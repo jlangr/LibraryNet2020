@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryNet2020", "LibraryNet2020\LibraryNet2020.csproj", "{5D14E032-5EB0-43B7-BC55-7D5E4EC508CE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5D14E032-5EB0-43B7-BC55-7D5E4EC508CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D14E032-5EB0-43B7-BC55-7D5E4EC508CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D14E032-5EB0-43B7-BC55-7D5E4EC508CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D14E032-5EB0-43B7-BC55-7D5E4EC508CE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
