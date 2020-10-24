@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using LibraryNet2020.NonPersistentModels;
 
 namespace LibraryNet2020.Models
 {

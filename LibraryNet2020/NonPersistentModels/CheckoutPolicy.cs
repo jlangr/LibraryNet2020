@@ -1,6 +1,6 @@
 using System;
 
-namespace LibraryNet2020.Models
+namespace LibraryNet2020.NonPersistentModels
 {
     [Serializable]
     public abstract class CheckoutPolicy
@@ -25,5 +25,7 @@ namespace LibraryNet2020.Models
         {
             return FineAmount(DaysLate(checkoutDate, checkinDate, MaximumCheckoutDays()));
         }
+
+        public abstract string Id { get; }
     }
 }

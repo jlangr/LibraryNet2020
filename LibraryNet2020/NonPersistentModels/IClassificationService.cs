@@ -1,4 +1,6 @@
-namespace LibraryNet2020.Models
+using LibraryNet2020.Models;
+
+namespace LibraryNet2020.NonPersistentModels
 {
     public interface IClassificationService
     {

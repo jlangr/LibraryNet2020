@@ -1,3 +1,4 @@
+using LibraryNet2020.NonPersistentModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibraryNet2020.Models
@@ -16,9 +17,24 @@ namespace LibraryNet2020.Models
         {
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Holding>()
+                .Ignore(holding => holding.CheckoutPolicy);
+
+            modelBuilder.Entity<Material>()
+                .HasNoKey();
+            
+            base.OnModelCreating(modelBuilder);
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder options)
             => options.UseSqlite("DataSource=Library.db");
 
         public DbSet<Branch> Branches { get; set; }
+        public DbSet<Holding> Holdings { get; set; }
+        public DbSet<Patron> Patrons { get; set; }
+        public DbSet<Material> Materials { get; set; }
+        
     }
 }

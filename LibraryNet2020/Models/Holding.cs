@@ -3,6 +3,7 @@ using System.Collections;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.RegularExpressions;
+using LibraryNet2020.NonPersistentModels;
 
 namespace LibraryNet2020.Models
 {
@@ -82,21 +83,22 @@ namespace LibraryNet2020.Models
 
         public int HeldByPatronId { get; set; }
 
+        public string CheckoutPolicyId { get; set; }
+
         [NotMapped]
-        public CheckoutPolicy CheckoutPolicy { get; set; }
+        public CheckoutPolicy CheckoutPolicy
+        {
+            get => CheckoutPolicyFactory.Create(CheckoutPolicyId);
+            set => CheckoutPolicyId = value.Id;
+        }
 
         [NotMapped, Display(Name = "Bar Code")]
-        public string Barcode
-        {
-            get { return GenerateBarcode(Classification, CopyNumber); }
-        }
+        public string Barcode => GenerateBarcode(Classification, CopyNumber);
 
         [NotMapped]
-        public bool IsCheckedOut
-        {
-            get { return BranchId == Branch.CheckedOutId; }
-        }
+        public bool IsCheckedOut => BranchId == Branch.CheckedOutId;
 
+        [NotMapped]
         public IEnumerable BranchesViewList { get; set; }
 
         public void CheckIn(DateTime timestamp, int toBranchId)
@@ -107,11 +109,12 @@ namespace LibraryNet2020.Models
             BranchId = toBranchId;
         }
 
+        // TODO changed to string checkoutpolicy
         public void CheckOut(DateTime timestamp, int patronId, CheckoutPolicy checkoutPolicy)
         {
             CheckOutTimestamp = timestamp;
             HeldByPatronId = patronId;
-            CheckoutPolicy = checkoutPolicy;
+            CheckoutPolicyId = checkoutPolicy.Id;
             CalculateDueDate();
             BranchId = Branch.CheckedOutId;
         }

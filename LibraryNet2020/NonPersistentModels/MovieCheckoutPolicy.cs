@@ -1,4 +1,4 @@
-namespace LibraryNet2020.Models
+namespace LibraryNet2020.NonPersistentModels
 {
     public class MovieCheckoutPolicy : CheckoutPolicy
     {
@@ -12,5 +12,7 @@ namespace LibraryNet2020.Models
         {
             return PenaltyAmount + daysLate * DailyFineBasis;
         }
+
+        public override string Id => "movie";
     }
 }

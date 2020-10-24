@@ -1,0 +1,69 @@
+@model LibraryNet2020.Models.Holding
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Holding</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Classification" class="control-label"></label>
+                <input asp-for="Classification" class="form-control" />
+                <span asp-validation-for="Classification" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CopyNumber" class="control-label"></label>
+                <input asp-for="CopyNumber" class="form-control" />
+                <span asp-validation-for="CopyNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CheckOutTimestamp" class="control-label"></label>
+                <input asp-for="CheckOutTimestamp" class="form-control" />
+                <span asp-validation-for="CheckOutTimestamp" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LastCheckedIn" class="control-label"></label>
+                <input asp-for="LastCheckedIn" class="form-control" />
+                <span asp-validation-for="LastCheckedIn" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DueDate" class="control-label"></label>
+                <input asp-for="DueDate" class="form-control" />
+                <span asp-validation-for="DueDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BranchId" class="control-label"></label>
+                <input asp-for="BranchId" class="form-control" />
+                <span asp-validation-for="BranchId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="HeldByPatronId" class="control-label"></label>
+                <input asp-for="HeldByPatronId" class="form-control" />
+                <span asp-validation-for="HeldByPatronId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CheckoutPolicyId" class="control-label"></label>
+                <input asp-for="CheckoutPolicyId" class="form-control" />
+                <span asp-validation-for="CheckoutPolicyId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

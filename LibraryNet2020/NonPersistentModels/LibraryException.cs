@@ -1,6 +1,6 @@
 using System;
 
-namespace LibraryNet2020.Models
+namespace LibraryNet2020.NonPersistentModels
 {
     public class LibraryException: ApplicationException
     {

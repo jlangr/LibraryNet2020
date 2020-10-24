@@ -1,6 +1,6 @@
 using System;
 
-namespace LibraryNet2020.Models
+namespace LibraryNet2020.NonPersistentModels
 {
     [Serializable]
     public class BookCheckoutPolicy: CheckoutPolicy
@@ -10,6 +10,8 @@ namespace LibraryNet2020.Models
         {
             return 21;
         }
+        
+        public override string Id => "book";
 
         public override decimal FineAmount(int daysLate)
         {
