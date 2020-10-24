@@ -22,9 +22,6 @@ namespace LibraryNet2020.Models
             modelBuilder.Entity<Holding>()
                 .Ignore(holding => holding.CheckoutPolicy);
 
-            modelBuilder.Entity<Material>()
-                .HasNoKey();
-            
             base.OnModelCreating(modelBuilder);
         }
 

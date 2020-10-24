@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using LibraryNet2020.NonPersistentModels;
 
@@ -6,6 +7,8 @@ namespace LibraryNet2020.Models
     public class Material
     {
         public string Director { get { return Author; } }
+        
+        public int Id { get; set; }
         
         public string CheckoutPolicyId { get; set; }
         
