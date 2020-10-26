@@ -1,5 +1,5 @@
-using System.Linq;
 using System.Threading.Tasks;
+using LibraryNet2020.Extensions;
 using LibraryNet2020.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -24,10 +24,9 @@ namespace LibraryNet2020.Controllers
         // GET: Branches/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            var branch = await FindBranchById(id);
-            if (branch == null) return NotFound();
-            return View(branch);
+            return this.ViewIf(await _context.Branches.FindById(id));
         }
+
 
         // GET: Branches/Create
         public IActionResult Create()
@@ -52,10 +51,7 @@ namespace LibraryNet2020.Controllers
         // GET: Branches/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null) return NotFound();
-            var branch = await _context.Branches.FindAsync(id);
-            if (branch == null) return NotFound();
-            return View(branch);
+            return this.ViewIf(await _context.Branches.FindDirect(id));
         }
 
         // POST: Branches/Edit/5
@@ -75,7 +71,7 @@ namespace LibraryNet2020.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!BranchExists(branch.Id)) return NotFound();
+                    if (!_context.Branches.Exists(branch.Id)) return NotFound();
                     throw;
                 }
             }
@@ -85,36 +81,17 @@ namespace LibraryNet2020.Controllers
         // GET: Branches/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            var branch = await FindBranchById(id);
-            if (branch == null) return NotFound();
-            return View(branch);
+            return this.ViewIf(await _context.Branches.FindById(id));
         }
 
-        private async Task<Branch> FindBranchById(int? id)
-        {
-            return await findById(id, _context.Branches);
-        }
-
-        private async Task<T> findById<T>(int? id, DbSet<T> dbSet) where T: class, Identifiable
-        {
-            if (id == null) return default;
-            return await dbSet.FirstOrDefaultAsync(m => m.Id == id);
-        }
-        
         // POST: Branches/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var branch = await _context.Branches.FindAsync(id);
-            _context.Branches.Remove(branch);
-            await _context.SaveChangesAsync();
+            _context.Branches.Delete(id, _context);
             return RedirectToAction(nameof(Index));
         }
-
-        private bool BranchExists(int id)
-        {
-            return _context.Branches.Any(e => e.Id == id);
-        }
+        
     }
 }

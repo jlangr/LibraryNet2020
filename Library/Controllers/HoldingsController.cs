@@ -49,7 +49,7 @@ namespace LibraryNet2020.Controllers
         }
 
         // POST: Holdings/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
+        // To protect from overpost
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]

@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using LibraryNet2020.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LibraryNet2020.Models;
 
@@ -27,19 +24,7 @@ namespace LibraryNet2020.Controllers
         // GET: Materials/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var material = await _context.Materials
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (material == null)
-            {
-                return NotFound();
-            }
-
-            return View(material);
+            return this.ViewIf(await _context.Materials.FindById(id));
         }
 
         // GET: Materials/Create
@@ -49,8 +34,6 @@ namespace LibraryNet2020.Controllers
         }
 
         // POST: Materials/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,CheckoutPolicyId,Title,Classification,Author,Year")] Material material)
@@ -67,30 +50,15 @@ namespace LibraryNet2020.Controllers
         // GET: Materials/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var material = await _context.Materials.FindAsync(id);
-            if (material == null)
-            {
-                return NotFound();
-            }
-            return View(material);
+            return this.ViewIf(await _context.Materials.FindDirect(id));
         }
 
         // POST: Materials/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,CheckoutPolicyId,Title,Classification,Author,Year")] Material material)
         {
-            if (id != material.Id)
-            {
-                return NotFound();
-            }
+            if (id != material.Id) return NotFound();
 
             if (ModelState.IsValid)
             {
@@ -98,19 +66,13 @@ namespace LibraryNet2020.Controllers
                 {
                     _context.Update(material);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!MaterialExists(material.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    if (!_context.Materials.Exists(material.Id)) return NotFound();
+                    throw;
                 }
-                return RedirectToAction(nameof(Index));
             }
             return View(material);
         }
@@ -118,19 +80,7 @@ namespace LibraryNet2020.Controllers
         // GET: Materials/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var material = await _context.Materials
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (material == null)
-            {
-                return NotFound();
-            }
-
-            return View(material);
+            return this.ViewIf(await _context.Materials.FindById(id));
         }
 
         // POST: Materials/Delete/5
@@ -138,15 +88,8 @@ namespace LibraryNet2020.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var material = await _context.Materials.FindAsync(id);
-            _context.Materials.Remove(material);
-            await _context.SaveChangesAsync();
+            _context.Materials.Delete(id, _context);
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool MaterialExists(int id)
-        {
-            return _context.Materials.Any(e => e.Id == id);
         }
     }
 }

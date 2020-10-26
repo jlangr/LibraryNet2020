@@ -17,7 +17,7 @@ namespace LibraryNet2020.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.9");
 
-            modelBuilder.Entity("LibraryNet2020.Models.Branch", b =>
+            modelBuilder.Entity("Library.Models.Branch", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

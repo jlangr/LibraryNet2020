@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryNet2020", "LibraryNet2020\LibraryNet2020.csproj", "{5D14E032-5EB0-43B7-BC55-7D5E4EC508CE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Library", "Library\Library.csproj", "{5D14E032-5EB0-43B7-BC55-7D5E4EC508CE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryTest", "LibraryTest\LibraryTest.csproj", "{2DF3A847-CE25-4D69-8C6D-8D21912624D4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,5 +14,9 @@ Global
 		{5D14E032-5EB0-43B7-BC55-7D5E4EC508CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D14E032-5EB0-43B7-BC55-7D5E4EC508CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5D14E032-5EB0-43B7-BC55-7D5E4EC508CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DF3A847-CE25-4D69-8C6D-8D21912624D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DF3A847-CE25-4D69-8C6D-8D21912624D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DF3A847-CE25-4D69-8C6D-8D21912624D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DF3A847-CE25-4D69-8C6D-8D21912624D4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

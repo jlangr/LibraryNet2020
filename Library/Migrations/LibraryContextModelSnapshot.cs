@@ -16,7 +16,7 @@ namespace LibraryNet2020.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.9");
 
-            modelBuilder.Entity("LibraryNet2020.Models.Branch", b =>
+            modelBuilder.Entity("Library.Models.Branch", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -32,7 +32,7 @@ namespace LibraryNet2020.Migrations
                     b.ToTable("Branches");
                 });
 
-            modelBuilder.Entity("LibraryNet2020.Models.Holding", b =>
+            modelBuilder.Entity("Library.Models.Holding", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -67,7 +67,7 @@ namespace LibraryNet2020.Migrations
                     b.ToTable("Holdings");
                 });
 
-            modelBuilder.Entity("LibraryNet2020.Models.Material", b =>
+            modelBuilder.Entity("Library.Models.Material", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -93,7 +93,7 @@ namespace LibraryNet2020.Migrations
                     b.ToTable("Materials");
                 });
 
-            modelBuilder.Entity("LibraryNet2020.Models.Patron", b =>
+            modelBuilder.Entity("Library.Models.Patron", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
