@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using LibraryNet2020.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LibraryNet2020.Controllers
 {
@@ -27,18 +24,8 @@ namespace LibraryNet2020.Controllers
         // GET: Branches/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var branch = await _context.Branches
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (branch == null)
-            {
-                return NotFound();
-            }
-
+            var branch = await FindBranchById(id);
+            if (branch == null) return NotFound();
             return View(branch);
         }
 
@@ -49,8 +36,6 @@ namespace LibraryNet2020.Controllers
         }
 
         // POST: Branches/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name")] Branch branch)
@@ -67,30 +52,18 @@ namespace LibraryNet2020.Controllers
         // GET: Branches/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
+            if (id == null) return NotFound();
             var branch = await _context.Branches.FindAsync(id);
-            if (branch == null)
-            {
-                return NotFound();
-            }
+            if (branch == null) return NotFound();
             return View(branch);
         }
 
         // POST: Branches/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Branch branch)
         {
-            if (id != branch.Id)
-            {
-                return NotFound();
-            }
+            if (id != branch.Id) return NotFound();
 
             if (ModelState.IsValid)
             {
@@ -98,19 +71,13 @@ namespace LibraryNet2020.Controllers
                 {
                     _context.Update(branch);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!BranchExists(branch.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    if (!BranchExists(branch.Id)) return NotFound();
+                    throw;
                 }
-                return RedirectToAction(nameof(Index));
             }
             return View(branch);
         }
@@ -118,21 +85,22 @@ namespace LibraryNet2020.Controllers
         // GET: Branches/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var branch = await _context.Branches
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (branch == null)
-            {
-                return NotFound();
-            }
-
+            var branch = await FindBranchById(id);
+            if (branch == null) return NotFound();
             return View(branch);
         }
 
+        private async Task<Branch> FindBranchById(int? id)
+        {
+            return await findById(id, _context.Branches);
+        }
+
+        private async Task<T> findById<T>(int? id, DbSet<T> dbSet) where T: class, Identifiable
+        {
+            if (id == null) return default;
+            return await dbSet.FirstOrDefaultAsync(m => m.Id == id);
+        }
+        
         // POST: Branches/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
