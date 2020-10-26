@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LibraryNet2020.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -27,19 +28,7 @@ namespace LibraryNet2020.Controllers
         // GET: Patrons/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var patron = await _context.Patrons
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (patron == null)
-            {
-                return NotFound();
-            }
-
-            return View(patron);
+            return this.ViewIf(await _context.Patrons.FindById(id));
         }
 
         // GET: Patrons/Create
@@ -49,8 +38,6 @@ namespace LibraryNet2020.Controllers
         }
 
         // POST: Patrons/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,Id,Balance")] Patron patron)
@@ -67,30 +54,15 @@ namespace LibraryNet2020.Controllers
         // GET: Patrons/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var patron = await _context.Patrons.FindAsync(id);
-            if (patron == null)
-            {
-                return NotFound();
-            }
-            return View(patron);
+            return this.ViewIf(await _context.Patrons.FindDirect(id));
         }
 
         // POST: Patrons/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Name,Id,Balance")] Patron patron)
         {
-            if (id != patron.Id)
-            {
-                return NotFound();
-            }
+            if (id != patron.Id) return NotFound();
 
             if (ModelState.IsValid)
             {
@@ -98,19 +70,13 @@ namespace LibraryNet2020.Controllers
                 {
                     _context.Update(patron);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!PatronExists(patron.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    if (!_context.Patrons.Exists(patron.Id)) return NotFound();
+                    throw;
                 }
-                return RedirectToAction(nameof(Index));
             }
             return View(patron);
         }
@@ -118,19 +84,7 @@ namespace LibraryNet2020.Controllers
         // GET: Patrons/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var patron = await _context.Patrons
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (patron == null)
-            {
-                return NotFound();
-            }
-
-            return View(patron);
+            return this.ViewIf(await _context.Patrons.FindById(id));
         }
 
         // POST: Patrons/Delete/5
@@ -138,15 +92,8 @@ namespace LibraryNet2020.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var patron = await _context.Patrons.FindAsync(id);
-            _context.Patrons.Remove(patron);
-            await _context.SaveChangesAsync();
+            _context.Patrons.Delete(id, _context);
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool PatronExists(int id)
-        {
-            return _context.Patrons.Any(e => e.Id == id);
         }
     }
 }
