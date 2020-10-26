@@ -36,15 +36,16 @@ namespace LibraryNet2020.Controllers
         // POST: Materials/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,CheckoutPolicyId,Title,Classification,Author,Year")] Material material)
+        public async Task<IActionResult> Create([Bind("Id,CheckoutPolicyId,Title,Classification,Author,Year")] Material entity)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(material);
+                _context.Add(entity);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(material);
+
+            return View(entity);
         }
 
         // GET: Materials/Edit/5
