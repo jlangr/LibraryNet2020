@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
+using LibraryNet2020.Extensions;
 using LibraryNet2020.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LibraryNet2020.Controllers
 {
@@ -27,19 +24,7 @@ namespace LibraryNet2020.Controllers
         // GET: Holdings/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var holding = await _context.Holdings
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (holding == null)
-            {
-                return NotFound();
-            }
-
-            return View(holding);
+            return this.ViewIf(await _context.Holdings.FindById(id));
         }
 
         // GET: Holdings/Create
@@ -49,11 +34,12 @@ namespace LibraryNet2020.Controllers
         }
 
         // POST: Holdings/Create
-        // To protect from overpost
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Classification,CopyNumber,CheckOutTimestamp,LastCheckedIn,DueDate,BranchId,HeldByPatronId,CheckoutPolicyId")] Holding holding)
+        public async Task<IActionResult> Create(
+            [Bind(
+                "Id,Classification,CopyNumber,CheckOutTimestamp,LastCheckedIn,DueDate,BranchId,HeldByPatronId,CheckoutPolicyId")]
+            Holding holding)
         {
             if (ModelState.IsValid)
             {
@@ -61,36 +47,25 @@ namespace LibraryNet2020.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             return View(holding);
         }
 
         // GET: Holdings/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var holding = await _context.Holdings.FindAsync(id);
-            if (holding == null)
-            {
-                return NotFound();
-            }
-            return View(holding);
+            return this.ViewIf(await _context.Holdings.FindDirect(id));
         }
 
         // POST: Holdings/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Classification,CopyNumber,CheckOutTimestamp,LastCheckedIn,DueDate,BranchId,HeldByPatronId,CheckoutPolicyId")] Holding holding)
+        public async Task<IActionResult> Edit(int id,
+            [Bind(
+                "Id,Classification,CopyNumber,CheckOutTimestamp,LastCheckedIn,DueDate,BranchId,HeldByPatronId,CheckoutPolicyId")]
+            Holding holding)
         {
-            if (id != holding.Id)
-            {
-                return NotFound();
-            }
+            if (id != holding.Id) return NotFound();
 
             if (ModelState.IsValid)
             {
@@ -98,39 +73,22 @@ namespace LibraryNet2020.Controllers
                 {
                     _context.Update(holding);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!HoldingExists(holding.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    if (!_context.Holdings.Exists(holding.Id)) return NotFound();
+                    throw;
                 }
-                return RedirectToAction(nameof(Index));
             }
+
             return View(holding);
         }
 
         // GET: Holdings/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var holding = await _context.Holdings
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (holding == null)
-            {
-                return NotFound();
-            }
-
-            return View(holding);
+            return this.ViewIf(await _context.Holdings.FindById(id));
         }
 
         // POST: Holdings/Delete/5
@@ -138,15 +96,8 @@ namespace LibraryNet2020.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var holding = await _context.Holdings.FindAsync(id);
-            _context.Holdings.Remove(holding);
-            await _context.SaveChangesAsync();
+            _context.Holdings.Delete(id, _context);
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool HoldingExists(int id)
-        {
-            return _context.Holdings.Any(e => e.Id == id);
         }
     }
 }
