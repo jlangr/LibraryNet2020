@@ -42,13 +42,15 @@ namespace LibraryNet2020.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,Id,Balance")] Patron patron)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return View(patron);
+            
             {
                 _context.Add(patron);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(patron);
+            // return View(patron);
         }
 
         // GET: Patrons/Edit/5
