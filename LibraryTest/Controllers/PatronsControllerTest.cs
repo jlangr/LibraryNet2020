@@ -1,77 +1,47 @@
+using System.Linq;
+using System.Threading.Tasks;
 using LibraryNet2020.Controllers;
 using LibraryNet2020.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace LibraryTest
 {
-    public class DbContextFixture
+    [Collection("SharedLibraryContext")]
+    public class PatronsControllerTest
     {
-        public DbContextOptions<LibraryContext> ContextOptions { get; set; }
+        // private readonly ITestOutputHelper output;
+        private LibraryContext context;
+        private PatronsController controller;
 
-        public DbContextFixture()
+        public PatronsControllerTest(DbContextFixture fixture) // , ITestOutputHelper output)
         {
-            ContextOptions = new DbContextOptionsBuilder<LibraryContext>()
-                // .UseSqlite("Filename=Library.db")
-                .UseSqlite("DataSource=:memory:")
-                .Options;
-            Seed();
-        }
-
-        private void Seed()
-        {
-            using var context = new LibraryContext(ContextOptions);
-            context.Database.EnsureDeleted();
-            context.Database.EnsureCreated();
-            // add materials here if necessary
-            context.SaveChanges();
-        }
-    }
-
-    public class PatronsControllerTest : IClassFixture<DbContextFixture>
-    {
-        private readonly DbContextFixture fixture;
-
-        public PatronsControllerTest(DbContextFixture fixture)
-        {
-            this.fixture = fixture;
+            fixture.Seed();
+            // this.output = output;
+            context = new LibraryContext(fixture.ContextOptions);
+            controller = new PatronsController(context);
         }
 
         [Fact]
         public void Details_ReturnsNotFoundWhenNoPatronAdded()
         {
-            using var context = new LibraryContext(fixture.ContextOptions);
-            var controller = new PatronsController(context);
-
             var task = controller.Details(0);
 
             Assert.IsType<NotFoundResult>(task.Result);
         }
-
+        
         [Fact]
-        public void Create_PersistsRetrievablePatron()
+        public async Task Create_PersistsPatron()
         {
-            using var context = new LibraryContext(fixture.ContextOptions);
-            var controller = new PatronsController(context);
+            await controller.Create(new Patron {Name = "Jeff"});
 
-            var id = controller.Create(new Patron {Name = "Jeff"});
-
-            var task = controller.Details(id.Id);
-            Assert.Equal("Jeff", Patron(task.Result).Name);
-        }
-
-        private static Patron Patron(IActionResult result)
-        {
-            return (result as ViewResult).Model as Patron;
+            Assert.NotNull(context.Patrons.Single(patron => patron.Name == "Jeff"));
         }
 
         [Fact]
         public void Create_RedirectsToIndexWhenModelValid()
         {
-            using var context = new LibraryContext(fixture.ContextOptions);
-            var controller = new PatronsController(context);
-
             var task = controller.Create(new Patron {Name = "name"});
 
             Assert.Equal("Index", (task.Result as RedirectToActionResult).ActionName);
@@ -80,8 +50,6 @@ namespace LibraryTest
         [Fact]
         public void Create_RendersPatronViewWhenPatronInvalid()
         {
-            using var context = new LibraryContext(fixture.ContextOptions);
-            var controller = new PatronsController(context);
             controller.ModelState.AddModelError("", "");
         
             var task = controller.Create(new Patron());

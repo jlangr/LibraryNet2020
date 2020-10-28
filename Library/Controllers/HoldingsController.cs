@@ -1,6 +1,10 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using LibraryNet2020.ControllerHelpers;
 using LibraryNet2020.Extensions;
 using LibraryNet2020.Models;
+using LibraryNet2020.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,8 +22,16 @@ namespace LibraryNet2020.Controllers
         // GET: Holdings
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Holdings.ToListAsync());
+            var holdings = await _context.Holdings.ToListAsync();
+            var holdingViewModels = holdings.Select(CreateHoldingViewModel);
+            return View(holdingViewModels);
         }
+
+        private HoldingViewModel CreateHoldingViewModel(Holding holding) =>
+            new HoldingViewModel(holding)
+            {
+                BranchName = BranchesControllerUtil.BranchName(_context.Branches, holding.BranchId)
+            };
 
         // GET: Holdings/Details/5
         public async Task<IActionResult> Details(int? id)

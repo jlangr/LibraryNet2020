@@ -45,12 +45,9 @@ namespace LibraryNet2020.Controllers
             if (!ModelState.IsValid)
                 return View(patron);
             
-            {
-                _context.Add(patron);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            // return View(patron);
+            _context.Add(patron);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Patrons/Edit/5

@@ -79,3 +79,6 @@ dotnet ef migrations add RestOfTables
 - how to debug
 - effective console logging
 - look at their code. OO? functional? Linq w/ code or regular linq?
+
+---
+https://andrewlock.net/should-you-unit-test-controllers-in-aspnetcore/
