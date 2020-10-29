@@ -57,8 +57,6 @@ namespace LibraryTest
             Assert.IsType<Patron>((task.Result as ViewResult).Model);
         }
 
-//
-//             IRepository<Branch> branchRepo = new InMemoryRepository<Branch>();
 //             CheckOutController checkoutController;
 //             int patronId;
 //             int branchId;

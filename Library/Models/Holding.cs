@@ -140,6 +140,7 @@ namespace LibraryNet2020.Models
             var colonIndex = barcode.IndexOf(':');
             return int.Parse(barcode.Substring(colonIndex + 1));
         }
+        // TODO can we do this with destructuring into a tuple or something?
 
         public int DaysLate()
         {
