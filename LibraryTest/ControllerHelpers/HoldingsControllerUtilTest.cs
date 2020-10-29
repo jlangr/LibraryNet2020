@@ -49,6 +49,7 @@ namespace LibraryTest.ControllerHelpers
             
             Assert.Equal(holding.Id, retrieved.Id);
         }
+        
         private Holding AddNewHolding(string classification)
         {
             var entity = context.Holdings.Add(new Holding(classification)).Entity;

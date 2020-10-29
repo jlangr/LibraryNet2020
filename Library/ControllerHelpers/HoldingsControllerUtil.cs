@@ -9,7 +9,7 @@ namespace LibraryNet2020.ControllerHelpers
         public static Holding FindByClassificationAndCopy(LibraryContext context, string classification, int copyNumber)
         {
             return context.Holdings
-                .Single(h => h.Classification == classification && h.CopyNumber == copyNumber);
+                .FirstOrDefault(h => h.Classification == classification && h.CopyNumber == copyNumber);
         }
 
         public static Holding FindByBarcode(LibraryContext context, string barcode)
@@ -21,6 +21,5 @@ namespace LibraryNet2020.ControllerHelpers
         {
             return context.Holdings.Count(h => h.Classification == classification) + 1;
         }
-
     }
 }

@@ -55,13 +55,10 @@ namespace LibraryNet2020.Controllers
                 "Id,Classification,CopyNumber,CheckOutTimestamp,LastCheckedIn,DueDate,BranchId,HeldByPatronId,CheckoutPolicyId")]
             Holding holding)
         {
-            if (ModelState.IsValid)
-            {
-                holdingsService.Add(holding);
-                return RedirectToAction(nameof(Index));
-            }
+            if (!ModelState.IsValid) return View(holding);
 
-            return View(holding);
+            holdingsService.Add(holding);
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Holdings/Edit/5
@@ -80,22 +77,19 @@ namespace LibraryNet2020.Controllers
         {
             if (id != holding.Id) return NotFound();
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    context.Update(holding);
-                    await context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!context.Holdings.Exists(holding.Id)) return NotFound();
-                    throw;
-                }
-            }
+            if (!ModelState.IsValid) return View(holding);
 
-            return View(holding);
+            try
+            {
+                context.Update(holding);
+                await context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!context.Holdings.Exists(holding.Id)) return NotFound();
+                throw;
+            }
         }
 
         // GET: Holdings/Delete/5
