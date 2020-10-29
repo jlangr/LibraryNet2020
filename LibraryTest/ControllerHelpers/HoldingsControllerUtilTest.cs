@@ -19,44 +19,41 @@ namespace LibraryTest.ControllerHelpers
         [Fact]
         public void NextAvailableCopyNumberIncrementsCopyNumberUsingCount()
         {
-            context.Holdings.Add(new Holding("AB123:1"));
-            context.Holdings.Add(new Holding("AB123:2"));
-            context.Holdings.Add(new Holding("XX123:1"));
-            context.SaveChanges();
+            AddNewHolding("AB123:2");
+            AddNewHolding("AB123:1");
+            AddNewHolding("XX123:1");
 
             var copyNumber = HoldingsControllerUtil.NextAvailableCopyNumber(context, "AB123");
 
             Assert.Equal(3, copyNumber);
         }
 
-            int idForAB123_2;
-            int idForXX123_1;
+        [Fact]
+        public void ByBarcodeReturnsMatchingHolding()
+        {
+            var holding = AddNewHolding("AB123:2");
+            AddNewHolding("XX123:1");
 
-            private void AddThreeHoldings()
-            {
-                context.Holdings.Add(new Holding("AB123:1"));
-                var e1 = context.Holdings.Add(new Holding("AB123:2")).Entity;
-                var e2 = context.Holdings.Add(new Holding("XX123:1")).Entity;
-                context.SaveChanges();
-                idForAB123_2 = e1.Id;
-                idForXX123_1 = e2.Id;
-            }
-
-            [Fact]
-            public void ByBarcodeReturnsMatchingHolding()
-            {
-                AddThreeHoldings();
-                Assert.Equal(idForAB123_2, HoldingsControllerUtil.FindByBarcode(context, "AB123:2").Id);
-            }
+            var retrievedHolding = HoldingsControllerUtil.FindByBarcode(context, "AB123:2");
             
-            /*
+            Assert.Equal(holding.Id, retrievedHolding.Id);
+        }
 
-            [Fact]
-            public void ByClassificationAndCopyReturnsMatchingHolding()
-            {
-                Assert.Equal(idForXX123_1,
-                    HoldingsControllerUtil.FindByClassificationAndCopy(context, "XX123", 1).Id);
-            }
-        */
+        [Fact]
+        public void ByClassificationAndCopyReturnsMatchingHolding()
+        {
+            AddNewHolding("AB123:2");
+            
+            var holding = AddNewHolding("XX123:1");
+            var retrieved = HoldingsControllerUtil.FindByClassificationAndCopy(context, "XX123", 1);
+            
+            Assert.Equal(holding.Id, retrieved.Id);
+        }
+        private Holding AddNewHolding(string classification)
+        {
+            var entity = context.Holdings.Add(new Holding(classification)).Entity;
+            context.SaveChanges();
+            return entity;
+        }
     }
 }
