@@ -12,17 +12,19 @@ namespace LibraryNet2020.Controllers
 {
     public class HoldingsController : Controller
     {
-        private readonly LibraryContext _context;
+        private readonly LibraryContext context;
+        private readonly HoldingsService holdingsService;
 
         public HoldingsController(LibraryContext context)
         {
-            _context = context;
+            this.context = context;
+            holdingsService = new HoldingsService(context);
         }
 
         // GET: Holdings
         public async Task<IActionResult> Index()
         {
-            var holdings = await _context.Holdings.ToListAsync();
+            var holdings = await context.Holdings.ToListAsync();
             var holdingViewModels = holdings.Select(CreateHoldingViewModel);
             return View(holdingViewModels);
         }
@@ -30,13 +32,13 @@ namespace LibraryNet2020.Controllers
         private HoldingViewModel CreateHoldingViewModel(Holding holding) =>
             new HoldingViewModel(holding)
             {
-                BranchName = BranchesControllerUtil.BranchName(_context.Branches, holding.BranchId)
+                BranchName = BranchesControllerUtil.BranchName(context.Branches, holding.BranchId)
             };
 
         // GET: Holdings/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            return this.ViewIf(await _context.Holdings.FindById(id));
+            return this.ViewIf(await context.Holdings.FindById(id));
         }
 
         // GET: Holdings/Create
@@ -55,8 +57,7 @@ namespace LibraryNet2020.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(holding);
-                await _context.SaveChangesAsync();
+                holdingsService.Add(holding);
                 return RedirectToAction(nameof(Index));
             }
 
@@ -66,7 +67,7 @@ namespace LibraryNet2020.Controllers
         // GET: Holdings/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            return this.ViewIf(await _context.Holdings.FindDirect(id));
+            return this.ViewIf(await context.Holdings.FindDirect(id));
         }
 
         // POST: Holdings/Edit/5
@@ -83,13 +84,13 @@ namespace LibraryNet2020.Controllers
             {
                 try
                 {
-                    _context.Update(holding);
-                    await _context.SaveChangesAsync();
+                    context.Update(holding);
+                    await context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!_context.Holdings.Exists(holding.Id)) return NotFound();
+                    if (!context.Holdings.Exists(holding.Id)) return NotFound();
                     throw;
                 }
             }
@@ -100,7 +101,7 @@ namespace LibraryNet2020.Controllers
         // GET: Holdings/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            return this.ViewIf(await _context.Holdings.FindById(id));
+            return this.ViewIf(await context.Holdings.FindById(id));
         }
 
         // POST: Holdings/Delete/5
@@ -108,7 +109,7 @@ namespace LibraryNet2020.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            _context.Holdings.Delete(id, _context);
+            context.Holdings.Delete(id, context);
             return RedirectToAction(nameof(Index));
         }
     }
