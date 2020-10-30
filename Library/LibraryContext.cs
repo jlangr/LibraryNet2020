@@ -35,7 +35,6 @@ namespace LibraryNet2020.Models
         public DbSet<Patron> Patrons { get; set; }
         public DbSet<Material> Materials { get; set; }
 
-        // TODO what's the "in" clause
         // TODO test
         public T GetById<T>(DbSet<T> dbSet, int id) where T: class, Identifiable
         {
@@ -43,6 +42,7 @@ namespace LibraryNet2020.Models
         }
 
         // TODO test
+        // TODO move to service
         public IEnumerable<Branch> AllBranchesIncludingVirtual()
         {
             return new List<Branch> { Branch.CheckedOutBranch }.Concat(Branches.AsEnumerable());

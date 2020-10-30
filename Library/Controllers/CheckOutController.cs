@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using LibraryNet2020.Models;
 using LibraryNet2020.Services;
 using LibraryNet2020.ViewModels;
@@ -7,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryNet2020.Controllers
 {
+    // TODO test
     public class CheckOutController : Controller
     {
         private const string ModelKey = "CheckOut";
@@ -32,15 +32,13 @@ namespace LibraryNet2020.Controllers
             if (!ModelState.IsValid) return View(checkout);
 
             checkout.BranchesViewList = new List<Branch>(context.AllBranchesIncludingVirtual());
-
             var checkOutService = new CheckOutService();
             if (!checkOutService.Checkout(context, checkout))
             {
-                // TODO don't just get first error message
-                ModelState.AddModelError(ModelKey, checkOutService.ErrorMessages.First());
+                foreach (var message in checkOutService.ErrorMessages)
+                    ModelState.AddModelError(ModelKey, message);
                 return View(checkout);
             }
-
             return RedirectToAction("Index");
         }
     }

@@ -57,6 +57,7 @@ namespace LibraryTest
             Assert.IsType<Patron>((task.Result as ViewResult).Model);
         }
 
+        // TODO all this
 //             CheckOutController checkoutController;
 //             int patronId;
 //             int branchId;
