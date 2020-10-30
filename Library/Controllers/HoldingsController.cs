@@ -15,25 +15,26 @@ namespace LibraryNet2020.Controllers
     {
         private readonly LibraryContext context;
         private readonly HoldingsService holdingsService;
+        private readonly BranchesService branchesService;
 
         public HoldingsController(LibraryContext context)
         {
             this.context = context;
             holdingsService = new HoldingsService(context);
+            branchesService = new BranchesService(context);
         }
 
         // GET: Holdings
         public async Task<IActionResult> Index()
         {
             var holdings = await context.Holdings.ToListAsync();
-            var holdingViewModels = holdings.Select(CreateHoldingViewModel);
-            return View(holdingViewModels);
+            return View(holdings.Select(HoldingViewModel));
         }
 
-        private HoldingViewModel CreateHoldingViewModel(Holding holding) =>
+        private HoldingViewModel HoldingViewModel(Holding holding) =>
             new HoldingViewModel(holding)
             {
-                BranchName = BranchesControllerUtil.BranchName(context, holding.BranchId)
+                BranchName = branchesService.BranchName(holding.BranchId)
             };
 
         // GET: Holdings/Details/5

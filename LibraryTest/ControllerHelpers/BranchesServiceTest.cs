@@ -5,21 +5,23 @@ using Xunit;
 namespace LibraryTest.ControllerHelpers
 {
     [Collection("SharedLibraryContext")]
-    public class BranchesControllerUtilTest
+    public class BranchesServiceTest
     {
         private LibraryContext context;
+        private BranchesService branchesService;
         
-        public BranchesControllerUtilTest(DbContextFixture fixture)
+        public BranchesServiceTest(DbContextFixture fixture)
         {
             fixture.Seed();
             context = new LibraryContext(fixture.ContextOptions);
+            branchesService = new BranchesService(context);
         }
         
         [Fact]
         public void BranchNameForCheckedOutBranch()
         {
-            Assert.Equal(BranchesControllerUtil.CheckedOutBranchName, 
-                BranchesControllerUtil.BranchName(context, Branch.CheckedOutId));
+            Assert.Equal(BranchesService.CheckedOutBranchName, 
+                branchesService.BranchName(Branch.CheckedOutId));
         }
 
         [Fact]
@@ -28,9 +30,17 @@ namespace LibraryTest.ControllerHelpers
             context.Add(new Branch { Id = 2, Name = "NewBranchName" });
             context.SaveChanges();
 
-            var branchName = BranchesControllerUtil.BranchName(context, 2);
+            var branchName = branchesService.BranchName(2);
 
             Assert.Equal("NewBranchName", branchName);
+        }
+
+        [Fact]
+        public void BranchNameIsNullWhenBranchNotFound()
+        {
+            var branchName = branchesService.BranchName(2);
+
+            Assert.Equal("", branchName);
         }
     }
 }
