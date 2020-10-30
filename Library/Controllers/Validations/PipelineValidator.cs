@@ -14,13 +14,12 @@ namespace LibraryNet2020.Controllers.Validations
         
         public void Validate(List<Validator> validators)
         {
-            
             Validator failingValidation = null;
-            Data = new Dictionary<string, object>();
+            Data = null;
             // TODO reduce
             foreach (var validator in validators)
             {
-                validator.Data = Data;
+                Merge(validator.Data, Data);
                 validator.Validate();
                 if (!validator.IsValid)
                 {
@@ -32,6 +31,14 @@ namespace LibraryNet2020.Controllers.Validations
             }
 
             if (failingValidation != null) ErrorMessages.Add(failingValidation.ErrorMessage);
+        }
+
+        private void Merge(Dictionary<string, object> d1, Dictionary<string, object> d2)
+        {
+            if (d2 == null || d1 == null)
+                return;
+            foreach (var entry in d2)
+                d1[entry.Key] = entry.Value;
         }
 
         public bool IsValid()

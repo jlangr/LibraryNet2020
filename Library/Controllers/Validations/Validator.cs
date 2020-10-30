@@ -6,8 +6,13 @@ namespace LibraryNet2020.Controllers.Validations
     public abstract class Validator
     {
         protected readonly LibraryContext context;
-        public Dictionary<string,object> Data { get; set; }
+        public virtual Dictionary<string,object> Data { get; set; }
 
+        public Validator()
+        {
+            context = null;
+        }
+        
         public Validator(LibraryContext context)
         {
             this.context = context;
