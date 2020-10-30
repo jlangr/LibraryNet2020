@@ -28,7 +28,7 @@ namespace LibraryTest
         {
             var task = controller.Details(0);
 
-            Assert.IsType<NotFoundResult>(task.Result);
+            Assert.IsType<BadRequestResult>(task.Result);
         }
         
         [Fact]
@@ -58,40 +58,6 @@ namespace LibraryTest
         }
 
         // TODO all this
-//             CheckOutController checkoutController;
-//             int patronId;
-//             int branchId;
-//
-//             public HoldingsTest()
-//             {
-//                 CreateCheckoutController();
-//                 CreatePatron();
-//                 CreateBranch();
-//             }
-//             
-//             private void CreateCheckoutController()
-//             {
-//                 checkoutController = new CheckOutController(branchRepo, holdingRepo, patronRepo);
-//             }
-//
-//             private void CreatePatron()
-//             {
-//                 patronId = patronRepo.Create(new Patron());
-//             }
-//
-//             private void CreateBranch()
-//             {
-//                 branchId = branchRepo.Create(new Branch());
-//             }
-//
-//             [Fact]
-//             public void ReturnsEmptyWhenPatronHasNotCheckedOutBooks()
-//             {
-//                 var view = (controller.Holdings(patronId) as ViewResult)?.Model as IEnumerable<Holding>;
-//
-//                 Assert.True(!view?.Any());
-//             }
-//
 //             [Fact]
 //             public void ReturnsListWithCheckedOutHolding()
 //             {

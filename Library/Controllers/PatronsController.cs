@@ -4,32 +4,46 @@ using System.Linq;
 using System.Threading.Tasks;
 using LibraryNet2020.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LibraryNet2020.Models;
+using LibraryNet2020.Services;
+using LibraryNet2020.ViewModels;
 
 namespace LibraryNet2020.Controllers
 {
     public class PatronsController : Controller
     {
-        private readonly LibraryContext _context;
+        private readonly LibraryContext context;
+        private readonly PatronsService patronsService;
 
         public PatronsController(LibraryContext context)
         {
-            _context = context;
+            this.context = context;
+            patronsService = new PatronsService(context);
         }
 
         // GET: Patrons
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Patrons.ToListAsync());
+            return View(await context.Patrons.ToListAsync());
         }
 
         // GET: Patrons/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
-            return this.ViewIf(await _context.Patrons.FindById(id));
+            var patron = await context.Patrons.FindById(id);
+            if (patron == null)
+                return BadRequest();
+            
+            var patronView = new PatronViewModel(patron)
+            {
+                Holdings = patronsService.HoldingsForPatron(id)
+            };
+            
+            return View(patronView);
         }
+
+
 
         // GET: Patrons/Create
         public IActionResult Create()
@@ -45,15 +59,15 @@ namespace LibraryNet2020.Controllers
             if (!ModelState.IsValid)
                 return View(patron);
             
-            _context.Add(patron);
-            await _context.SaveChangesAsync();
+            context.Add(patron);
+            await context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         // GET: Patrons/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            return this.ViewIf(await _context.Patrons.FindDirect(id));
+            return this.ViewIf(await context.Patrons.FindDirect(id));
         }
 
         // POST: Patrons/Edit/5
@@ -67,13 +81,13 @@ namespace LibraryNet2020.Controllers
             {
                 try
                 {
-                    _context.Update(patron);
-                    await _context.SaveChangesAsync();
+                    context.Update(patron);
+                    await context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!_context.Patrons.Exists(patron.Id)) return NotFound();
+                    if (!context.Patrons.Exists(patron.Id)) return NotFound();
                     throw;
                 }
             }
@@ -83,7 +97,7 @@ namespace LibraryNet2020.Controllers
         // GET: Patrons/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            return this.ViewIf(await _context.Patrons.FindById(id));
+            return this.ViewIf(await context.Patrons.FindById(id));
         }
 
         // POST: Patrons/Delete/5
@@ -91,7 +105,7 @@ namespace LibraryNet2020.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            _context.Patrons.Delete(id, _context);
+            context.Patrons.Delete(id, context);
             return RedirectToAction(nameof(Index));
         }
     }
