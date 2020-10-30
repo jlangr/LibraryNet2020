@@ -29,6 +29,18 @@ namespace LibraryTest.Controllers.Validations
         }
 
         [Fact]
+        public void UpdatesDataWithRetrievedHolding()
+        {
+            validator = new HoldingRetrievalValidator(context, "AC123:1");
+            context.Holdings.Add(new Holding("AC123:1"));
+            context.SaveChanges();
+
+            validator.Validate();
+
+            Assert.Equal("AC123:1", (validator.Data["Holding"] as Holding).Barcode);
+        }
+
+        [Fact]
         public void IsNotValidWhenHoldingDoesNotExist()
         {
             validator = new HoldingRetrievalValidator(context, "ABC123:1");
