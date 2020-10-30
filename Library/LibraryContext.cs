@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using LibraryNet2020.NonPersistentModels;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,6 +34,18 @@ namespace LibraryNet2020.Models
         public DbSet<Holding> Holdings { get; set; }
         public DbSet<Patron> Patrons { get; set; }
         public DbSet<Material> Materials { get; set; }
-        
+
+        // TODO what's the "in" clause
+        // TODO test
+        public T GetById<T>(DbSet<T> dbSet, int id) where T: class, Identifiable
+        {
+            return dbSet.FirstOrDefault(e => e.Id == id);
+        }
+
+        // TODO test
+        public IEnumerable<Branch> AllBranchesIncludingVirtual()
+        {
+            return new List<Branch> { Branch.CheckedOutBranch }.Concat(Branches.AsEnumerable());
+        }
     }
 }

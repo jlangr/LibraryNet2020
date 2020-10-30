@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using LibraryNet2020.ControllerHelpers;
 using LibraryNet2020.Models;
 
@@ -32,20 +33,24 @@ namespace LibraryNet2020.Controllers
                 throw new InvalidOperationException(ErrorMessageDuplicateBarcode);
         }
 
-        // TODO remote HoldingsControllerUtil
-        public static Holding FindByClassificationAndCopy(LibraryContext context, string classification, int copyNumber)
+        // TODO remove HoldingsControllerUtil
+        // TODO null test
+        public Holding FindByClassificationAndCopy(string classification, int copyNumber)
         {
-            return HoldingsControllerUtil.FindByClassificationAndCopy(context, classification, copyNumber);
+            return context.Holdings
+                .FirstOrDefault(h => h.Classification == classification && h.CopyNumber == copyNumber);
         }
 
-        public static Holding FindByBarcode(LibraryContext context, string barcode)
+        // TODO null test
+        public Holding FindByBarcode(string barcode)
         {
-            return HoldingsControllerUtil.FindByBarcode(context, barcode);
+            return FindByClassificationAndCopy(Holding.ClassificationFromBarcode(barcode), Holding.CopyNumberFromBarcode(barcode));
         }
 
-        public static int NextAvailableCopyNumber(LibraryContext context, string classification)
+        // TODO null test
+        public int NextAvailableCopyNumber(string classification)
         {
-            return HoldingsControllerUtil.NextAvailableCopyNumber(context, classification);
+            return context.Holdings.Count(h => h.Classification == classification) + 1;
         }
     }
 }

@@ -8,23 +8,23 @@ namespace LibraryNet2020.Controllers
 {
     public class BranchesController : Controller
     {
-        private readonly LibraryContext _context;
+        private readonly LibraryContext context;
 
         public BranchesController(LibraryContext context)
         {
-            _context = context;
+            this.context = context;
         }
 
         // GET: Branches
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Branches.ToListAsync());
+            return View(await context.Branches.ToListAsync());
         }
 
         // GET: Branches/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            return this.ViewIf(await _context.Branches.FindById(id));
+            return this.ViewIf(await context.Branches.FindById(id));
         }
 
 
@@ -39,19 +39,16 @@ namespace LibraryNet2020.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name")] Branch branch)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(branch);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(branch);
+            if (!ModelState.IsValid) return View(branch);
+            context.Add(branch);
+            await context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Branches/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            return this.ViewIf(await _context.Branches.FindDirect(id));
+            return this.ViewIf(await context.Branches.FindDirect(id));
         }
 
         // POST: Branches/Edit/5
@@ -65,13 +62,13 @@ namespace LibraryNet2020.Controllers
             {
                 try
                 {
-                    _context.Update(branch);
-                    await _context.SaveChangesAsync();
+                    context.Update(branch);
+                    await context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!_context.Branches.Exists(branch.Id)) return NotFound();
+                    if (!context.Branches.Exists(branch.Id)) return NotFound();
                     throw;
                 }
             }
@@ -81,7 +78,7 @@ namespace LibraryNet2020.Controllers
         // GET: Branches/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            return this.ViewIf(await _context.Branches.FindById(id));
+            return this.ViewIf(await context.Branches.FindById(id));
         }
 
         // POST: Branches/Delete/5
@@ -89,7 +86,7 @@ namespace LibraryNet2020.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            _context.Branches.Delete(id, _context);
+            context.Branches.Delete(id, context);
             return RedirectToAction(nameof(Index));
         }
         
