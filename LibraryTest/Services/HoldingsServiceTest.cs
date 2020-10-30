@@ -60,5 +60,58 @@ namespace LibraryTest
             
             Assert.Equal(HoldingsService.ErrorMessageDuplicateBarcode, thrown.Message);
         }
+        
+        [Fact]
+        public void NextAvailableCopyNumberIncrementsCopyNumberUsingCount()
+        {
+            AddNewHolding("AB123:2");
+            AddNewHolding("AB123:1");
+            AddNewHolding("XX123:1");
+
+            var copyNumber = service.NextAvailableCopyNumber("AB123");
+
+            Assert.Equal(3, copyNumber);
+        }
+
+        [Fact]
+        public void FindByBarcodeReturnsMatchingHolding()
+        {
+            var holding = AddNewHolding("AB123:2");
+            AddNewHolding("XX123:1");
+
+            var retrievedHolding = service.FindByBarcode("AB123:2");
+            
+            Assert.Equal(holding.Id, retrievedHolding.Id);
+        }
+
+        [Fact]
+        public void FindByBarcodeReturnsNullWhenNotFound()
+        {
+            Assert.Null(service.FindByBarcode("AB123:2"));
+        }
+
+        [Fact]
+        public void FindByClassificationAndCopyReturnsMatchingHolding()
+        {
+            AddNewHolding("AB123:2");
+            
+            var holding = AddNewHolding("XX123:1");
+            var retrieved = service.FindByClassificationAndCopy("XX123", 1);
+            
+            Assert.Equal(holding.Id, retrieved.Id);
+        }
+        
+        [Fact]
+        public void FindByClassificationAndCopyReturnsNullWhenNotFound()
+        {
+            Assert.Null(service.FindByClassificationAndCopy("XX123", 1));
+        }
+        
+        private Holding AddNewHolding(string classification)
+        {
+            var entity = context.Holdings.Add(new Holding(classification)).Entity;
+            context.SaveChanges();
+            return entity;
+        }
     }
 }

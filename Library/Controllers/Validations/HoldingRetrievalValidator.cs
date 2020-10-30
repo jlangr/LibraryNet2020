@@ -14,7 +14,7 @@ namespace LibraryNet2020.Controllers.Validations
         public override void Validate()
         {
             // TODO constant
-            Data["Holding"] = HoldingsControllerUtil.FindByBarcode(context, Barcode);
+            Data["Holding"] = new HoldingsService(context).FindByBarcode(Barcode);
         }
 
         public override bool IsValid => Data["Holding"] != null;

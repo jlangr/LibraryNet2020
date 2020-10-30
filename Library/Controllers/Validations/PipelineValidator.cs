@@ -16,7 +16,6 @@ namespace LibraryNet2020.Controllers.Validations
         {
             Validator failingValidation = null;
             Data = null;
-            // TODO reduce
             foreach (var validator in validators)
             {
                 Merge(validator.Data, Data);

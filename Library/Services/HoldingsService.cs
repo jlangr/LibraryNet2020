@@ -18,7 +18,7 @@ namespace LibraryNet2020.Controllers
         public Holding Add(Holding holding)
         {
             if (holding.CopyNumber == 0)
-                holding.CopyNumber = HoldingsControllerUtil.NextAvailableCopyNumber(context, holding.Classification);
+                holding.CopyNumber = new HoldingsService(context).NextAvailableCopyNumber(holding.Classification);
             else
                 ThrowOnDuplicateBarcode(holding);
 
@@ -29,11 +29,10 @@ namespace LibraryNet2020.Controllers
 
         private void ThrowOnDuplicateBarcode(Holding holding)
         {
-            if (HoldingsControllerUtil.FindByBarcode(context, holding.Barcode) != null)
+            if (new HoldingsService(context).FindByBarcode(holding.Barcode) != null)
                 throw new InvalidOperationException(ErrorMessageDuplicateBarcode);
         }
 
-        // TODO remove HoldingsControllerUtil
         // TODO null test
         public Holding FindByClassificationAndCopy(string classification, int copyNumber)
         {
@@ -47,7 +46,6 @@ namespace LibraryNet2020.Controllers
             return FindByClassificationAndCopy(Holding.ClassificationFromBarcode(barcode), Holding.CopyNumberFromBarcode(barcode));
         }
 
-        // TODO null test
         public int NextAvailableCopyNumber(string classification)
         {
             return context.Holdings.Count(h => h.Classification == classification) + 1;

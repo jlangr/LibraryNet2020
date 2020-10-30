@@ -1,4 +1,5 @@
 using LibraryNet2020.ControllerHelpers;
+using LibraryNet2020.Controllers;
 using LibraryNet2020.Models;
 using Xunit;
 
@@ -23,7 +24,7 @@ namespace LibraryTest.ControllerHelpers
             AddNewHolding("AB123:1");
             AddNewHolding("XX123:1");
 
-            var copyNumber = HoldingsControllerUtil.NextAvailableCopyNumber(context, "AB123");
+            var copyNumber = new HoldingsService(context).NextAvailableCopyNumber("AB123");
 
             Assert.Equal(3, copyNumber);
         }
@@ -34,7 +35,7 @@ namespace LibraryTest.ControllerHelpers
             var holding = AddNewHolding("AB123:2");
             AddNewHolding("XX123:1");
 
-            var retrievedHolding = HoldingsControllerUtil.FindByBarcode(context, "AB123:2");
+            var retrievedHolding = new HoldingsService(context).FindByBarcode("AB123:2");
             
             Assert.Equal(holding.Id, retrievedHolding.Id);
         }
@@ -45,7 +46,7 @@ namespace LibraryTest.ControllerHelpers
             AddNewHolding("AB123:2");
             
             var holding = AddNewHolding("XX123:1");
-            var retrieved = HoldingsControllerUtil.FindByClassificationAndCopy(context, "XX123", 1);
+            var retrieved = new HoldingsService(context).FindByClassificationAndCopy("XX123", 1);
             
             Assert.Equal(holding.Id, retrieved.Id);
         }
