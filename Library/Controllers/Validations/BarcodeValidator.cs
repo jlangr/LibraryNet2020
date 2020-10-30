@@ -1,6 +1,5 @@
 using LibraryNet2020.Controllers.Validations;
 using LibraryNet2020.Models;
-using Microsoft.IdentityModel.Tokens;
 
 namespace LibraryNet2020.Services
 {
@@ -18,7 +17,7 @@ namespace LibraryNet2020.Services
 
         public override void Validate()
         {
-            isBarcodeValid = !Holding.IsBarcodeValid(Barcode);
+            isBarcodeValid = Holding.IsBarcodeValid(Barcode);
         }
 
         public override string ErrorMessage => $"Invalid holding barcode format: {Barcode}";
