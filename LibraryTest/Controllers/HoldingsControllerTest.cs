@@ -33,7 +33,8 @@ namespace LibraryTest
         [Fact]
         public async void Create_PopulatesViewModelWithBranchName()
         {
-            var branchEntity = context.Branches.Add(new Branch {Name = "branch123"});
+            var branchEntity = await context.Branches.AddAsync(new Branch {Name = "branch123"});
+            await context.SaveChangesAsync();
             var branchId = branchEntity.Entity.Id;
             
             controller.Create(new Holding { Classification = "AB123", CopyNumber = 1, BranchId = branchId });

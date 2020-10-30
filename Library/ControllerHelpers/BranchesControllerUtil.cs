@@ -1,18 +1,18 @@
 using System.Linq;
 using LibraryNet2020.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace LibraryNet2020.ControllerHelpers
 {
-    public class BranchesControllerUtil
+    public static class BranchesControllerUtil
     {
         public const string CheckedOutBranchName = "** checked out **";
 
-        public static string BranchName(DbSet<Branch> branchRepo, int branchId)
+        // TODO move to somewhere better, e.g. BranchService
+        public static string BranchName(LibraryContext context, int branchId)
         {
             return branchId == Branch.CheckedOutId
                 ? CheckedOutBranchName
-                : branchRepo.Single(branchId => branchId == branchId).Name;
+                : context.Branches.Single(branch => branch.Id == branchId).Name;
         }
     }
 }

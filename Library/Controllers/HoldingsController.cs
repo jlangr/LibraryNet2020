@@ -32,7 +32,7 @@ namespace LibraryNet2020.Controllers
         private HoldingViewModel CreateHoldingViewModel(Holding holding) =>
             new HoldingViewModel(holding)
             {
-                BranchName = BranchesControllerUtil.BranchName(context.Branches, holding.BranchId)
+                BranchName = BranchesControllerUtil.BranchName(context, holding.BranchId)
             };
 
         // GET: Holdings/Details/5

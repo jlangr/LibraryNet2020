@@ -1,10 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using LibraryNet2020.ControllerHelpers;
 using LibraryNet2020.Models;
-using LibraryNet2020.NonPersistentModels;
 using LibraryNet2020.Services;
-using LibraryNet2020.Util;
 using LibraryNet2020.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -35,7 +32,7 @@ namespace LibraryNet2020.Controllers
             if (!ModelState.IsValid) return View(checkout);
 
             checkout.BranchesViewList = new List<Branch>(context.AllBranchesIncludingVirtual());
-            
+
             var checkOutService = new CheckOutService();
             if (!checkOutService.Checkout(context, checkout))
             {
@@ -43,6 +40,7 @@ namespace LibraryNet2020.Controllers
                 ModelState.AddModelError(ModelKey, checkOutService.ErrorMessages.First());
                 return View(checkout);
             }
+
             return RedirectToAction("Index");
         }
     }

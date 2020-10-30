@@ -30,10 +30,6 @@ namespace LibraryNet2020.Services
                 return false;
 
             var holding = pipelineValidator.Data["Holding"] as Holding;
-            // -- put up in controller:
-            // AddModelError(ModelKey, "Invalid holding barcode.");
-            // return View(checkout);
-
             // TODO determine policy material, which in turn comes from from Isbn lookup on creation 
             // Currently Holding creation in controller does not accept ISBN
             holding.CheckOut(TimeService.Now, checkout.PatronId, new BookCheckoutPolicy());
