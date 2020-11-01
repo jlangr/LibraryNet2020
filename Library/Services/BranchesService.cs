@@ -13,17 +13,14 @@ namespace LibraryNet2020.ControllerHelpers
         {
             this.context = context;
         }
-
-        public const string CheckedOutBranchName = "** checked out **";
-
+        
         public string BranchName(int branchId)
         {
-            if (branchId == Branch.CheckedOutId) return CheckedOutBranchName;
+            if (branchId == Branch.CheckedOutId) return Branch.CheckedOutBranch.Name;
             var branch = context.Branches.SingleOrDefault(branch => branch.Id == branchId);
             return branch == null ? "" : branch.Name;
         }
 
-        // TODO test
         public IEnumerable<Branch> AllBranchesIncludingVirtual()
         {
             return new List<Branch> {Branch.CheckedOutBranch}.Concat(context.Branches.AsEnumerable());
