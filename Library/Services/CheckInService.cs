@@ -5,7 +5,7 @@ using LibraryNet2020.Util;
 using LibraryNet2020.ViewModels;
 using static LibraryNet2020.Controllers.Validations.Constants;
 
-namespace LibraryNet2020.Controllers
+namespace LibraryNet2020.Services
 {
     // TODO test
     public class CheckInService
@@ -25,7 +25,7 @@ namespace LibraryNet2020.Controllers
             if (!pipelineValidator.IsValid())
                 return false;
 
-            var holding = pipelineValidator.Data[HoldingKey] as Holding;
+            var holding = (Holding) pipelineValidator.Data[HoldingKey];
 
             // TODO  manage thru holdingservice
             holding.CheckIn(TimeService.Now, checkin.BranchId);

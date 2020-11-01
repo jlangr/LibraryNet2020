@@ -9,7 +9,7 @@ namespace LibraryNet2020.Controllers
     // TODO test
     public class CheckOutController : LibraryController
     {
-        private const string ModelKey = "CheckOut";
+        public const string ModelKey = "CheckOut";
         private readonly LibraryContext context;
         private readonly CheckOutService checkOutService;
 

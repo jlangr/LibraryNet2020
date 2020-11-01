@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LibraryNet2020.Controllers;
 using LibraryNet2020.Models;
+using LibraryNet2020.Services;
 using LibraryNet2020.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -38,9 +39,9 @@ namespace LibraryTest.Controllers
             checkInServiceMock.Setup(
                 s => s.Checkin(context, checkinViewModel)).Returns(true);
 
-            var actionResult = controller.Index(checkinViewModel);
+            var actionResult = Assert.IsType<RedirectToActionResult>(controller.Index(checkinViewModel));
 
-            Assert.Equal("Index", (actionResult as RedirectToActionResult).ActionName);
+            Assert.Equal("Index", actionResult.ActionName);
         }
         
         [Fact]
@@ -51,7 +52,7 @@ namespace LibraryTest.Controllers
             checkInServiceMock.Setup(
                 s => s.ErrorMessages).Returns(new List<string> {"error"});
 
-            var viewResult = controller.Index(checkinViewModel) as ViewResult;
+            var viewResult = Assert.IsType<ViewResult>(controller.Index(checkinViewModel));
 
             Assert.Equal("error", 
                 ControllerErrors(viewResult, ModelKey).First().ErrorMessage);

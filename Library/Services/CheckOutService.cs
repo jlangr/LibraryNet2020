@@ -13,7 +13,7 @@ namespace LibraryNet2020.Services
     {
         private PipelineValidator pipelineValidator = new PipelineValidator();
 
-        public IEnumerable<string> ErrorMessages => pipelineValidator.ErrorMessages;
+        public virtual IEnumerable<string> ErrorMessages => pipelineValidator.ErrorMessages;
         
         public virtual bool Checkout(LibraryContext context, CheckOutViewModel checkout)
         {

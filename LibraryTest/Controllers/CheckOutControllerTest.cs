@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using LibraryNet2020.Controllers;
 using LibraryNet2020.Models;
 using LibraryNet2020.Services;
@@ -5,39 +7,54 @@ using LibraryNet2020.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
+using static LibraryNet2020.Controllers.CheckOutController;
 
-namespace LibraryTest
+namespace LibraryTest.Controllers
 {
     [Collection("SharedLibraryContext")]
-    public class CheckOutControllerTest
+    public class CheckOutControllerTest: LibraryControllerTest
     {
-        private LibraryContext context;
-        private CheckOutController controller;
-        private CheckOutService checkOutService;
-        private Mock<CheckOutService> checkOutServiceMock = new Mock<CheckOutService>();
-        
+        private readonly LibraryContext context;
+        private readonly CheckOutController controller;
+        private readonly Mock<CheckOutService> checkOutServiceMock = new Mock<CheckOutService>();
+        private readonly CheckOutViewModel checkOutViewModel;
+
         public CheckOutControllerTest(DbContextFixture fixture)
         {
             fixture.Seed();
             context = new LibraryContext(fixture.ContextOptions);
-            checkOutService = checkOutServiceMock.Object;           
+            var checkOutService = checkOutServiceMock.Object;           
             controller = new CheckOutController(context, checkOutService);
+            checkOutViewModel = new CheckOutViewModel
+            {
+                Barcode = "QA123:1",
+                PatronId = 1
+            };
         }
 
         [Fact]
         public void Post_RedirectsToIndexOnSuccessfulCheckout()
         {
-            var checkout = new CheckOutViewModel
-            {
-                Barcode = "QA123:1",
-                PatronId = 1
-            };
             checkOutServiceMock.Setup(
-                s => s.Checkout(context, checkout)).Returns(true);
+                s => s.Checkout(context, checkOutViewModel)).Returns(true);
 
-            var actionResult = controller.Index(checkout);
+            var actionResult = Assert.IsType<RedirectToActionResult>(controller.Index(checkOutViewModel));
 
-            Assert.Equal("Index", (actionResult as RedirectToActionResult).ActionName);
+            Assert.Equal("Index", actionResult.ActionName);
+        }
+        
+        [Fact]
+        public void Post_SetsModelErrorsOnUnsuccessfulCheckin()
+        {
+            checkOutServiceMock.Setup(
+                s => s.Checkout(context, checkOutViewModel)).Returns(false);
+            checkOutServiceMock.Setup(
+                s => s.ErrorMessages).Returns(new List<string> {"error"});
+
+            var viewResult = Assert.IsType<ViewResult>(controller.Index(checkOutViewModel));
+
+            Assert.Equal("error", 
+                ControllerErrors(viewResult, ModelKey).First().ErrorMessage);
         }
     }
 }
