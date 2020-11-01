@@ -5,13 +5,13 @@ using LibraryNet2020.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
-namespace LibraryTest
+namespace LibraryTest.Controllers
 {
     [Collection("SharedLibraryContext")]
     public class HoldingsControllerTest
     {
-        private LibraryContext context;
-        private HoldingsController controller;
+        private readonly LibraryContext context;
+        private readonly HoldingsController controller;
 
         public HoldingsControllerTest(DbContextFixture fixture)
         {
@@ -37,17 +37,17 @@ namespace LibraryTest
             await context.SaveChangesAsync();
             var branchId = branchEntity.Entity.Id;
             
-            controller.Create(new Holding { Classification = "AB123", CopyNumber = 1, BranchId = branchId });
+            await controller.Create(new Holding { Classification = "AB123", CopyNumber = 1, BranchId = branchId });
 
             var viewResult = await controller.Index() as ViewResult;
-            var holdingViewModels = viewResult.Model as IEnumerable<HoldingViewModel>;
+            var holdingViewModels = (IEnumerable<HoldingViewModel>)viewResult.Model;
             Assert.Collection(holdingViewModels, 
                 holdingViewModel => Assert.Equal("branch123", holdingViewModel.BranchName));
         }
 
         private static Holding Holding(IActionResult result)
         {
-            return (result as ViewResult).Model as Holding;
+            return Assert.IsType<Holding>((Assert.IsType<ViewResult>(result)).Model);
         }
     }
 }

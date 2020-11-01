@@ -27,7 +27,7 @@ namespace LibraryNet2020.Services
             if (!pipelineValidator.IsValid())
                 return false;
 
-            var holding = pipelineValidator.Data[HoldingKey] as Holding;
+            var holding = (Holding) pipelineValidator.Data[HoldingKey];
             // TODO determine policy material, which in turn comes from from Isbn lookup on creation 
             // Currently Holding creation in controller does not accept ISBN
             // TODO manage thru holdingservice

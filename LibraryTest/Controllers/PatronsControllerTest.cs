@@ -4,9 +4,8 @@ using LibraryNet2020.Controllers;
 using LibraryNet2020.Models;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
-using Xunit.Abstractions;
 
-namespace LibraryTest
+namespace LibraryTest.Controllers
 {
     [Collection("SharedLibraryContext")]
     public class PatronsControllerTest
@@ -44,7 +43,9 @@ namespace LibraryTest
         {
             var task = controller.Create(new Patron {Name = "name"});
 
-            Assert.Equal("Index", (task.Result as RedirectToActionResult).ActionName);
+            var result = Assert.IsType<RedirectToActionResult>(task.Result);
+
+            Assert.Equal("Index", result.ActionName);
         }
 
         [Fact]
@@ -53,8 +54,9 @@ namespace LibraryTest
             controller.ModelState.AddModelError("", "");
         
             var task = controller.Create(new Patron());
-        
-            Assert.IsType<Patron>((task.Result as ViewResult).Model);
+            
+            var viewResult = Assert.IsType<ViewResult>(task.Result);
+            Assert.IsType<Patron>(viewResult.Model);
         }
 
         // TODO all this
