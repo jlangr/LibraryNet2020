@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using LibraryNet2020.Controllers.Validations;
 using LibraryNet2020.Models;
+using LibraryNet2020.Services;
 using LibraryNet2020.Util;
 using LibraryNet2020.ViewModels;
 using static LibraryNet2020.Controllers.Validations.Constants;
@@ -18,9 +19,8 @@ namespace LibraryNet2020.Controllers
             pipelineValidator.Validate(new List<Validator>
             {
                 new BarcodeValidator(context, checkin.Barcode),
-                new HoldingRetrievalValidator(context, checkin.Barcode),
-// TODO                new HoldingAvailableValidator(context)
-//                 if (!holding.IsCheckedOut) invert available validator
+                new HoldingRetrievalValidator(context, checkin.Barcode), 
+                new NotValidator(new HoldingAvailableValidator(context))
             });
             if (!pipelineValidator.IsValid())
                 return false;

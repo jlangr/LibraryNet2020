@@ -7,7 +7,7 @@ namespace LibraryNet2020.Controllers
 {
     public class CheckInController: LibraryController
     {
-        public const string ModelKey = "CheckIn";
+        private const string ModelKey = "CheckIn";
         private readonly LibraryContext context;
         private readonly CheckInService checkInService;
 
