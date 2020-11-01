@@ -2,11 +2,11 @@ using System;
 
 namespace LibraryNet2020.Util
 {
-    // TODO test
     public static class TimeService
     {
         private static readonly DateTime DummyDateTime = DateTime.MinValue;
         private static DateTime nextDateTime = DummyDateTime;
+        
         public static DateTime Now
         {
             get

@@ -109,7 +109,6 @@ namespace LibraryNet2020.Models
             BranchId = toBranchId;
         }
 
-        // TODO changed to string checkoutpolicy
         public void CheckOut(DateTime timestamp, int patronId, CheckoutPolicy checkoutPolicy)
         {
             CheckOutTimestamp = timestamp;
@@ -135,12 +134,12 @@ namespace LibraryNet2020.Models
             return barcode.Substring(0, colonIndex);
         }
 
+        // TODO can we do this with destructuring into a tuple or something?
         public static int CopyNumberFromBarcode(string barcode)
         {
             var colonIndex = barcode.IndexOf(':');
             return int.Parse(barcode.Substring(colonIndex + 1));
         }
-        // TODO can we do this with destructuring into a tuple or something?
 
         public int DaysLate()
         {
