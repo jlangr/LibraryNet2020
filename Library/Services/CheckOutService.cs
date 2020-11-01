@@ -4,21 +4,19 @@ using LibraryNet2020.Models;
 using LibraryNet2020.NonPersistentModels;
 using LibraryNet2020.Util;
 using LibraryNet2020.ViewModels;
+using static LibraryNet2020.Controllers.Validations.Constants;
 using Validator = LibraryNet2020.Controllers.Validations.Validator;
 
 namespace LibraryNet2020.Services
 {
     public class CheckOutService
     {
-        private PipelineValidator pipelineValidator;
+        private PipelineValidator pipelineValidator = new PipelineValidator();
 
-        public IList<string> ErrorMessages => pipelineValidator.ErrorMessages;
+        public IEnumerable<string> ErrorMessages => pipelineValidator.ErrorMessages;
         
-        public bool Checkout(LibraryContext context, CheckOutViewModel checkout)
+        public virtual bool Checkout(LibraryContext context, CheckOutViewModel checkout)
         {
-            checkout.BranchesViewList = new List<Branch>(context.AllBranchesIncludingVirtual());
-
-            pipelineValidator = new PipelineValidator();
             pipelineValidator.Validate(new List<Validator>
             {
                 new PatronRetrievalValidator(context, checkout.PatronId),
@@ -29,9 +27,10 @@ namespace LibraryNet2020.Services
             if (!pipelineValidator.IsValid())
                 return false;
 
-            var holding = pipelineValidator.Data["Holding"] as Holding;
+            var holding = pipelineValidator.Data[HoldingKey] as Holding;
             // TODO determine policy material, which in turn comes from from Isbn lookup on creation 
             // Currently Holding creation in controller does not accept ISBN
+            // TODO manage thru holdingservice
             holding.CheckOut(TimeService.Now, checkout.PatronId, new BookCheckoutPolicy());
             context.SaveChanges();
             return true;

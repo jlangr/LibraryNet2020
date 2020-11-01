@@ -1,7 +1,6 @@
-using LibraryNet2020.Controllers.Validations;
 using LibraryNet2020.Models;
 
-namespace LibraryNet2020.Services
+namespace LibraryNet2020.Controllers.Validations
 {
     public class BarcodeValidator : Validator
     {

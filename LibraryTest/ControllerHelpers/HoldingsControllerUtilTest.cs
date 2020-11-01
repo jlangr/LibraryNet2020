@@ -5,7 +5,7 @@ using Xunit;
 
 namespace LibraryTest.ControllerHelpers
 {
-    // TODO merge into HoldingsService
+    // TODO merge into HoldingsServiceTests
     [Collection("SharedLibraryContext")]
     public class HoldingsControllerUtilTest
     {

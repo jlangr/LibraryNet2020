@@ -1,5 +1,5 @@
-using LibraryNet2020.ControllerHelpers;
 using LibraryNet2020.Models;
+using static LibraryNet2020.Controllers.Validations.Constants;
 
 namespace LibraryNet2020.Controllers.Validations
 {
@@ -13,11 +13,10 @@ namespace LibraryNet2020.Controllers.Validations
 
         public override void Validate()
         {
-            // TODO constant
-            Data["Holding"] = new HoldingsService(context).FindByBarcode(Barcode);
+            Data[HoldingKey] = new HoldingsService(context).FindByBarcode(Barcode);
         }
 
-        public override bool IsValid => Data["Holding"] != null;
+        public override bool IsValid => Data[HoldingKey] != null;
         public override string ErrorMessage => $"Holding with barcode {Barcode} not found";
     }
 }

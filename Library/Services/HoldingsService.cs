@@ -33,14 +33,12 @@ namespace LibraryNet2020.Controllers
                 throw new InvalidOperationException(ErrorMessageDuplicateBarcode);
         }
 
-        // TODO null test
         public Holding FindByClassificationAndCopy(string classification, int copyNumber)
         {
             return context.Holdings
                 .FirstOrDefault(h => h.Classification == classification && h.CopyNumber == copyNumber);
         }
 
-        // TODO null test
         public Holding FindByBarcode(string barcode)
         {
             return FindByClassificationAndCopy(Holding.ClassificationFromBarcode(barcode), Holding.CopyNumberFromBarcode(barcode));

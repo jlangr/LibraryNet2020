@@ -40,8 +40,6 @@ namespace LibraryNet2020.Controllers
             return View(patronView);
         }
 
-
-
         // GET: Patrons/Create
         public IActionResult Create()
         {

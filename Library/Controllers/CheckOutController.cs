@@ -7,14 +7,16 @@ using Microsoft.AspNetCore.Mvc;
 namespace LibraryNet2020.Controllers
 {
     // TODO test
-    public class CheckOutController : Controller
+    public class CheckOutController : LibraryController
     {
         private const string ModelKey = "CheckOut";
         private readonly LibraryContext context;
+        private readonly CheckOutService checkOutService;
 
-        public CheckOutController(LibraryContext context)
+        public CheckOutController(LibraryContext context, CheckOutService checkOutService)
         {
             this.context = context;
+            this.checkOutService = checkOutService;
         }
 
         // GET: CheckOut
@@ -32,11 +34,9 @@ namespace LibraryNet2020.Controllers
             if (!ModelState.IsValid) return View(checkout);
 
             checkout.BranchesViewList = new List<Branch>(context.AllBranchesIncludingVirtual());
-            var checkOutService = new CheckOutService();
             if (!checkOutService.Checkout(context, checkout))
             {
-                foreach (var message in checkOutService.ErrorMessages)
-                    ModelState.AddModelError(ModelKey, message);
+                AddModelErrors(checkOutService.ErrorMessages, ModelKey);
                 return View(checkout);
             }
             return RedirectToAction("Index");
