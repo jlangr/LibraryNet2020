@@ -1,5 +1,4 @@
-using System.Collections.Generic;
-using LibraryNet2020.Models;
+using System.Collections.Generic; using LibraryNet2020.Models;
 using LibraryNet2020.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,13 +6,14 @@ namespace LibraryNet2020.Controllers
 {
     public class CheckInController: LibraryController
     {
-        private const string ModelKey = "CheckIn";
+        public const string ModelKey = "CheckIn";
         private readonly LibraryContext context;
         private readonly CheckInService checkInService;
 
-        public CheckInController(LibraryContext context)
+        public CheckInController(LibraryContext context, CheckInService checkInService)
         {
             this.context = context;
+            this.checkInService = checkInService;
         }
         
         // GET: CheckIn
