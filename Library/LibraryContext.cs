@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using LibraryNet2020.ControllerHelpers;
 using LibraryNet2020.NonPersistentModels;
 using Microsoft.EntityFrameworkCore;
 
@@ -40,12 +41,6 @@ namespace LibraryNet2020.Models
         {
             return dbSet.FirstOrDefault(e => e.Id == id);
         }
-
-        // TODO test
-        // TODO move to service
-        public IEnumerable<Branch> AllBranchesIncludingVirtual()
-        {
-            return new List<Branch> { Branch.CheckedOutBranch }.Concat(Branches.AsEnumerable());
-        }
     }
+    
 }

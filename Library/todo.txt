@@ -1,7 +1,6 @@
 LibraryContext.cs:38:        // TODO test
 LibraryContext.cs:44:        // TODO test
 LibraryContext.cs:45:        // TODO move to service
-Models/Holding.cs:112:        // TODO changed to string checkoutpolicy
 Models/Holding.cs:143:        // TODO can we do this with destructuring into a tuple or something?
 README.md:77:?? TODO:
 Controllers/CheckInController.cs:40:            // TODO this is broke (?)
@@ -10,3 +9,5 @@ Services/CheckOutService.cs:31:            // TODO determine policy material, wh
 Services/CheckOutService.cs:33:            // TODO manage thru holdingservice
 Services/CheckInService.cs:10:    // TODO test
 Services/CheckInService.cs:30:            // TODO  manage thru holdingservice
+
+TODO: take a look at their code!

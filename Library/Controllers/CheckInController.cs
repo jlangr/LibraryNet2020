@@ -1,4 +1,6 @@
-using System.Collections.Generic; using LibraryNet2020.Models;
+using System.Collections.Generic;
+using LibraryNet2020.ControllerHelpers;
+using LibraryNet2020.Models;
 using LibraryNet2020.Services;
 using LibraryNet2020.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -10,18 +12,20 @@ namespace LibraryNet2020.Controllers
         public const string ModelKey = "CheckIn";
         private readonly LibraryContext context;
         private readonly CheckInService checkInService;
+        private readonly BranchesService branchesService;
 
         public CheckInController(LibraryContext context, CheckInService checkInService)
         {
             this.context = context;
             this.checkInService = checkInService;
+            branchesService = new BranchesService(context);
         }
         
         // GET: CheckIn
         public ActionResult Index()
         {
             var model = new CheckInViewModel
-                {BranchesViewList = new List<Branch>(context.AllBranchesIncludingVirtual())};
+                {BranchesViewList = new List<Branch>(branchesService.AllBranchesIncludingVirtual())};
             return View(model);
         }
 
@@ -29,7 +33,7 @@ namespace LibraryNet2020.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Index(CheckInViewModel checkin)
         {
-            checkin.BranchesViewList = new List<Branch>(context.AllBranchesIncludingVirtual());
+            checkin.BranchesViewList = new List<Branch>(branchesService.AllBranchesIncludingVirtual());
 
             if (!checkInService.Checkin(context, checkin))
             {
