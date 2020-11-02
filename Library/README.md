@@ -26,7 +26,6 @@ If the "slow" category tests are failing:
   - Enter the command:
       Update-Database
 
-
 ===
 
 Todo:
@@ -41,10 +40,6 @@ Todo:
 -- installed .NET Core 3.1 
 https://dotnet.microsoft.com/download/dotnet-core/thank-you/runtime-3.1.9-macos-x64-installer
 
-
-
-console logging from unit test:
-https://www.jetbrains.com/help/rider/Xunit.XunitTestWithConsoleOutput.html
 
 
 Installed .NET SDK
@@ -78,3 +73,10 @@ TODO: look at their code. OO? functional? Linq w/ code or regular linq?
 
 ---
 https://andrewlock.net/should-you-unit-test-controllers-in-aspnetcore/
+---
+
+console logging from unit test:
+https://www.jetbrains.com/help/rider/Xunit.XunitTestWithConsoleOutput.html
+        private readonly ITestOutputHelper output; -- pass in through test constructor
+
+

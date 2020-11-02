@@ -35,7 +35,7 @@ namespace LibraryNet2020.Controllers
         {
             checkin.BranchesViewList = new List<Branch>(branchesService.AllBranchesIncludingVirtual());
 
-            if (!checkInService.Checkin(context, checkin))
+            if (!checkInService.Checkin(checkin))
             {
                 AddModelErrors(checkInService.ErrorMessages, ModelKey);
                 return View(checkin);

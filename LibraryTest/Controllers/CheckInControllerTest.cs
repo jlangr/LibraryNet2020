@@ -37,7 +37,7 @@ namespace LibraryTest.Controllers
         public void Post_RedirectsToIndexOnSuccessfulCheckout()
         {
             checkInServiceMock.Setup(
-                s => s.Checkin(context, checkinViewModel)).Returns(true);
+                s => s.Checkin(checkinViewModel)).Returns(true);
 
             var actionResult = Assert.IsType<RedirectToActionResult>(controller.Index(checkinViewModel));
 
@@ -48,7 +48,7 @@ namespace LibraryTest.Controllers
         public void Post_SetsModelErrorsOnUnsuccessfulCheckin()
         {
             checkInServiceMock.Setup(
-                s => s.Checkin(context, checkinViewModel)).Returns(false);
+                s => s.Checkin(checkinViewModel)).Returns(false);
             checkInServiceMock.Setup(
                 s => s.ErrorMessages).Returns(new List<string> {"error"});
 

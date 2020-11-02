@@ -1,8 +1,8 @@
 LibraryContext.cs:39:        // TODO test
 Models/Holding.cs:137:        // TODO can we do this with destructuring into a tuple or something?
-README.md:77:TODO: look at their code. OO? functional? Linq w/ code or regular linq?
 Controllers/CheckInController.cs:44:            // TODO this is broke (?)
-Services/CheckOutService.cs:31:            // TODO determine policy material, which in turn comes from from Isbn lookup on creation 
-Services/CheckOutService.cs:33:            // TODO manage thru holdingservice
+README.md:77:TODO: look at their code. OO? functional? Linq w/ code or regular linq?
 Services/CheckInService.cs:10:    // TODO test
-Services/CheckInService.cs:30:            // TODO  manage thru holdingservice
+Services/CheckInService.cs:40:            // TODO  manage thru holdingservice
+Services/CheckOutService.cs:29:        // TODO
+Services/CheckOutService.cs:43:            // TODO determine policy material, which in turn comes from from Isbn lookup on creation 

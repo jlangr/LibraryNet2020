@@ -31,6 +31,22 @@ namespace LibraryTest.Models
         const int SomeBranchId = 1;
 
         [Fact]
+        public void IsCheckedOutWhenBranchIsTheCheckedOutBranch()
+        {
+            var holding = new Holding { BranchId = Branch.CheckedOutId };
+            Assert.True(holding.IsCheckedOut);
+            Assert.False(holding.IsAvailable);
+        }
+        
+        [Fact]
+        public void IsAvailableOutWhenBranchIsSet()
+        {
+            var holding = new Holding { BranchId = 1 };
+            Assert.False(holding.IsCheckedOut);
+            Assert.True(holding.IsAvailable);
+        }
+
+        [Fact]
         public void CreateWithCommonArguments()
         {
             const int branchId = 10;

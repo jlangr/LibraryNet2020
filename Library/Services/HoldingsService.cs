@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using LibraryNet2020.ControllerHelpers;
 using LibraryNet2020.Models;
 using LibraryNet2020.NonPersistentModels;
 using LibraryNet2020.Util;
@@ -11,6 +10,8 @@ namespace LibraryNet2020.Controllers
     {
         private readonly LibraryContext context;
         public const string ErrorMessageDuplicateBarcode = "Duplicate classification / copy number combination.";
+
+        public HoldingsService() {} // needed for Moq
 
         public HoldingsService(LibraryContext context)
         {
@@ -53,7 +54,15 @@ namespace LibraryNet2020.Controllers
 
         public void CheckOut(Holding holding, int patronId)
         {
+            // TODO determine policy material, which in turn comes from from Isbn lookup on creation 
+            // Currently Holding creation in controller does not accept ISBN
             holding.CheckOut(TimeService.Now, patronId, new BookCheckoutPolicy());
+            context.SaveChanges();
+        }
+
+        public void CheckIn(Holding holding, int branchId)
+        {
+            holding.CheckIn(TimeService.Now, branchId);
             context.SaveChanges();
         }
     }

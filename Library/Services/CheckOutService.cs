@@ -8,11 +8,12 @@ using Validator = LibraryNet2020.Controllers.Validations.Validator;
 
 namespace LibraryNet2020.Services
 {
+    // TODO test
     public class CheckOutService
     {
-        private PipelineValidator pipelineValidator = new PipelineValidator();
+        private readonly PipelineValidator pipelineValidator = new PipelineValidator();
         private readonly HoldingsService holdingsService;
-        private LibraryContext context;
+        private readonly LibraryContext context;
 
         public CheckOutService() // needed for Moq
         {
@@ -26,8 +27,7 @@ namespace LibraryNet2020.Services
 
         public virtual IEnumerable<string> ErrorMessages => pipelineValidator.ErrorMessages;
         
-        // TODO
-        public virtual bool Checkout(/* LibraryContext context, */ CheckOutViewModel checkout)
+        public virtual bool Checkout(CheckOutViewModel checkout)
         {
             pipelineValidator.Validate(new List<Validator>
             {
@@ -40,8 +40,6 @@ namespace LibraryNet2020.Services
                 return false;
 
             var holding = (Holding) pipelineValidator.Data[HoldingKey];
-            // TODO determine policy material, which in turn comes from from Isbn lookup on creation 
-            // Currently Holding creation in controller does not accept ISBN
             holdingsService.CheckOut(holding, checkout.PatronId);
             return true;
         }

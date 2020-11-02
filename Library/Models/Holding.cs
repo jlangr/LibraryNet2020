@@ -99,6 +99,9 @@ namespace LibraryNet2020.Models
         public bool IsCheckedOut => BranchId == Branch.CheckedOutId;
 
         [NotMapped]
+        public bool IsAvailable => !IsCheckedOut;
+        
+        [NotMapped]
         public IEnumerable BranchesViewList { get; set; }
 
         public void CheckIn(DateTime timestamp, int toBranchId)
