@@ -14,7 +14,6 @@ namespace LibraryTest.Controllers
     [Collection("SharedLibraryContext")]
     public class CheckOutControllerTest: LibraryControllerTest
     {
-        private readonly LibraryContext context;
         private readonly CheckOutController controller;
         private readonly Mock<CheckOutService> checkOutServiceMock = new Mock<CheckOutService>();
         private readonly CheckOutViewModel checkOutViewModel;
@@ -22,9 +21,11 @@ namespace LibraryTest.Controllers
         public CheckOutControllerTest(DbContextFixture fixture)
         {
             fixture.Seed();
-            context = new LibraryContext(fixture.ContextOptions);
-            var checkOutService = checkOutServiceMock.Object;           
-            controller = new CheckOutController(context, checkOutService);
+            var context = new LibraryContext(fixture.ContextOptions);
+            controller = new CheckOutController(context)
+            {
+                checkOutService = checkOutServiceMock.Object
+            };
             checkOutViewModel = new CheckOutViewModel
             {
                 Barcode = "QA123:1",
@@ -36,7 +37,7 @@ namespace LibraryTest.Controllers
         public void Post_RedirectsToIndexOnSuccessfulCheckout()
         {
             checkOutServiceMock.Setup(
-                s => s.Checkout(context, checkOutViewModel)).Returns(true);
+                s => s.Checkout(checkOutViewModel)).Returns(true);
 
             var actionResult = Assert.IsType<RedirectToActionResult>(controller.Index(checkOutViewModel));
 
@@ -47,7 +48,7 @@ namespace LibraryTest.Controllers
         public void Post_SetsModelErrorsOnUnsuccessfulCheckin()
         {
             checkOutServiceMock.Setup(
-                s => s.Checkout(context, checkOutViewModel)).Returns(false);
+                s => s.Checkout(checkOutViewModel)).Returns(false);
             checkOutServiceMock.Setup(
                 s => s.ErrorMessages).Returns(new List<string> {"error"});
 

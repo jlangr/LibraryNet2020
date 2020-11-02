@@ -11,13 +11,13 @@ namespace LibraryNet2020.Controllers
     {
         public const string ModelKey = "CheckOut";
         private readonly LibraryContext context;
-        private readonly CheckOutService checkOutService;
+        public CheckOutService checkOutService;
         private readonly BranchesService branchesService;
 
-        public CheckOutController(LibraryContext context, CheckOutService checkOutService)
+        public CheckOutController(LibraryContext context)
         {
             this.context = context;
-            this.checkOutService = checkOutService;
+            checkOutService = new CheckOutService(context);
             branchesService = new BranchesService(context);
         }
 
@@ -36,7 +36,7 @@ namespace LibraryNet2020.Controllers
             if (!ModelState.IsValid) return View(checkout);
 
             checkout.BranchesViewList = new List<Branch>(branchesService.AllBranchesIncludingVirtual());
-            if (!checkOutService.Checkout(context, checkout))
+            if (!checkOutService.Checkout(checkout))
             {
                 AddModelErrors(checkOutService.ErrorMessages, ModelKey);
                 return View(checkout);

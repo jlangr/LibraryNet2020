@@ -6,21 +6,28 @@ namespace LibraryNet2020.Controllers.Validations
     public abstract class Validator
     {
         protected readonly LibraryContext context;
-        public virtual Dictionary<string,object> Data { get; set; }
+        public virtual Dictionary<string,object> Data { get; set; } = new Dictionary<string, object>();
 
-        public Validator()
+        protected Validator()
         {
-            context = null;
         }
-        
-        public Validator(LibraryContext context)
+
+        protected Validator(LibraryContext context)
         {
             this.context = context;
-            Data = new Dictionary<string, object>();
         }
 
         public abstract void Validate();
         public abstract bool IsValid { get; }
         public abstract string ErrorMessage { get; }
+
+        // TODO test
+        public virtual void MergePreviousValidationData(Dictionary<string, object> data)
+        {
+            if (data == null)
+                return;
+            foreach (var (key, value) in data)
+                Data[key] = value;
+        }
     }
 }

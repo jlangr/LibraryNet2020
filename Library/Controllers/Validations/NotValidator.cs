@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace LibraryNet2020.Controllers.Validations
 {
     public class NotValidator : Validator
@@ -16,5 +18,11 @@ namespace LibraryNet2020.Controllers.Validations
 
         public override bool IsValid => !validator.IsValid;
         public override string ErrorMessage => validator.ErrorMessage;
+        // TODO test
+        public override void MergePreviousValidationData(Dictionary<string, object> data)
+        {
+            validator.MergePreviousValidationData(data);
+            Data = validator.Data;
+        }
     }
 }

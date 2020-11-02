@@ -11,13 +11,13 @@ namespace LibraryNet2020.Controllers
     {
         public const string ModelKey = "CheckIn";
         private readonly LibraryContext context;
-        private readonly CheckInService checkInService;
+        public CheckInService checkInService;
         private readonly BranchesService branchesService;
-
-        public CheckInController(LibraryContext context, CheckInService checkInService)
+        
+        public CheckInController(LibraryContext context)
         {
             this.context = context;
-            this.checkInService = checkInService;
+            checkInService = new CheckInService(context);
             branchesService = new BranchesService(context);
         }
         

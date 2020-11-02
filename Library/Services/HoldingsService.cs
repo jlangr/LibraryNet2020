@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using LibraryNet2020.ControllerHelpers;
 using LibraryNet2020.Models;
+using LibraryNet2020.NonPersistentModels;
+using LibraryNet2020.Util;
 
 namespace LibraryNet2020.Controllers
 {
@@ -47,6 +49,12 @@ namespace LibraryNet2020.Controllers
         public int NextAvailableCopyNumber(string classification)
         {
             return context.Holdings.Count(h => h.Classification == classification) + 1;
+        }
+
+        public void CheckOut(Holding holding, int patronId)
+        {
+            holding.CheckOut(TimeService.Now, patronId, new BookCheckoutPolicy());
+            context.SaveChanges();
         }
     }
 }

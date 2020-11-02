@@ -11,6 +11,16 @@ namespace LibraryNet2020.Services
     public class CheckInService
     {
         private PipelineValidator pipelineValidator = new PipelineValidator();
+        private LibraryContext context;
+
+        public CheckInService() // needed by Moq
+        {
+        }
+
+        public CheckInService(LibraryContext context)
+        {
+            this.context = context;
+        }
 
         public virtual IEnumerable<string> ErrorMessages => pipelineValidator.ErrorMessages;
         

@@ -29,7 +29,7 @@ namespace LibraryNet2020
             services.AddDbContext<LibraryContext>(options =>
                 options.UseSqlite("Library"));
             services.AddControllersWithViews();
-            services.AddSingleton<CheckOutService, CheckOutService>();
+//            services.AddSingleton<CheckOutService, CheckOutService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

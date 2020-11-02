@@ -23,8 +23,8 @@ namespace LibraryTest.Controllers
         {
             fixture.Seed();
             context = new LibraryContext(fixture.ContextOptions);
-            var checkInService = checkInServiceMock.Object;           
-            controller = new CheckInController(context, checkInService);
+            controller = new CheckInController(context);
+            controller.checkInService = checkInServiceMock.Object;
             
             checkinViewModel = new CheckInViewModel
             {

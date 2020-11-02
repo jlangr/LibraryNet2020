@@ -1,24 +1,25 @@
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace LibraryNet2020.Controllers.Validations
 {
     public class PipelineValidator
     {
         public IList<string> ErrorMessages { get; set; }
-        public Dictionary<string,object> Data { get; set; }
+        public Dictionary<string, object> Data { get; set; }
 
         public PipelineValidator()
         {
             ErrorMessages = new List<string>();
         }
-        
+
         public void Validate(List<Validator> validators)
         {
             Validator failingValidation = null;
             Data = null;
             foreach (var validator in validators)
             {
-                Merge(validator.Data, Data);
+                validator.MergePreviousValidationData(Data);
                 validator.Validate();
                 if (!validator.IsValid)
                 {
@@ -32,13 +33,7 @@ namespace LibraryNet2020.Controllers.Validations
             if (failingValidation != null) ErrorMessages.Add(failingValidation.ErrorMessage);
         }
 
-        private void Merge(Dictionary<string, object> d1, Dictionary<string, object> d2)
-        {
-            if (d2 == null || d1 == null)
-                return;
-            foreach (var entry in d2)
-                d1[entry.Key] = entry.Value;
-        }
+        // TODO test appropriate for null?
 
         public bool IsValid()
         {
