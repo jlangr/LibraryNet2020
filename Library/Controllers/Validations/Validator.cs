@@ -21,7 +21,6 @@ namespace LibraryNet2020.Controllers.Validations
         public abstract bool IsValid { get; }
         public abstract string ErrorMessage { get; }
 
-        // TODO test
         public virtual void MergePreviousValidationData(Dictionary<string, object> data)
         {
             if (data == null)
