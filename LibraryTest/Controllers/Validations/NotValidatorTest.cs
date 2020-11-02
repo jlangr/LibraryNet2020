@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using LibraryNet2020.Controllers.Validations;
 using Xunit;
 using Moq;
@@ -6,7 +7,7 @@ namespace LibraryTest.Controllers.Validations
 {
     public class NotValidatorTest
     {
-        private readonly NotValidator notValidator;
+        private NotValidator notValidator;
         private readonly Mock<Validator> mock;
 
         public NotValidatorTest()
@@ -19,7 +20,7 @@ namespace LibraryTest.Controllers.Validations
         {
             mock.Setup(v => v.IsValid).Returns(false);
             var falseValidator = mock.Object;
-            var notValidator = new NotValidator(falseValidator);
+            notValidator = new NotValidator(falseValidator);
 
             var isValid = notValidator.IsValid;
             
@@ -31,7 +32,7 @@ namespace LibraryTest.Controllers.Validations
         {
             mock.Setup(v => v.IsValid).Returns(true);
             var trueValidator = mock.Object;
-            var notValidator = new NotValidator(trueValidator);
+            notValidator = new NotValidator(trueValidator);
 
             var isValid = notValidator.IsValid;
             
@@ -43,9 +44,23 @@ namespace LibraryTest.Controllers.Validations
         {
             mock.Setup(v => v.ErrorMessage).Returns("hey");
             var validator = mock.Object;
-            var notValidator = new NotValidator(validator);
+            notValidator = new NotValidator(validator);
             
             Assert.Equal("hey", notValidator.ErrorMessage);
+        }
+
+        [Fact]
+        public void MergeUpdatesWithDataFromNestedValidation()
+        {
+            var data = new Dictionary<string, object> {{"a", "Alpha"}};
+            var nestedValidator = new PassingValidator(data);
+            notValidator = new NotValidator(nestedValidator);
+            
+            notValidator.MergePreviousValidationData(new Dictionary<string, object> { { "b", "Beta"}});
+            
+            Assert.Equal(
+                new Dictionary<string,object> { {"a", "Alpha"}, {"b", "Beta"}},
+                notValidator.Data);
         }
     }
 }

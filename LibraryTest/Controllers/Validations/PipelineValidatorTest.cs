@@ -54,11 +54,8 @@ namespace LibraryTest.Controllers.Validations
         public void PassesDataFromValidatorToNextViaMerge()
         {
             var validation1 = new PassingValidator(new Dictionary<string, object> {{"A", "Alpha" }});
-            // var validation2 = new NotValidator(new FailingValidator("", new Dictionary<string, object> {{"B", "Beta" }, {"G", "Step 2 Gamma"}}));
-            var validation2 = 
-                new PassingValidator(new Dictionary<string, object> {{"B", "Beta" }, {"G", "Step 2 Gamma"}});
-            var validation3 = 
-                new PassingValidator(new Dictionary<string, object> {{"G", "Step 3 Gamma" }});
+            var validation2 = new PassingValidator(new Dictionary<string, object> {{"B", "Beta" }, {"G", "Step 2 Gamma"}});
+            var validation3 = new PassingValidator(new Dictionary<string, object> {{"G", "Step 3 Gamma" }});
             
             pipeline.Validate(new List<Validator> { validation1, validation2, validation3 });
             
@@ -68,31 +65,6 @@ namespace LibraryTest.Controllers.Validations
                 { "B", "Beta" },
                 { "G", "Step 2 Gamma" }
             }, pipeline.Data);
-        }
-
-        class PassingValidator: Validator
-        {
-            public PassingValidator(Dictionary<string, object> data = null)
-            {
-                Data = data;
-            }
-            public override void Validate() {}
-
-            public override bool IsValid => true;
-            public override string ErrorMessage { get; }
-        }
-
-        class FailingValidator : Validator
-        {
-            public FailingValidator(string message = "default message", Dictionary<string,object> data = null)
-            {
-                ErrorMessage = message;
-                Data = data;
-            }
-            public override void Validate() {}
-
-            public override bool IsValid => false;
-            public override string ErrorMessage { get; }
         }
     }
 }
