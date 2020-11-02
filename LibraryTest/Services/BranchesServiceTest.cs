@@ -9,8 +9,8 @@ namespace LibraryTest.ControllerHelpers
     [Collection("SharedLibraryContext")]
     public class BranchesServiceTest
     {
-        private LibraryContext context;
-        private BranchesService branchesService;
+        private readonly LibraryContext context;
+        private readonly BranchesService branchesService;
         
         public BranchesServiceTest(DbContextFixture fixture)
         {

@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LibraryNet2020.ControllerHelpers;
+using LibraryNet2020.Controllers;
 using LibraryNet2020.Models;
 using LibraryNet2020.Services;
 using Microsoft.AspNetCore.Builder;
@@ -29,7 +31,10 @@ namespace LibraryNet2020
             services.AddDbContext<LibraryContext>(options =>
                 options.UseSqlite("Library"));
             services.AddControllersWithViews();
-//            services.AddSingleton<CheckOutService, CheckOutService>();
+            services.AddScoped<CheckOutService, CheckOutService>();
+            services.AddScoped<CheckInService, CheckInService>();
+            services.AddScoped<HoldingsService, HoldingsService>();
+            services.AddScoped<BranchesService, BranchesService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

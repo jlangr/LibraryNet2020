@@ -19,10 +19,11 @@ namespace LibraryNet2020.Services
         {
         }
 
-        public CheckOutService(LibraryContext context)
+        public CheckOutService(LibraryContext context, HoldingsService holdingsService)
         {
             this.context = context;
-            holdingsService = new HoldingsService(context);
+            // holdingsService = new HoldingsService(context);
+            this.holdingsService = holdingsService;
         }
 
         public virtual IEnumerable<string> ErrorMessages => pipelineValidator.ErrorMessages;

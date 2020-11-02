@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using LibraryNet2020.ControllerHelpers;
 using LibraryNet2020.Controllers;
 using LibraryNet2020.Models;
 using LibraryNet2020.Services;
@@ -14,7 +15,6 @@ namespace LibraryTest.Controllers
     [Collection("SharedLibraryContext")]
     public class CheckInControllerTest: LibraryControllerTest
     {
-        private readonly LibraryContext context;
         private readonly CheckInController controller;
         private readonly Mock<CheckInService> checkInServiceMock = new Mock<CheckInService>();
         private readonly CheckInViewModel checkinViewModel;
@@ -22,10 +22,8 @@ namespace LibraryTest.Controllers
         public CheckInControllerTest(DbContextFixture fixture)
         {
             fixture.Seed();
-            context = new LibraryContext(fixture.ContextOptions);
-            controller = new CheckInController(context);
-            controller.checkInService = checkInServiceMock.Object;
-            
+            var context = new LibraryContext(fixture.ContextOptions);
+            controller = new CheckInController(context, checkInServiceMock.Object, new BranchesService(context));
             checkinViewModel = new CheckInViewModel
             {
                 Barcode = "QA123:1",
@@ -38,9 +36,9 @@ namespace LibraryTest.Controllers
         {
             checkInServiceMock.Setup(
                 s => s.Checkin(checkinViewModel)).Returns(true);
-
+        
             var actionResult = Assert.IsType<RedirectToActionResult>(controller.Index(checkinViewModel));
-
+        
             Assert.Equal("Index", actionResult.ActionName);
         }
         
@@ -51,9 +49,9 @@ namespace LibraryTest.Controllers
                 s => s.Checkin(checkinViewModel)).Returns(false);
             checkInServiceMock.Setup(
                 s => s.ErrorMessages).Returns(new List<string> {"error"});
-
+        
             var viewResult = Assert.IsType<ViewResult>(controller.Index(checkinViewModel));
-
+        
             Assert.Equal("error", 
                 ControllerErrors(viewResult, ModelKey).First().ErrorMessage);
         }

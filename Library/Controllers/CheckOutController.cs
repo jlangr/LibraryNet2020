@@ -10,15 +10,13 @@ namespace LibraryNet2020.Controllers
     public class CheckOutController : LibraryController
     {
         public const string ModelKey = "CheckOut";
-        private readonly LibraryContext context;
-        public CheckOutService checkOutService;
+        private readonly CheckOutService checkOutService;
         private readonly BranchesService branchesService;
 
-        public CheckOutController(LibraryContext context)
+        public CheckOutController(LibraryContext _context, CheckOutService checkOutService, BranchesService branchesService)
         {
-            this.context = context;
-            checkOutService = new CheckOutService(context);
-            branchesService = new BranchesService(context);
+            this.checkOutService = checkOutService;
+            this.branchesService = branchesService;
         }
 
         // GET: CheckOut

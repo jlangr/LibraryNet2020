@@ -13,7 +13,7 @@ namespace LibraryTest.Services
     public class CheckInServiceTest
     {
         private readonly LibraryContext context;
-        private Mock<HoldingsService> holdingsServiceMock;
+        private Mock<HoldingsService> holdingsServiceMock = new Mock<HoldingsService>();
 
         public CheckInServiceTest(DbContextFixture fixture)
         {
@@ -24,20 +24,22 @@ namespace LibraryTest.Services
         [Fact]
         public void ChecksInBook()
         {
-            var holding = new Holding { Classification = "QA123" };
+            var holding = SaveCheckedOutHoldingWithClassification("QA123");
+            var checkInService = new CheckInService(context, holdingsServiceMock.Object);
+            var checkin = new CheckInViewModel { Barcode = "QA123:1", BranchId = 42 };
+            
+            Assert.True(checkInService.Checkin(checkin));
+            
+            holdingsServiceMock.Verify(s => s.CheckIn(holding, 42));
+        }
+
+        private Holding SaveCheckedOutHoldingWithClassification(string classification)
+        {
+            var holding = new Holding {Classification = classification};
             holding.CheckOut(DateTime.Now, 1, CheckoutPolicies.BookCheckoutPolicy);
             context.Holdings.Add(holding);
             context.SaveChanges();
-            
-            holdingsServiceMock = new Mock<HoldingsService>();
-            var service = new CheckInService(context);
-            service.holdingsService = holdingsServiceMock.Object;
-            
-            var checkin = new CheckInViewModel { Barcode = "QA123:1", BranchId = 42 };
-            
-            Assert.True(service.Checkin(checkin));
-            
-            holdingsServiceMock.Verify(s => s.CheckIn(holding, 42));
+            return holding;
         }
     }
 }

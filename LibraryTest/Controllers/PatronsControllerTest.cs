@@ -10,14 +10,12 @@ namespace LibraryTest.Controllers
     [Collection("SharedLibraryContext")]
     public class PatronsControllerTest
     {
-        // private readonly ITestOutputHelper output;
         private LibraryContext context;
         private PatronsController controller;
 
-        public PatronsControllerTest(DbContextFixture fixture) // , ITestOutputHelper output)
+        public PatronsControllerTest(DbContextFixture fixture)
         {
             fixture.Seed();
-            // this.output = output;
             context = new LibraryContext(fixture.ContextOptions);
             controller = new PatronsController(context);
         }

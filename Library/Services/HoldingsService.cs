@@ -60,7 +60,7 @@ namespace LibraryNet2020.Controllers
             context.SaveChanges();
         }
 
-        public void CheckIn(Holding holding, int branchId)
+        public virtual void CheckIn(Holding holding, int branchId)
         {
             holding.CheckIn(TimeService.Now, branchId);
             context.SaveChanges();

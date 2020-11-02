@@ -10,17 +10,17 @@ namespace LibraryNet2020.Services
     public class CheckInService
     {
         private readonly PipelineValidator pipelineValidator = new PipelineValidator();
-        public HoldingsService holdingsService;
         private readonly LibraryContext context;
+        private readonly HoldingsService holdingsService;
 
         public CheckInService() // needed by Moq
         {
         }
 
-        public CheckInService(LibraryContext context)
+        public CheckInService(LibraryContext context, HoldingsService holdingsService)
         {
             this.context = context;
-            holdingsService = new HoldingsService(context);
+            this.holdingsService = holdingsService;
         }
 
         public virtual IEnumerable<string> ErrorMessages => pipelineValidator.ErrorMessages;

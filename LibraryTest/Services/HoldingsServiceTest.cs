@@ -1,6 +1,4 @@
 using System;
-using System.Linq;
-using LibraryNet2020.ControllerHelpers;
 using LibraryNet2020.Controllers;
 using LibraryNet2020.Models;
 using Xunit;
@@ -25,7 +23,6 @@ namespace LibraryTest
         {
             var holding = service.Add(new Holding {Classification = "AB123", CopyNumber = 0});
 
-            // var retrievedHolding = context.Holdings.Single(holding => holding.Classification == "AB123");
             Assert.Equal(1, holding.CopyNumber);
         }
 
