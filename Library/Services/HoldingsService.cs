@@ -53,7 +53,7 @@ namespace LibraryNet2020.Controllers
             return context.Holdings.Count(h => h.Classification == classification) + 1;
         }
 
-        public void CheckOut(Holding holding, int patronId)
+        public virtual void CheckOut(Holding holding, int patronId)
         {
             // TODO determine policy material, which in turn comes from from Isbn lookup on creation 
             // Currently Holding creation in controller does not accept ISBN
