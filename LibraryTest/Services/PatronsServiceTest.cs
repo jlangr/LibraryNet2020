@@ -1,8 +1,9 @@
+using LibraryNet2020.Extensions;
 using LibraryNet2020.Models;
 using LibraryNet2020.Services;
 using Xunit;
 
-namespace LibraryTest
+namespace LibraryTest.Services
 {
     [Collection("SharedLibraryContext")]
     public class PatronsServiceTest
@@ -31,6 +32,19 @@ namespace LibraryTest
             Assert.Collection(holdings,
                 holding => Assert.Equal("BB", holding.Classification),
                 holding => Assert.Equal("DD", holding.Classification));
+        }
+
+        [Fact]
+        public void CreateSavesPatron()
+        {
+            var idA = service.Create(new Patron {Name = "a"});
+            var idB = service.Create(new Patron {Name = "b"});
+            
+            Assert.Equal(1, idA);
+            Assert.Equal(2, idB);
+
+            Assert.Equal("a", context.Patrons.FirstByIdAsync(1).Result.Name);
+            Assert.Equal("b", context.Patrons.FirstByIdAsync(2).Result.Name);
         }
     }
 }

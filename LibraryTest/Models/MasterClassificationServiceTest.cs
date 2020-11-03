@@ -3,7 +3,7 @@ using LibraryNet2020.NonPersistentModels;
 using Xunit;
 using Assert = Xunit.Assert;
 
-namespace LibraryCoreTests.Models
+namespace LibraryTest.Models
 {
     public class MasterClassificationServiceTest
     {

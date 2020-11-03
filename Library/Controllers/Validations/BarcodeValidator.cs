@@ -5,7 +5,6 @@ namespace LibraryNet2020.Controllers.Validations
     public class BarcodeValidator : Validator
     {
         private string Barcode { get; }
-        private readonly LibraryContext context;
         private bool isBarcodeValid;
 
         public BarcodeValidator(LibraryContext context, string barcode)

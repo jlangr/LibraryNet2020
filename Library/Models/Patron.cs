@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LibraryNet2020.Models
 {
@@ -17,6 +18,7 @@ namespace LibraryNet2020.Models
 
         [Required, StringLength(25)]
         public string Name { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)] 
         public int Id { get; set; }
         public decimal Balance { get; set; }
 

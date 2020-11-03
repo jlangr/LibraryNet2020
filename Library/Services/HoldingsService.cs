@@ -64,6 +64,13 @@ namespace LibraryNet2020.Controllers
         public virtual void CheckIn(Holding holding, int branchId)
         {
             holding.CheckIn(TimeService.Now, branchId);
+            Update(holding);
+        }
+
+        // TODO test
+        public void Update(Holding holding)
+        {
+            context.Holdings.Update(holding);
             context.SaveChanges();
         }
     }

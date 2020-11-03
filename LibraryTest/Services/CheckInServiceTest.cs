@@ -60,13 +60,14 @@ namespace LibraryTest.Services
         [Fact]
         public void ValidatesHoldingAvailability()
         {
-            SaveCheckedOutHoldingWithClassification(context, "QA123");
-            SavePatronWithId(context, 5);
+            SaveCheckedInHoldingWithClassification(context, "QA123");
+            SavePatronWithId(context, 1);
             var checkInService = new CheckInService(context, holdingsServiceMock.Object);
             var checkin = new CheckInViewModel { Barcode = "QA123:1" };
 
             Assert.False(checkInService.Checkin(checkin));
             
+            // TODO Negate!
             Assert.Equal("Holding with barcode QA123:1 is already checked out.", 
                 checkInService.ErrorMessages.First());
         }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using LibraryNet2020.ControllerHelpers;
 using LibraryNet2020.Controllers;
 using LibraryNet2020.Models;
+using LibraryNet2020.NonPersistentModels;
 using LibraryNet2020.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -35,8 +36,10 @@ namespace LibraryNet2020
             services.AddScoped<CheckInService, CheckInService>();
             services.AddScoped<HoldingsService, HoldingsService>();
             services.AddScoped<BranchesService, BranchesService>();
+            services.AddScoped<PatronsService, PatronsService>();
+            services.AddScoped<IClassificationService, MasterClassificationService>();
         }
-
+        
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
