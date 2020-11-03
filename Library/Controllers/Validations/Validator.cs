@@ -20,6 +20,7 @@ namespace LibraryNet2020.Controllers.Validations
         public abstract void Validate();
         public abstract bool IsValid { get; }
         public abstract string ErrorMessage { get; }
+        public virtual string InvertMessage { get; }
 
         public virtual void MergePreviousValidationData(Dictionary<string, object> data)
         {

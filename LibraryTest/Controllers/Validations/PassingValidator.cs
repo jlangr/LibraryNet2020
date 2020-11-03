@@ -15,6 +15,7 @@ namespace LibraryTest.Controllers.Validations
         }
 
         public override bool IsValid => true;
-        public override string ErrorMessage => "";
+        public override string ErrorMessage => "straight up error message";
+        public override string InvertMessage => "default invert message";
     }
 }

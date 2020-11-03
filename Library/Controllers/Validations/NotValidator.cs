@@ -17,7 +17,7 @@ namespace LibraryNet2020.Controllers.Validations
         }
 
         public override bool IsValid => !validator.IsValid;
-        public override string ErrorMessage => validator.ErrorMessage;
+        public override string ErrorMessage => validator.InvertMessage;
         public override void MergePreviousValidationData(Dictionary<string, object> data)
         {
             validator.MergePreviousValidationData(data);

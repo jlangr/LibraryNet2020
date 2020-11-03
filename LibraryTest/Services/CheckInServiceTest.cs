@@ -67,8 +67,7 @@ namespace LibraryTest.Services
 
             Assert.False(checkInService.Checkin(checkin));
             
-            // TODO Negate!
-            Assert.Equal("Holding with barcode QA123:1 is already checked out.", 
+            Assert.Equal("Holding with barcode QA123:1 is already checked in", 
                 checkInService.ErrorMessages.First());
         }
     }

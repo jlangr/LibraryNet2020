@@ -18,6 +18,7 @@ namespace LibraryNet2020.Controllers.Validations
         }
 
         public override bool IsValid => !Holding.IsCheckedOut;
-        public override string ErrorMessage => $"Holding with barcode {Holding.Barcode} is already checked out.";
+        public override string ErrorMessage => $"Holding with barcode {Holding.Barcode} is already checked out";
+        public override string InvertMessage => $"Holding with barcode {Holding.Barcode} is already checked in";
     }
 }

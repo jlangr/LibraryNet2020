@@ -43,10 +43,11 @@ namespace LibraryTest.Controllers.Validations
         public void ReturnsErrorMessagesFromNestedValidator()
         {
             mock.Setup(v => v.ErrorMessage).Returns("hey");
+            mock.Setup(v => v.InvertMessage).Returns("not hey");
             var validator = mock.Object;
             notValidator = new NotValidator(validator);
             
-            Assert.Equal("hey", notValidator.ErrorMessage);
+            Assert.Equal("not hey", notValidator.ErrorMessage);
         }
 
         [Fact]
@@ -61,6 +62,15 @@ namespace LibraryTest.Controllers.Validations
             Assert.Equal(
                 new Dictionary<string,object> { {"a", "Alpha"}, {"b", "Beta"}},
                 notValidator.Data);
+        }
+
+        [Fact]
+        public void ReturnsInvertMessageFromNestedValidation()
+        {
+            var nestedValidator = new PassingValidator();
+            notValidator = new NotValidator(nestedValidator);
+            
+            Assert.Equal(nestedValidator.InvertMessage, notValidator.ErrorMessage);
         }
     }
 }
