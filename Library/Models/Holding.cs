@@ -22,11 +22,6 @@ namespace LibraryNet2020.Models
         {
         }
 
-        public override string ToString()
-        {
-            return $"{Classification}:{CopyNumber}:{BranchId}";
-        }
-
         public Holding(string classification, int copyNumber, int branchId)
         {
             CheckOutTimestamp = null;
@@ -35,6 +30,11 @@ namespace LibraryNet2020.Models
             Classification = classification;
             CopyNumber = copyNumber;
             BranchId = branchId;
+        }
+
+        public override string ToString()
+        {
+            return $"{Classification}:{CopyNumber}:{BranchId}";
         }
 
         public static bool IsBarcodeValid(string barcode)
@@ -133,15 +133,23 @@ namespace LibraryNet2020.Models
 
         public static string ClassificationFromBarcode(string barcode)
         {
-            var colonIndex = barcode.IndexOf(':');
-            return barcode.Substring(0, colonIndex);
+            var (classification, _) = BarcodeParts(barcode);
+            return classification;
         }
 
-        // TODO can we do this with destructuring into a tuple or something?
         public static int CopyNumberFromBarcode(string barcode)
         {
+            var (_, copyNumber) = BarcodeParts(barcode);
+            return copyNumber;
+        }
+        
+        public static (string, int) BarcodeParts(string barcode)
+        {
             var colonIndex = barcode.IndexOf(':');
-            return int.Parse(barcode.Substring(colonIndex + 1));
+            if (colonIndex == -1) throw new FormatException();
+            var classification = barcode.Substring(0, colonIndex);
+            var copyNumber = int.Parse(barcode.Substring(colonIndex + 1));
+            return (classification, copyNumber);
         }
 
         public int DaysLate()

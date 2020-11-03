@@ -33,15 +33,15 @@ namespace LibraryTest.Models
         [Fact]
         public void IsCheckedOutWhenBranchIsTheCheckedOutBranch()
         {
-            var holding = new Holding { BranchId = Branch.CheckedOutId };
+            var holding = new Holding {BranchId = Branch.CheckedOutId};
             Assert.True(holding.IsCheckedOut);
             Assert.False(holding.IsAvailable);
         }
-        
+
         [Fact]
         public void IsAvailableOutWhenBranchIsSet()
         {
-            var holding = new Holding { BranchId = 1 };
+            var holding = new Holding {BranchId = 1};
             Assert.False(holding.IsCheckedOut);
             Assert.True(holding.IsAvailable);
         }
@@ -101,6 +101,12 @@ namespace LibraryTest.Models
         }
 
         [Fact]
+        public void BarcodePts()
+        {
+            Assert.Equal(("QA234", 42), Holding.BarcodeParts("QA234:42"));
+        }
+
+        [Fact]
         public void ParsesCopyNoFromBarcode()
         {
             try
@@ -122,7 +128,7 @@ namespace LibraryTest.Models
         [Fact]
         public void Co()
         {
-            var holding = new Holding { Classification = "", CopyNumber = 1, BranchId = 1 };
+            var holding = new Holding {Classification = "", CopyNumber = 1, BranchId = 1};
             Assert.False(holding.IsCheckedOut);
             var now = DateTime.Now;
 
@@ -143,7 +149,7 @@ namespace LibraryTest.Models
         [Fact]
         public void CheckIn()
         {
-            var holding = new Holding { Classification = "X", BranchId = 1, CopyNumber = 1 };
+            var holding = new Holding {Classification = "X", BranchId = 1, CopyNumber = 1};
             // check out movie
             holding.CheckOut(DateTime.Now, PatronId, CheckoutPolicies.BookCheckoutPolicy);
             var tomorrow = DateTime.Now.AddDays(1);
@@ -160,12 +166,12 @@ namespace LibraryTest.Models
         [Fact]
         public void CheckInAnswersZeroDaysLateWhenReturnedOnDueDate()
         {
-            var holding = new Holding { Classification = "X", BranchId = 1, CopyNumber = 1 };
+            var holding = new Holding {Classification = "X", BranchId = 1, CopyNumber = 1};
             holding.CheckOut(DateTime.Now, PatronId, CheckoutPolicies.BookCheckoutPolicy);
 
             var dueDate = holding.DueDate.Value;
             int brId = 2;
-            
+
             holding.CheckIn(dueDate, brId);
             Assert.Equal(0, holding.DaysLate());
         }
@@ -173,12 +179,12 @@ namespace LibraryTest.Models
         [Fact]
         public void DaysLateCalculatedWhenReturnedAfterDueDate()
         {
-            var holding = new Holding { Classification = "X", BranchId = 1, CopyNumber = 1 };
+            var holding = new Holding {Classification = "X", BranchId = 1, CopyNumber = 1};
             holding.CheckOut(DateTime.Now, PatronId, CheckoutPolicies.BookCheckoutPolicy);
 
             var date = holding.DueDate.Value.AddDays(2);
             var branchId = 2;
-            
+
             holding.CheckIn(date, branchId);
             Assert.Equal(2, holding.DaysLate());
         }
@@ -186,12 +192,12 @@ namespace LibraryTest.Models
         [Fact]
         public void CheckInAnswersZeroDaysLateWhenReturnedBeforeDueDate()
         {
-            var holding = new Holding { Classification = "X", BranchId = 1, CopyNumber = 1 };
+            var holding = new Holding {Classification = "X", BranchId = 1, CopyNumber = 1};
             holding.CheckOut(DateTime.Now, PatronId, CheckoutPolicies.BookCheckoutPolicy);
 
             var date = holding.DueDate.Value.AddDays(-1);
             int branchId = 2;
-            
+
             holding.CheckIn(date, branchId);
             Assert.Equal(0, holding.DaysLate());
         }

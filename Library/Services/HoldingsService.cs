@@ -44,7 +44,8 @@ namespace LibraryNet2020.Controllers
 
         public Holding FindByBarcode(string barcode)
         {
-            return FindByClassificationAndCopy(Holding.ClassificationFromBarcode(barcode), Holding.CopyNumberFromBarcode(barcode));
+            var (classification, copy) = Holding.BarcodeParts(barcode);
+            return FindByClassificationAndCopy(classification, copy);
         }
 
         public int NextAvailableCopyNumber(string classification)
