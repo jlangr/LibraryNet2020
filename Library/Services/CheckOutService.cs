@@ -22,7 +22,6 @@ namespace LibraryNet2020.Services
         public CheckOutService(LibraryContext context, HoldingsService holdingsService)
         {
             this.context = context;
-            // holdingsService = new HoldingsService(context);
             this.holdingsService = holdingsService;
         }
 

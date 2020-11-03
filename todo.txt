@@ -1,0 +1,8 @@
+LibraryTest/Models/BookCheckoutPolicyTest.cs:16:        // TODO Use abstract test here and for next test!
+LibraryTest/Controllers/PatronsControllerTest.cs:60:        // TODO all this
+LibraryTest/Services/HoldingsServiceTest.cs:49:        // TODO trickle up to controller & have return 400
+Library/LibraryContext.cs:39:        // TODO test
+Library/Models/Holding.cs:140:        // TODO can we do this with destructuring into a tuple or something?
+Library/Controllers/CheckInController.cs:42:            // TODO this is broke (?)
+Library/Services/CheckOutService.cs:11:    // TODO test
+Library/README.md:72:TODO: look at their code. OO? functional? Linq w/ code or regular linq?

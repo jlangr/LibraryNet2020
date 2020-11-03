@@ -70,6 +70,8 @@ dotnet ef migrations add RestOfTables
 
 
 TODO: look at their code. OO? functional? Linq w/ code or regular linq?
+TODO: navigation on view
+TODO: show edit error (add duplciate branch) on Holdings page
 
 ---
 https://andrewlock.net/should-you-unit-test-controllers-in-aspnetcore/

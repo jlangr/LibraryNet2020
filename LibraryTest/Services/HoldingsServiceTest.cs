@@ -46,7 +46,6 @@ namespace LibraryTest
             Assert.Equal("XX999:1", holding.Barcode);
         }
 
-        // TODO trickle up to controller & have return 400
         [Fact]
         public void Add_ThrowsWhenAddingDuplicateBarcode()
         {

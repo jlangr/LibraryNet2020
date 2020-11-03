@@ -33,8 +33,6 @@ namespace LibraryNet2020.Controllers.Validations
             if (failingValidation != null) ErrorMessages.Add(failingValidation.ErrorMessage);
         }
 
-        // TODO test appropriate for null?
-
         public bool IsValid()
         {
             return ErrorMessages.Count == 0;

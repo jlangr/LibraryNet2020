@@ -36,7 +36,6 @@ namespace LibraryNet2020.Models
         public DbSet<Patron> Patrons { get; set; }
         public DbSet<Material> Materials { get; set; }
 
-        // TODO test
         public T GetById<T>(DbSet<T> dbSet, int id) where T: class, Identifiable
         {
             return dbSet.FirstOrDefault(e => e.Id == id);

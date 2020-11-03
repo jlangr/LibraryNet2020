@@ -13,6 +13,7 @@ namespace LibraryNet2020.Controllers
 {
     public class HoldingsController : Controller
     {
+        public const string ModelKey = "Holdings";
         private readonly LibraryContext context;
         private readonly HoldingsService holdingsService;
         private readonly BranchesService branchesService;
@@ -59,7 +60,16 @@ namespace LibraryNet2020.Controllers
         {
             if (!ModelState.IsValid) return View(holding);
 
-            holdingsService.Add(holding);
+            try
+            {
+                holdingsService.Add(holding);
+            }
+            catch (Exception e)
+            {
+                ModelState.AddModelError(ModelKey, e.Message);
+                return View(holding);
+            }
+
             return RedirectToAction(nameof(Index));
         }
 
