@@ -8,6 +8,11 @@ namespace LibraryNet2020.Extensions
 {
     public static class DbSetExtensions
     {
+        public static T GetById<T>(this DbSet<T> dbSet, int id) where T: class, Identifiable
+        {
+            return dbSet.FirstOrDefault(e => e.Id == id);
+        }
+        
         public static async Task<T> FindById<T>(this DbSet<T> dbSet, int? id) where T: class, Identifiable
         {
             if (id == null) return default;
