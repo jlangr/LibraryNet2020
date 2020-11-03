@@ -28,7 +28,7 @@ namespace LibraryNet2020.Controllers
         // GET: Patrons/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            var patron = await context.Patrons.FindById(id);
+            var patron = await context.Patrons.FirstByIdAsync(id);
             if (patron == null)
                 return BadRequest();
             
@@ -62,7 +62,7 @@ namespace LibraryNet2020.Controllers
         // GET: Patrons/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            return this.ViewIf(await context.Patrons.FindDirect(id));
+            return this.ViewIf(await context.Patrons.FindByIdAsync(id));
         }
 
         // POST: Patrons/Edit/5
@@ -92,7 +92,7 @@ namespace LibraryNet2020.Controllers
         // GET: Patrons/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            return this.ViewIf(await context.Patrons.FindById(id));
+            return this.ViewIf(await context.Patrons.FirstByIdAsync(id));
         }
 
         // POST: Patrons/Delete/5

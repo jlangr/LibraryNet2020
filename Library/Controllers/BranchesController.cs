@@ -24,7 +24,7 @@ namespace LibraryNet2020.Controllers
         // GET: Branches/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            return this.ViewIf(await context.Branches.FindById(id));
+            return this.ViewIf(await context.Branches.FirstByIdAsync(id));
         }
 
 
@@ -48,7 +48,7 @@ namespace LibraryNet2020.Controllers
         // GET: Branches/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            return this.ViewIf(await context.Branches.FindDirect(id));
+            return this.ViewIf(await context.Branches.FindByIdAsync(id));
         }
 
         // POST: Branches/Edit/5
@@ -78,7 +78,7 @@ namespace LibraryNet2020.Controllers
         // GET: Branches/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            return this.ViewIf(await context.Branches.FindById(id));
+            return this.ViewIf(await context.Branches.FirstByIdAsync(id));
         }
 
         // POST: Branches/Delete/5

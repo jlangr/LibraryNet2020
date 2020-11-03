@@ -41,7 +41,7 @@ namespace LibraryNet2020.Controllers
         // GET: Holdings/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            return this.ViewIf(await context.Holdings.FindById(id));
+            return this.ViewIf(await context.Holdings.FirstByIdAsync(id));
         }
 
         // GET: Holdings/Create
@@ -76,7 +76,7 @@ namespace LibraryNet2020.Controllers
         // GET: Holdings/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            return this.ViewIf(await context.Holdings.FindDirect(id));
+            return this.ViewIf(await context.Holdings.FindByIdAsync(id));
         }
 
         // POST: Holdings/Edit/5
@@ -107,7 +107,7 @@ namespace LibraryNet2020.Controllers
         // GET: Holdings/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            return this.ViewIf(await context.Holdings.FindById(id));
+            return this.ViewIf(await context.Holdings.FirstByIdAsync(id));
         }
 
         // POST: Holdings/Delete/5

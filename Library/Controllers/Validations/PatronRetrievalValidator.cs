@@ -14,7 +14,7 @@ namespace LibraryNet2020.Controllers.Validations
 
         public override void Validate()
         {
-            Patron = context.Patrons.FindById(Id).Result;
+            Patron = context.Patrons.FirstByIdAsync(Id).Result;
         }
 
         public override bool IsValid => Patron != null;

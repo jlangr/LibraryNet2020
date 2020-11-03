@@ -24,7 +24,7 @@ namespace LibraryNet2020.Controllers
         // GET: Materials/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            return this.ViewIf(await _context.Materials.FindById(id));
+            return this.ViewIf(await _context.Materials.FirstByIdAsync(id));
         }
 
         // GET: Materials/Create
@@ -51,7 +51,7 @@ namespace LibraryNet2020.Controllers
         // GET: Materials/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            return this.ViewIf(await _context.Materials.FindDirect(id));
+            return this.ViewIf(await _context.Materials.FindByIdAsync(id));
         }
 
         // POST: Materials/Edit/5
@@ -81,7 +81,7 @@ namespace LibraryNet2020.Controllers
         // GET: Materials/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            return this.ViewIf(await _context.Materials.FindById(id));
+            return this.ViewIf(await _context.Materials.FirstByIdAsync(id));
         }
 
         // POST: Materials/Delete/5
