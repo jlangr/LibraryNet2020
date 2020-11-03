@@ -8,7 +8,6 @@ using Validator = LibraryNet2020.Controllers.Validations.Validator;
 
 namespace LibraryNet2020.Services
 {
-    // TODO test
     public class CheckOutService
     {
         private readonly PipelineValidator pipelineValidator = new PipelineValidator();

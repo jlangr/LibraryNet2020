@@ -56,42 +56,5 @@ namespace LibraryTest.Controllers
             var viewResult = Assert.IsType<ViewResult>(task.Result);
             Assert.IsType<Patron>(viewResult.Model);
         }
-
-        // TODO all this
-//             [Fact]
-//             public void ReturnsListWithCheckedOutHolding()
-//             {
-//                 int holdingId1 = CreateCheckedOutHolding(patronId, checkoutController, 1);
-//                 int holdingId2 = CreateCheckedOutHolding(patronId, checkoutController, 2);
-//
-//                 var view = (controller.Holdings(patronId) as ViewResult)?.Model as IEnumerable<Holding>;
-//
-//                 Assert.Equal(new List<int> { holdingId1, holdingId2 }, view.Select(h => h.Id));
-//             }
-//
-//             private int CreateCheckedOutHolding(int id, CheckOutController controller, int copyNumber)
-//             {
-//                 var holdingId = holdingRepo.Create(new Holding { Classification = "X", CopyNumber = copyNumber, BranchId = branchId });
-//                 var checkOutViewModel = new CheckOutViewModel { Barcode = $"X:{copyNumber}", PatronId = id };
-//                 controller.Index(checkOutViewModel);
-//                 return holdingId;
-//             }
-//         }
-//         
-//         public class Index: PatronsControllerTest
-//         {
-//             [Fact]
-//             public void RetrievesViewOnAllPatrons()
-//             {
-//                 patronRepo.Create(new Patron { Name = "Alpha" }); 
-//                 patronRepo.Create(new Patron { Name = "Beta" }); 
-//
-//                 var view = controller.Index();
-//
-//                 var patrons = (view as ViewResult)?.Model as IEnumerable<Patron>;
-//                 Assert.Equal(new string[] { "Alpha", "Beta" }, patrons?.Select(p => p.Name));
-//             }
-//         }
-//
     }
 }
