@@ -1,4 +1,3 @@
-using LibraryNet2020.Extensions;
 using LibraryNet2020.Models;
 using LibraryNet2020.Services;
 using Xunit;
@@ -35,7 +34,7 @@ namespace LibraryTest.Services
         }
 
         [Fact]
-        public void CreateSavesPatron()
+        public void CreateSavesRetrievablePatron()
         {
             var idA = service.Create(new Patron {Name = "a"});
             var idB = service.Create(new Patron {Name = "b"});
@@ -43,8 +42,20 @@ namespace LibraryTest.Services
             Assert.Equal(1, idA);
             Assert.Equal(2, idB);
 
-            Assert.Equal("a", context.Patrons.FirstByIdAsync(1).Result.Name);
-            Assert.Equal("b", context.Patrons.FirstByIdAsync(2).Result.Name);
+            Assert.Equal("a", service.FindById(1).Name);
+            Assert.Equal("b", service.FindById(2).Name);
+        }
+        
+        [Fact]
+        public void UpdatePersistsChangedPatron()
+        {
+            var patron = new Patron {Name = "a"};
+            var id = service.Create(patron);
+
+            patron.Name = "b";
+            service.Update(patron);
+
+            Assert.Equal("b", service.FindById(id).Name);
         }
     }
 }

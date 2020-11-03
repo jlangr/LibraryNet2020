@@ -26,13 +26,11 @@ namespace LibraryNet2020.Services
             return persisted.Entity.Id;
         }
 
-        // TODO test
         public Patron FindById(int id)
         {
             return context.Patrons.FindByIdAsync(id).Result;
         }
 
-        // TODO test
         public void Update(Patron patron)
         {
             context.Patrons.Update(patron);
