@@ -103,9 +103,21 @@ namespace LibraryTest
             Assert.Null(service.FindByClassificationAndCopy("XX123", 1));
         }
         
-        private Holding AddNewHolding(string classification)
+        
+        [Fact]
+        public void UpdatePersistsChangedPatron()
         {
-            var entity = context.Holdings.Add(new Holding(classification)).Entity;
+            var holding = AddNewHolding("QA123:1");
+
+            holding.HeldByPatronId = 42;
+            service.Update(holding);
+
+            Assert.Equal(42, service.FindByClassificationAndCopy("QA123", 1).HeldByPatronId);
+        }
+        
+        private Holding AddNewHolding(string barcode)
+        {
+            var entity = context.Holdings.Add(new Holding(barcode)).Entity;
             context.SaveChanges();
             return entity;
         }

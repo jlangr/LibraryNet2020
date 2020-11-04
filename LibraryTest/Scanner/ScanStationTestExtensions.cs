@@ -9,12 +9,6 @@ namespace LibraryTest.Scanner
 {
     public static class ScanStationTestExtensions
     {
-        // static void CheckOut(this ScanStation scanner, string barcode, int somePatronId)
-        // {
-        //     CheckOut(barcode, somePatronId);
-        // }
-
-
         public static void ScanNewMaterial(this ScanStation scanner, string barcode,
             Mock<IClassificationService> serviceMock)
         {
@@ -33,22 +27,12 @@ namespace LibraryTest.Scanner
             scanner.AddNewHolding(isbn);
         }
 
-        public static void CheckOut(this ScanStation scanner, string barcode, int patronId)
-        {
-            scanner.CheckOut(barcode, patronId, TimeService.Now);
-        }
-
         public static void CheckOut(this ScanStation scanner, string barcode, int patronId, DateTime dateTime)
         {
             TimeService.NextTime = dateTime;
             scanner.AcceptLibraryCard(patronId);
             TimeService.NextTime = dateTime;
             scanner.AcceptBarcode(barcode);
-        }
-
-        public static void CheckIn(this ScanStation scanner, string barcode)
-        {
-            scanner.CheckIn(barcode, DateTime.Now);
         }
 
         public static void CheckIn(this ScanStation scanner, string barcode, DateTime dateTime)

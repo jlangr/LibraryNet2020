@@ -31,5 +31,16 @@ namespace LibraryTest.Services
             context.SaveChanges();
             return holding;
         }
+
+        public static CheckoutPolicy RetrievePolicy(string barcode, IClassificationService classificationService)
+        {
+            var classification = Holding.ClassificationFromBarcode(barcode);
+            var material = classificationService.Retrieve(classification);
+            return material.CheckoutPolicy;
+        }
+
+        public static DateTime DaysPastDueDate(string barcode, DateTime fromDate, int daysLate, IClassificationService service) {
+            return fromDate.AddDays(RetrievePolicy(barcode, service).MaximumCheckoutDays() + daysLate);
+        }
     }
 }

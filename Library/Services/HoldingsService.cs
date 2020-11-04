@@ -67,7 +67,6 @@ namespace LibraryNet2020.Controllers
             Update(holding);
         }
 
-        // TODO test
         public void Update(Holding holding)
         {
             context.Holdings.Update(holding);

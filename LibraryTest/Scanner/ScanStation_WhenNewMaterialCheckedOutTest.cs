@@ -1,13 +1,12 @@
 using System;
 using LibraryNet2020.Controllers;
-using LibraryNet2020.Extensions;
 using LibraryNet2020.Models;
 using LibraryNet2020.NonPersistentModels;
 using LibraryNet2020.Scanner;
 using LibraryNet2020.Services;
-using LibraryNet2020.Util;
 using Moq;
 using Xunit;
+using static LibraryTest.Services.ServiceHelpers;
 
 namespace LibraryTest.Scanner
 {
@@ -39,11 +38,15 @@ namespace LibraryTest.Scanner
             
             savedPatronId = patronsService.Create(new Patron { Name = ""});
             
-            TimeService.NextTime = now;
-            scanner.ScanNewMaterial(SomeBarcode, classificationServiceMock);
-            scanner.CheckOut(SomeBarcode, savedPatronId);
+            CheckOutNewMaterial();
         }
-        
+
+        private void CheckOutNewMaterial()
+        {
+            scanner.ScanNewMaterial(SomeBarcode, classificationServiceMock);
+            scanner.CheckOut(SomeBarcode, savedPatronId, now);
+        }
+
         [Fact]
         public void HeldByPatronIdUpdated()
         {
@@ -75,7 +78,7 @@ namespace LibraryTest.Scanner
         {
             scanner.ScanNewMaterial("XX123:1", classificationServiceMock);
         
-            scanner.CheckOut("XX123:1", savedPatronId);
+            scanner.CheckOut("XX123:1", savedPatronId, now);
         
             Assert.Equal(savedPatronId, holdingsService.FindByBarcode(SomeBarcode).HeldByPatronId);
             Assert.Equal(savedPatronId, holdingsService.FindByBarcode("XX123:1").HeldByPatronId);
@@ -111,18 +114,11 @@ namespace LibraryTest.Scanner
             scanner.CompleteCheckout();
             const int daysLate = 2;
         
-            scanner.CheckIn(SomeBarcode, DaysPastDueDate(SomeBarcode, now, daysLate));
+            scanner.CheckIn(SomeBarcode, DaysPastDueDate(SomeBarcode, now, daysLate, classificationService));
         
-            Assert.Equal(RetrievePolicy(SomeBarcode).FineAmount(daysLate), patronsService.FindById(savedPatronId).Balance);
+            Assert.Equal(RetrievePolicy(SomeBarcode, classificationService).FineAmount(daysLate), patronsService.FindById(savedPatronId).Balance);
         }
-        
-        private CheckoutPolicy RetrievePolicy(string barcode)
-        {
-            var classification = Holding.ClassificationFromBarcode(barcode);
-            var material = classificationService.Retrieve(classification);
-            return material.CheckoutPolicy;
-        }
-        
+
         [Fact]
         public void CheckoutByOtherPatronSucceeds()
         {
@@ -130,7 +126,7 @@ namespace LibraryTest.Scanner
             var anotherPatronId = patronsService.Create(new Patron {Name = ""});
             scanner.AcceptLibraryCard(anotherPatronId);
         
-            scanner.CheckOut(SomeBarcode, anotherPatronId);
+            scanner.CheckOut(SomeBarcode, anotherPatronId, now);
         
             Assert.Equal(anotherPatronId, holdingsService.FindByBarcode(SomeBarcode).HeldByPatronId);
         }
@@ -142,15 +138,10 @@ namespace LibraryTest.Scanner
             var anotherPatronId = patronsService.Create(new Patron { Name = "" });
         
             const int daysLate = 2;
-            scanner.CheckOut(SomeBarcode, anotherPatronId, DaysPastDueDate(SomeBarcode, now, daysLate));
+            scanner.CheckOut(SomeBarcode, anotherPatronId, DaysPastDueDate(SomeBarcode, now, daysLate, classificationService));
         
-            Assert.Equal(RetrievePolicy(SomeBarcode).FineAmount(daysLate),
+            Assert.Equal(RetrievePolicy(SomeBarcode, classificationService).FineAmount(daysLate),
                 patronsService.FindById(savedPatronId).Balance);
-        }
-
-        // TODO move to policy?
-        private DateTime DaysPastDueDate(string barcode, DateTime fromDate, int daysLate) {
-            return fromDate.AddDays(RetrievePolicy(barcode).MaximumCheckoutDays() + daysLate);
         }
     }
 }

@@ -15,17 +15,16 @@ namespace LibraryTest.Scanner
     [Collection("SharedLibraryContext")]
     public class ScanStation_WhenNothingCheckedOutTest
     {
-        const string SomeBarcode = "QA123:1";
+        private const string SomeBarcode = "QA123:1";
+        private readonly int somePatronId;
 
-        readonly DateTime now = DateTime.Now;
-
-        ScanStation scanner;
+        private LibraryContext context;
+        
+        private IClassificationService classificationService;
         Mock<IClassificationService> classificationServiceMock;
         private PatronsService patronsService;
         private HoldingsService holdingsService;
-        private IClassificationService classificationService;
-        int somePatronId;
-        private LibraryContext context;
+        ScanStation scanner;
 
         public ScanStation_WhenNothingCheckedOutTest(DbContextFixture fixture)
         {
@@ -37,8 +36,9 @@ namespace LibraryTest.Scanner
             classificationServiceMock = new Mock<IClassificationService>();
             classificationService = classificationServiceMock.Object;
             AlwaysReturnBookMaterial(classificationServiceMock);
-            somePatronId = patronsService.Create(new Patron {Name = "x"});
 
+            somePatronId = patronsService.Create(new Patron {Name = "x"});
+            
             scanner = new ScanStation(context, 1, classificationService, new HoldingsService(context),
                 new PatronsService(context));
         }
@@ -48,8 +48,6 @@ namespace LibraryTest.Scanner
             serviceMock.Setup(service => service.Retrieve(It.IsAny<string>()))
                 .Returns(new Material {CheckoutPolicy = new BookCheckoutPolicy()});
         }
-
-        // NotRequiringCheckout:
 
         [Fact]
         public void StoresHoldingAtBranchWhenNewMaterialAdded()
@@ -100,43 +98,5 @@ namespace LibraryTest.Scanner
 
             Assert.Equal(ScanStation.NoPatron, scanner.CurrentPatronId);
         }
-
-
-        /*
-        public class WhenMaterialCheckedInTest : ScanStationTest
-        {
-            public WhenMaterialCheckedInTest()
-            {
-                ScanNewMaterial(SomeBarcode);
-                CheckOut(SomeBarcode);
-                scanner.CompleteCheckout();
-                CheckIn(SomeBarcode);
-            }
-
-            [Fact]
-            public void PatronCleared()
-            {
-                Assert.Equal(Holding.NoPatron, GetByBarcode(SomeBarcode).HeldByPatronId);
-            }
-
-            [Fact]
-            public void HoldingMarkedAsNotCheckedOut()
-            {
-                Assert.False(GetByBarcode(SomeBarcode).IsCheckedOut);
-            }
-
-            [Fact]
-            public void CheckOutTimestampCleared()
-            {
-                Assert.Null(GetByBarcode(SomeBarcode).CheckOutTimestamp);
-            }
-
-            [Fact]
-            public void LastCheckedInTimestampUpdated()
-            {
-                Assert.Equal(now, GetByBarcode(SomeBarcode).LastCheckedIn);
-            }
-        }
-        */
     }
 }
