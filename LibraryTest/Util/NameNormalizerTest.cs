@@ -13,6 +13,10 @@ using Assert = Xunit.Assert;
 //      Assume that you need only support the behaviors described in tests so far.
 // 6. Is there another assertion that is commented out? Uncomment it. It should fail. Make it pass.
 // 7. Return to step 1.
+// Out of tests? Can you think of tests you might also want to write? Go for it!
+
+// Coding hint:
+//   s.Count(c => c == ',') will count all the comma characters in string s.
 
 namespace LibraryCoreTests.Util
 {
@@ -78,12 +82,6 @@ namespace LibraryCoreTests.Util
         {
             var exception = Assert.Throws<ArgumentException>(() => normalizer.Normalize("Thurston, Howell, III"));
             Assert.Equal("name can have at most one comma", exception.Message);
-        }
-
-        [Fact(Skip="unskip when ready to work")]
-        public void SuppotsSuffixesForOneWordNames()
-        {
-            Assert.Equal("Madonna, Jr.", normalizer.Normalize("Madonna, Jr."));
         }
     }
 }
