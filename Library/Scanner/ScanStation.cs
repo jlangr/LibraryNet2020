@@ -11,11 +11,11 @@ namespace LibraryNet2020.Scanner
     {
         public const int NoPatron = -1;
         private readonly IClassificationService classificationService;
-        private readonly int brId;
-        private int cur = NoPatron;
-        private DateTime cts;
-        private HoldingsService holdingsService;
-        private PatronsService patronsService;
+        private readonly int branchId;
+        private int currentPatronId = NoPatron;
+        private DateTime currentTimeStamp;
+        private readonly HoldingsService holdingsService;
+        private readonly PatronsService patronsService;
 
         public ScanStation(LibraryContext context, int branchId)
             : this(context,
@@ -33,10 +33,10 @@ namespace LibraryNet2020.Scanner
             this.holdingsService = holdingsService;
             this.patronsService = patronsService;
             BranchId = branchId;
-            brId = BranchId;
+            this.branchId = BranchId;
         }
 
-        public Holding AddNewHolding(string isbn)
+        public void AddNewHolding(string isbn)
         {
             var classification = classificationService.Classification(isbn);
             var holding = new Holding
@@ -46,87 +46,91 @@ namespace LibraryNet2020.Scanner
                 BranchId = BranchId
             };
             holdingsService.Add(holding);
-            return holding;
         }
 
-        public int BranchId { get; private set; }
+        public int BranchId { get; }
 
-        public int CurrentPatronId => cur;
+        public int CurrentPatronId => currentPatronId;
 
         public void AcceptLibraryCard(int patronId)
         {
-            cur = patronId;
-            cts = TimeService.Now;
+            currentPatronId = patronId;
+            currentTimeStamp = TimeService.Now;
         }
 
-        // 1/19/2017: who wrote this?
-        // 
-        // FIXME. Fix this mess. We just have to SHIP IT for nwo!!!
-        public void AcceptBarcode(string bc)
+        public void AcceptBarcode(string barcode)
         {
-            var cl = Holding.ClassificationFromBarcode(bc);
-            var cn = Holding.CopyNumberFromBarcode(bc);
-            var h = holdingsService.FindByBarcode(bc);
+            var holding = holdingsService.FindByBarcode(barcode);
+            var timestamp = TimeService.Now;
+            if (ScannerInCheckInState())
+                if (holding.IsCheckedOut)
+                {
+                    CheckIn(holding, timestamp);
+                }
+                else
+                {
+                    ThrowDueToDuplicateCheckoutAttempt();
+                }
+            else // ScannerInCheckOutState
+            {
+                if (holding.IsAvailable)
+                {
+                    CheckOut(holding, currentTimeStamp);
+                }
+                else if (AlreadyCheckedOutByOtherPatron(holding))
+                {
+                    CheckIn(holding, timestamp);
+                    CheckOut(holding, timestamp);
+                }
+            }
+        }
 
-            if (h.IsCheckedOut)
-            {
-                if (cur == NoPatron)
-                {
-                    // ci
-                    bc = h.Barcode;
-                    var patronId = h.HeldByPatronId;
-                    var cis = TimeService.Now;
-                    Material m = null;
-                    m = classificationService.Retrieve(h.Classification);
-                    var fine = m.CheckoutPolicy.FineAmount(h.CheckOutTimestamp.Value, cis);
-                    Patron p = patronsService.FindById(patronId);
-                    p.Fine(fine);
-                    patronsService.Update(p);
-                    h.CheckIn(cis, brId);
-                    holdingsService.Update(h);
-                }
-                else
-                {
-                    if (h.HeldByPatronId != cur) // check out book already cked-out
-                    {
-                        var bc1 = h.Barcode;
-                        var n = TimeService.Now;
-                        var t = TimeService.Now.AddDays(21);
-                        var f = classificationService.Retrieve(h.Classification).CheckoutPolicy
-                            .FineAmount(h.CheckOutTimestamp.Value, n);
-                        var patron = patronsService.FindById(h.HeldByPatronId);
-                        patron.Fine(f);
-                        patronsService.Update(patron);
-                        h.CheckIn(n, brId);
-                        holdingsService.Update(h);
-                        // co
-                        h.CheckOut(n, cur, CheckoutPolicies.BookCheckoutPolicy);
-                        holdingsService.Update(h);
-                        // call check out controller(cur, bc1);
-                        t.AddDays(1);
-                        n = t;
-                    }
-                    else // not checking out book already cked out by other patron
-                    {
-                        // otherwise ignore, already checked out by this patron
-                    }
-                }
-            }
-            else
-            {
-                if (cur != NoPatron) // check in book
-                {
-                    h.CheckOut(cts, cur, CheckoutPolicies.BookCheckoutPolicy);
-                    holdingsService.Update(h);
-                }
-                else
-                    throw new CheckoutException();
-            }
+        private void CheckIn(Holding holding, DateTime timestamp)
+        {
+            AssessFinesIfLateCheckin(holding, timestamp);
+            holding.CheckIn(timestamp, branchId);
+            holdingsService.Update(holding);
+        }
+
+        private void CheckOut(Holding holding, DateTime timeStamp)
+        {
+            holding.CheckOut(timeStamp, currentPatronId, CheckoutPolicies.BookCheckoutPolicy);
+            holdingsService.Update(holding);
+        }
+
+        private static void ThrowDueToDuplicateCheckoutAttempt()
+        {
+            throw new CheckoutException();
+        }
+
+        private bool AlreadyCheckedOutByOtherPatron(Holding holding)
+        {
+            return holding.HeldByPatronId != currentPatronId;
+        }
+
+        private void AssessFinesIfLateCheckin(Holding holding, DateTime timestamp)
+        {
+            var material = classificationService.Retrieve(holding.Classification);
+            var fine = material.CheckoutPolicy.FineAmount(holding.CheckOutTimestamp.Value, timestamp);
+            var patron = patronsService.FindById(holding.HeldByPatronId);
+            patron.Fine(fine);
+            patronsService.Update(patron);
+        }
+
+        private bool ScannerInCheckInState()
+        {
+            return currentPatronId == NoPatron;
+        }
+
+        private void CheckOutStateHoldingNotCheckedOut(Holding holding, DateTime timestamp)
+        {
+            holding.CheckOut(timestamp, currentPatronId, CheckoutPolicies.BookCheckoutPolicy);
+            holdingsService.Update(holding);
         }
 
         public void CompleteCheckout()
         {
-            cur = NoPatron;
+            currentPatronId = NoPatron;
         }
     }
 }
