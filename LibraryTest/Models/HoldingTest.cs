@@ -4,31 +4,17 @@ using LibraryNet2020.NonPersistentModels;
 using Xunit;
 using Assert = Xunit.Assert;
 
-/*
-This test class is a mess. Some of the following opportunities for cleanup might exist:
-
- - AAA used but no visual separation
- - seeming use of AAA but it's not really
- - duplicate and uninteresting initialization
- - unnecessary code (null checks? try/catch?)
- - things that bury information relevant to the test
- - inconsistent test names
- - test names that don't emphasize behavior
- - comments in tests (are they even true)?
- - multiple behaviors/asserts per test
- - dead code
- - local variables that add no readability or other value
- - variables that don't provide enough relevant info
- */
-
-
 namespace LibraryTest.Models
 {
     public class HoldingTest
     {
         const int PatronId = 101;
         const string ExpectedBarcode = "QA234:3";
-        const int SomeBranchId = 1;
+        const int BranchId1 = 1;
+        const int BranchId2 = 2;
+        private readonly DateTime today = DateTime.Now;
+        private readonly DateTime tomorrow = DateTime.Now.AddDays(1);
+        private readonly Holding holdingAtBranch1 = new Holding { BranchId = BranchId1 };
 
         [Fact]
         public void IsCheckedOutWhenBranchIsTheCheckedOutBranch()
@@ -41,13 +27,12 @@ namespace LibraryTest.Models
         [Fact]
         public void IsAvailableOutWhenBranchIsSet()
         {
-            var holding = new Holding {BranchId = 1};
-            Assert.False(holding.IsCheckedOut);
-            Assert.True(holding.IsAvailable);
+            Assert.False(holdingAtBranch1.IsCheckedOut);
+            Assert.True(holdingAtBranch1.IsAvailable);
         }
 
         [Fact]
-        public void CreateWithCommonArguments()
+        public void CanCreateWithCommonArguments()
         {
             const int branchId = 10;
             var holding = new Holding("QA123", 2, branchId);
@@ -126,74 +111,127 @@ namespace LibraryTest.Models
         }
 
         [Fact]
-        public void Co()
+        public void CheckOutSetsHoldingToCheckedOutBranch()
         {
-            var holding = new Holding {Classification = "", CopyNumber = 1, BranchId = 1};
-            Assert.False(holding.IsCheckedOut);
-            var now = DateTime.Now;
+            holdingAtBranch1.CheckOut(today, PatronId, CheckoutPolicies.BookCheckoutPolicy);
 
-            var policy = CheckoutPolicies.BookCheckoutPolicy;
-            holding.CheckOut(now, PatronId, policy);
+            Assert.Equal(Branch.CheckedOutId, holdingAtBranch1.BranchId);
+        }
 
-            Assert.True(holding.IsCheckedOut);
+        [Fact]
+        public void CheckOutUpdatedWithPatronId()
+        {
+            holdingAtBranch1.CheckOut(today, PatronId, CheckoutPolicies.BookCheckoutPolicy);
 
-            Assert.Equal(policy.Id, holding.CheckoutPolicy.Id);
-            Assert.Equal(PatronId, holding.HeldByPatronId);
+            Assert.Equal(PatronId, holdingAtBranch1.HeldByPatronId);
+        }
 
-            var dueDate = now.AddDays(policy.MaximumCheckoutDays());
-            Assert.Equal(dueDate, holding.DueDate);
+        [Fact]
+        public void CheckOutUpdatesDueDateDetails()
+        {
+            holdingAtBranch1.CheckOut(today, PatronId, CheckoutPolicies.BookCheckoutPolicy);
 
-            Assert.Equal(Branch.CheckedOutId, holding.BranchId);
+            Assert.Equal(CheckoutPolicies.BookCheckoutPolicy.Id, holdingAtBranch1.CheckoutPolicy.Id);
+            Assert.Equal(today.AddDays(CheckoutPolicies.BookCheckoutPolicy.MaximumCheckoutDays()),
+                holdingAtBranch1.DueDate);
+        }
+
+        [Fact]
+        public void CheckOutUpdatesAvailabilityFlags()
+        {
+            holdingAtBranch1.CheckOut(today, PatronId, CheckoutPolicies.BookCheckoutPolicy);
+
+            Assert.True(holdingAtBranch1.IsCheckedOut);
+            Assert.False(holdingAtBranch1.IsAvailable);
+        }
+
+        [Fact]
+        public void CheckOutSetsCheckOutTimestamp()
+        {
+            holdingAtBranch1.CheckOut(today, PatronId, CheckoutPolicies.BookCheckoutPolicy);
+
+            Assert.Equal(today, holdingAtBranch1.CheckOutTimestamp);
+        }
+
+        [Fact]
+        public void CheckInUpdatesLastCheckedInDate()
+        {
+            holdingAtBranch1.CheckOut(today, PatronId, CheckoutPolicies.BookCheckoutPolicy);
+
+            holdingAtBranch1.CheckIn(tomorrow, BranchId2);
+
+            Assert.Equal(tomorrow, holdingAtBranch1.LastCheckedIn);
+        }
+        
+        [Fact]
+        public void CheckInUpdatesBranchId()
+        {
+            holdingAtBranch1.CheckOut(today, PatronId, CheckoutPolicies.BookCheckoutPolicy);
+
+            holdingAtBranch1.CheckIn(tomorrow, BranchId2);
+
+            Assert.Equal(BranchId2, holdingAtBranch1.BranchId);
+        }
+        
+        [Fact]
+        public void CheckInClearsCheckOutTimestamp()
+        {
+            holdingAtBranch1.CheckOut(today, PatronId, CheckoutPolicies.BookCheckoutPolicy);
+
+            holdingAtBranch1.CheckIn(tomorrow, BranchId2);
+
+            Assert.Null(holdingAtBranch1.CheckOutTimestamp);
+        }
+
+        [Fact]
+        public void CheckInUpdatesAvailability()
+        {
+            holdingAtBranch1.CheckOut(today, PatronId, CheckoutPolicies.BookCheckoutPolicy);
+
+            holdingAtBranch1.CheckIn(tomorrow, BranchId2);
+
+            Assert.False(holdingAtBranch1.IsCheckedOut);
+            Assert.True(holdingAtBranch1.IsAvailable);
+        }
+
+        [Fact]
+        public void CheckInClearsPatronId()
+        {
+            holdingAtBranch1.CheckOut(today, PatronId, CheckoutPolicies.BookCheckoutPolicy);
+
+            holdingAtBranch1.CheckIn(tomorrow, BranchId2);
+
+            Assert.Equal(Holding.NoPatron, holdingAtBranch1.HeldByPatronId);
+        }
+
+        [Fact]
+        public void CheckInNotLateWhenReturnedOnDueDate()
+        {
+            holdingAtBranch1.CheckOut(DateTime.Now, PatronId, CheckoutPolicies.BookCheckoutPolicy);
+
+            holdingAtBranch1.CheckIn(holdingAtBranch1.DueDate.Value, BranchId2);
             
-            // checking in
-            var tomorrow = DateTime.Now.AddDays(1);
-            const int newBranchId = 2;
-            holding.CheckIn(tomorrow, newBranchId);
-            Assert.False(holding.IsCheckedOut);
-            Assert.Equal(Holding.NoPatron, holding.HeldByPatronId);
-            Assert.Null(holding.CheckOutTimestamp);
-            Assert.Equal(newBranchId, holding.BranchId);
-            // day after now
-            Assert.Equal(tomorrow, holding.LastCheckedIn);
+            Assert.Equal(0, holdingAtBranch1.DaysLate());
         }
 
         [Fact]
-        public void CheckInAnswersZeroDaysLateWhenReturnedOnDueDate()
+        public void CheckInLateUpdatesDaysLate()
         {
-            var holding = new Holding {Classification = "X", BranchId = 1, CopyNumber = 1};
-            holding.CheckOut(DateTime.Now, PatronId, CheckoutPolicies.BookCheckoutPolicy);
+            holdingAtBranch1.CheckOut(DateTime.Now, PatronId, CheckoutPolicies.BookCheckoutPolicy);
 
-            var dueDate = holding.DueDate.Value;
-            int brId = 2;
-
-            holding.CheckIn(dueDate, brId);
-            Assert.Equal(0, holding.DaysLate());
+            holdingAtBranch1.CheckIn(holdingAtBranch1.DueDate.Value.AddDays(2), BranchId2);
+            
+            Assert.Equal(2, holdingAtBranch1.DaysLate());
         }
 
         [Fact]
-        public void DaysLateCalculatedWhenReturnedAfterDueDate()
+        public void CheckInNotLateWhenReturnedBeforeDueDate()
         {
-            var holding = new Holding {Classification = "X", BranchId = 1, CopyNumber = 1};
-            holding.CheckOut(DateTime.Now, PatronId, CheckoutPolicies.BookCheckoutPolicy);
+            holdingAtBranch1.CheckOut(DateTime.Now, PatronId, CheckoutPolicies.BookCheckoutPolicy);
 
-            var date = holding.DueDate.Value.AddDays(2);
-            var branchId = 2;
-
-            holding.CheckIn(date, branchId);
-            Assert.Equal(2, holding.DaysLate());
-        }
-
-        [Fact]
-        public void CheckInAnswersZeroDaysLateWhenReturnedBeforeDueDate()
-        {
-            var holding = new Holding {Classification = "X", BranchId = 1, CopyNumber = 1};
-            holding.CheckOut(DateTime.Now, PatronId, CheckoutPolicies.BookCheckoutPolicy);
-
-            var date = holding.DueDate.Value.AddDays(-1);
-            int branchId = 2;
-
-            holding.CheckIn(date, branchId);
-            Assert.Equal(0, holding.DaysLate());
+            holdingAtBranch1.CheckIn(holdingAtBranch1.DueDate.Value.AddDays(-1), BranchId2);
+            
+            Assert.Equal(0, holdingAtBranch1.DaysLate());
         }
     }
 }
