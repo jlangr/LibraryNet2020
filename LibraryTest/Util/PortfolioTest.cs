@@ -7,6 +7,8 @@ namespace LibraryTest.Util
     public class PortfolioTest
     {
         private const string Bayn = "BAYN";
+        private const decimal BaynCurrentPrice = 12.50m;
+        private const decimal IbmCurrentPrice = 100.00m;
         private const string Ibm = "IBM";
         private Portfolio portfolio = new Portfolio();
         
@@ -119,6 +121,47 @@ namespace LibraryTest.Util
             portfolio.Sell(Bayn, 10);
             
             Assert.Equal(0, portfolio.Size);
+        }
+
+        [Fact]
+        public void ValueIsZeroOnCreation()
+        {
+            Assert.Equal(0, portfolio.Value);
+        }
+
+        class StubStockService : StockService
+        {
+            // oh no not a stub!
+            public decimal CurrentPrice(string symbol) => 
+                symbol == Bayn ? BaynCurrentPrice : IbmCurrentPrice;
+        }
+
+        [Fact]
+        public void ValueIsSharePriceAfterSingleSharePurchase()
+        {
+            portfolio.StockService = new StubStockService();
+            portfolio.Purchase(Bayn, 1);
+            
+            Assert.Equal(BaynCurrentPrice, portfolio.Value);
+        }
+
+        [Fact]
+        public void ValueMultipliesPriceByShareCount()
+        {
+            portfolio.StockService = new StubStockService();
+            portfolio.Purchase(Bayn, 10);
+            
+            Assert.Equal(BaynCurrentPrice * 10, portfolio.Value);
+        }
+
+        [Fact]
+        public void ValueAccumulatesAllSymbolValues()
+        {
+            portfolio.StockService = new StubStockService();
+            portfolio.Purchase(Bayn, 10);
+            portfolio.Purchase(Ibm, 20);
+            
+            Assert.Equal((BaynCurrentPrice * 10) + (IbmCurrentPrice * 20), portfolio.Value);
         }
     }
 }
