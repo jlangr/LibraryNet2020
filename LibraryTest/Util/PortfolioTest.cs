@@ -1,4 +1,5 @@
 using System;
+using Moq;
 using Xunit;
 using Assert = Xunit.Assert;
 
@@ -11,6 +12,13 @@ namespace LibraryTest.Util
         private const decimal IbmCurrentPrice = 100.00m;
         private const string Ibm = "IBM";
         private Portfolio portfolio = new Portfolio();
+        private Mock<StockService> stockServiceMock;
+
+        public PortfolioTest()
+        {
+            stockServiceMock = new Mock<StockService>();
+            portfolio.StockService = stockServiceMock.Object;
+        }
         
         [Fact]
         public void IsEmptyWhenCreated()
@@ -129,17 +137,12 @@ namespace LibraryTest.Util
             Assert.Equal(0, portfolio.Value);
         }
 
-        class StubStockService : StockService
-        {
-            // oh no not a stub!
-            public decimal CurrentPrice(string symbol) => 
-                symbol == Bayn ? BaynCurrentPrice : IbmCurrentPrice;
-        }
-
         [Fact]
         public void ValueIsSharePriceAfterSingleSharePurchase()
         {
-            portfolio.StockService = new StubStockService();
+            stockServiceMock.Setup(s => s.CurrentPrice(Bayn))
+                .Returns(BaynCurrentPrice);
+            
             portfolio.Purchase(Bayn, 1);
             
             Assert.Equal(BaynCurrentPrice, portfolio.Value);
@@ -148,7 +151,9 @@ namespace LibraryTest.Util
         [Fact]
         public void ValueMultipliesPriceByShareCount()
         {
-            portfolio.StockService = new StubStockService();
+            stockServiceMock.Setup(s => s.CurrentPrice(Bayn))
+                .Returns(BaynCurrentPrice);
+            
             portfolio.Purchase(Bayn, 10);
             
             Assert.Equal(BaynCurrentPrice * 10, portfolio.Value);
@@ -157,7 +162,11 @@ namespace LibraryTest.Util
         [Fact]
         public void ValueAccumulatesAllSymbolValues()
         {
-            portfolio.StockService = new StubStockService();
+            stockServiceMock.Setup(s => s.CurrentPrice(Bayn))
+                .Returns(BaynCurrentPrice);
+            stockServiceMock.Setup(s => s.CurrentPrice(Ibm))
+                .Returns(IbmCurrentPrice);
+            
             portfolio.Purchase(Bayn, 10);
             portfolio.Purchase(Ibm, 20);
             
