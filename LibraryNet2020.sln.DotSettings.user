@@ -4,6 +4,9 @@
     &lt;TestId&gt;xUnit::2DF3A847-CE25-4D69-8C6D-8D21912624D4::.NETCoreApp,Version=v3.1::LibraryTest.PatronsServiceTest.CreateSavesPatron&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=74f204ad_002Dcd7c_002D4f0f_002Dbb23_002D4ad6a58b8a0b/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="All tests from Solution #5" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;Solution /&gt;
+&lt;/SessionState&gt;</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=7f64b797_002D3e1c_002D4f66_002D93d2_002D367510365c5b/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="All tests from Solution #3" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;Solution /&gt;
 &lt;/SessionState&gt;</s:String>
@@ -20,6 +23,9 @@
 	
 	
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=b0fc1ff4_002Df424_002D49d4_002D85e7_002D83ea93990fc8/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from Solution" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;Solution /&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=cb1ec9f3_002De03e_002D43a3_002Dbeb3_002D68b1e195e220/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from Solution #6" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;Solution /&gt;
 &lt;/SessionState&gt;</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=cd50142b_002D5b15_002D4c7e_002D9c95_002D4aa9db0aeb11/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="ChecksInBook" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
