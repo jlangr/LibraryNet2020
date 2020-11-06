@@ -144,14 +144,8 @@ namespace LibraryTest.Models
             Assert.Equal(dueDate, holding.DueDate);
 
             Assert.Equal(Branch.CheckedOutId, holding.BranchId);
-        }
-
-        [Fact]
-        public void CheckIn()
-        {
-            var holding = new Holding {Classification = "X", BranchId = 1, CopyNumber = 1};
-            // check out movie
-            holding.CheckOut(DateTime.Now, PatronId, CheckoutPolicies.BookCheckoutPolicy);
+            
+            // checking in
             var tomorrow = DateTime.Now.AddDays(1);
             const int newBranchId = 2;
             holding.CheckIn(tomorrow, newBranchId);
