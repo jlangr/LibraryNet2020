@@ -108,5 +108,19 @@ namespace LibraryTest.Util
 
             Assert.True(x.SomeProperty);
         }
+
+        [Fact]
+        public void MoqSimpleStub()
+        {
+            var mock = new Moq.Mock<IList<string>>();
+            mock.Setup(l => l.Count)
+                .Returns(42);
+            IList<string> list = mock.Object;
+
+            Assert.Equal(42, list.Count);
+            
+            mock.Setup(l => l[15])
+                .Returns("1500");
+        }
     }
 }
