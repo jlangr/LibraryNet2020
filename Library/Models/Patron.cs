@@ -21,6 +21,8 @@ namespace LibraryNet2020.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)] 
         public int Id { get; set; }
         public decimal Balance { get; set; }
+        
+        public string SSN { get; set; }
 
         public void Fine(decimal amount)
         {

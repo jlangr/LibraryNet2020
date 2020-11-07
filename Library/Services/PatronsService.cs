@@ -13,7 +13,9 @@ namespace LibraryNet2020.Services
         {
             this.context = context;
         }
-        
+
+        public CreditVerifier CreditVerifier { get; set; } = new ProductionCreditVerifier();
+
         public IEnumerable<Holding> HoldingsForPatron(int id)
         {
             return new List<Holding>(context.Holdings.Where(holding => holding.HeldByPatronId == id));
@@ -21,9 +23,15 @@ namespace LibraryNet2020.Services
 
         public int Create(Patron patron)
         {
+            if (!IsCreditGood(patron)) return -1;
             var persisted = context.Patrons.Add(patron);
             context.SaveChanges();
             return persisted.Entity.Id;
+        }
+
+        private bool IsCreditGood(Patron patron)
+        {
+            return CreditVerifier.Verify(patron.SSN);
         }
 
         public Patron FindById(int id)

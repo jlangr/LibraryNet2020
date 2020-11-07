@@ -45,6 +45,22 @@ namespace LibraryTest.Services
             Assert.Equal("a", service.FindById(1).Name);
             Assert.Equal("b", service.FindById(2).Name);
         }
+
+        class AlwaysFalseCreditVerifier : CreditVerifier
+        {
+            public bool Verify(string cardNumber) => false;
+        }
+
+        [Fact]
+        public void CreateFailsIfPatronHasBadCredit()
+        {
+            var creditVerifier = new AlwaysFalseCreditVerifier();
+            service.CreditVerifier = creditVerifier;
+            
+            var id = service.Create(new Patron {Name = "a"});
+            
+            Assert.Null(service.FindById(id));
+        }
         
         [Fact]
         public void UpdatePersistsChangedPatron()
