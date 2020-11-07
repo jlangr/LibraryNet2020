@@ -14,7 +14,7 @@ namespace LibraryNet2020.Services
             this.context = context;
         }
 
-        public CreditVerifier CreditVerifier { get; set; } = new ProductionCreditVerifier();
+        public ICreditCheck CreditCheck { get; set; } = new ProductionCreditCheck();
 
         public IEnumerable<Holding> HoldingsForPatron(int id)
         {
@@ -31,7 +31,7 @@ namespace LibraryNet2020.Services
 
         private bool IsCreditGood(Patron patron)
         {
-            return CreditVerifier.Verify(patron.SSN);
+            return CreditCheck.CreditScore(patron.SSN) >= ICreditCheck.GoodCreditThreshold;
         }
 
         public Patron FindById(int id)

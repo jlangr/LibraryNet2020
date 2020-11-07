@@ -46,16 +46,16 @@ namespace LibraryTest.Services
             Assert.Equal("b", service.FindById(2).Name);
         }
 
-        class AlwaysFalseCreditVerifier : CreditVerifier
+        class BadCreditCheck : ICreditCheck
         {
-            public bool Verify(string cardNumber) => false;
+            public int CreditScore(string ssn) => ICreditCheck.GoodCreditThreshold - 1;
         }
 
         [Fact]
         public void CreateFailsIfPatronHasBadCredit()
         {
-            var creditVerifier = new AlwaysFalseCreditVerifier();
-            service.CreditVerifier = creditVerifier;
+            var creditVerifier = new BadCreditCheck();
+            service.CreditCheck = creditVerifier;
             
             var id = service.Create(new Patron {Name = "a"});
             
