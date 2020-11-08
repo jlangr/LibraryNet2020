@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Moq;
 using Xunit;
 using Assert = Xunit.Assert;
 
@@ -118,9 +120,81 @@ namespace LibraryTest.Util
             IList<string> list = mock.Object;
 
             Assert.Equal(42, list.Count);
-            
+
             mock.Setup(l => l[15])
                 .Returns("1500");
+        }
+
+        [Fact]
+        public void moq()
+        {
+            var mock = new Mock<IDictionary<object, string>>();
+            var dictionary = mock.Object;
+
+            mock.Setup(d => d[It.IsAny<string>()])
+                .Returns("a fish");
+
+            Assert.Equal("a fish", dictionary["smelt"]);
+            Assert.Equal("a fish", dictionary["trout"]);
+            Assert.NotEqual("a fish", dictionary[42]);
+
+            mock
+                .Setup(d => d[It.Is<string>(s => s.Last() == 's')])
+                .Returns("maybe plural");
+            mock
+                .Setup(d => d[It.Is<string>(s => s.Last() != 's')])
+                .Returns("maybe singular");
+
+            Assert.Equal("maybe plural", dictionary["dogs"]);
+            Assert.Equal("maybe singular", dictionary["trout"]);
+        }
+
+        private IList<string> list;
+
+        public MiscTest()
+        {
+            var mock = new Mock<IList<string>>();
+            list = mock.Object;
+        }
+
+        [Fact]
+        public void MoqRetrieveMock()
+        {
+            Mock.Get(list).Setup(l => l.Count)
+                .Returns(42);
+            
+            Assert.Equal(42, list.Count);
+        }
+
+        public interface Cache
+        {
+            string LookUp(string key);
+        }
+        
+        [Fact]
+        public void MockOfSyntax()
+        {
+            var cache = 
+                Mock.Of<Cache>(c => c.LookUp("smelt") == "a fish");
+
+            Assert.Equal(cache.LookUp("smelt"), "a fish"); 
+        }
+        
+        public class Store
+        {
+            public string LookUp(string key)
+            {
+                throw new Exception("shouldn't get here"); 
+            }
+        }
+        
+        [Fact]
+        public void VirtualAndNot()
+        {
+            var store = 
+                Mock.Of<Store>(c => c.LookUp("smelt") == "a fish");
+
+            Assert.Equal(store.LookUp("smelt"), "a fish"); 
         }
     }
 }
