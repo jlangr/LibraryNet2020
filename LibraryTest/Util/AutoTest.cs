@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Castle.DynamicProxy.Generators.Emitters;
-using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
@@ -70,10 +68,31 @@ namespace LibraryTest.Util
                 Console.WriteLine(DiagnosticDevice.Results());
             }
             catch(DiagnosticsException e) { 
-                var errMsg = $"{DateTime.Now}: ${System}-${Module} ${LogLevel.Error} ${e.Message.Truncate(80)}";
+                var errMsg = $"{DateTime.Now}: {System}-{Module} " +
+                             $"{LogLevel.Error} {e.Message.Trunc(80)}";
                 Log(errMsg);
                 throw new ApplicationException(errMsg, e);
             } 
+        }
+        
+        public void RunDiagnostics2()
+        {
+            try
+            {
+                DiagnosticDevice.Start();
+                DiagnosticDevice.Run();
+                Console.WriteLine(DiagnosticDevice.Results());
+            }
+            catch(DiagnosticsException e) { 
+                var errMsg = FormattedErrorMessage(e, Module, System);
+                Log(errMsg);
+                throw new ApplicationException(errMsg, e);
+            } 
+        }
+
+        private string FormattedErrorMessage(DiagnosticsException e, string module, string system)
+        {
+            return $"{DateTime.Now}: {system}-{module} {LogLevel.Error} {e.Message.Trunc(80)}";
         }
 
         public int RPM { get; set; }
