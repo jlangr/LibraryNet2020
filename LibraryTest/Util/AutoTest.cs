@@ -1,18 +1,50 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Castle.DynamicProxy.Generators.Emitters;
+using Microsoft.CodeAnalysis;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 using Assert = Xunit.Assert;
 
 namespace LibraryTest.Util
 {
+    class DiagnosticDevice {
+        public string Results()
+        {
+            return "diagnostics: ";
+        }
+
+        public void Start()
+        {
+            throw new DiagnosticsException("unable to open device");
+        }
+
+        public void Run()
+        {
+        }
+
+        public object System { get; set; } = "engine";
+    }
+
+    internal class DiagnosticsException : Exception
+    {
+        public DiagnosticsException(string message) : base(message)
+        {
+        }
+    }
+
     public class Auto
     {
         public Auto()
         {
             RPM = 950;
         }
+        
+        private DiagnosticDevice DiagnosticDevice { get; set; }
+
+        private const string Module = "Auto";
 
         public void DepressBrake()
         {
@@ -20,6 +52,28 @@ namespace LibraryTest.Util
 
         public void PressStartButton()
         {
+        }
+
+        public void Log(string message)
+        {
+            // Console.WriteLine(message);
+        }
+        
+        private string System { get; set; }
+
+        public void RunDiagnostics()
+        {
+            try
+            {
+                DiagnosticDevice.Start();
+                DiagnosticDevice.Run();
+                Console.WriteLine(DiagnosticDevice.Results());
+            }
+            catch(DiagnosticsException e) { 
+                var errMsg = $"{DateTime.Now}: ${System}-${Module} ${LogLevel.Error} ${e.Message.Truncate(80)}";
+                Log(errMsg);
+                throw new ApplicationException(errMsg, e);
+            } 
         }
 
         public int RPM { get; set; }
@@ -162,7 +216,7 @@ namespace LibraryTest.Util
         {
             Mock.Get(list).Setup(l => l.Count)
                 .Returns(42);
-            
+
             Assert.Equal(42, list.Count);
         }
 
@@ -170,31 +224,52 @@ namespace LibraryTest.Util
         {
             string LookUp(string key);
         }
-        
+
         [Fact]
         public void MockOfSyntax()
         {
-            var cache = 
+            var cache =
                 Mock.Of<Cache>(c => c.LookUp("smelt") == "a fish");
 
-            Assert.Equal(cache.LookUp("smelt"), "a fish"); 
+            Assert.Equal(cache.LookUp("smelt"), "a fish");
         }
-        
+
         public class Store
         {
-            public string LookUp(string key)
+            public virtual string LookUp(string key)
             {
-                throw new Exception("shouldn't get here"); 
+                throw new Exception("shouldn't get here");
             }
         }
-        
+
         [Fact]
         public void VirtualAndNot()
         {
-            var store = 
+            var store =
                 Mock.Of<Store>(c => c.LookUp("smelt") == "a fish");
 
-            Assert.Equal(store.LookUp("smelt"), "a fish"); 
+            Assert.Equal(store.LookUp("smelt"), "a fish");
+        }
+
+
+        private static ulong GCD(ulong x, ulong y)
+        {
+            while (x != 0 && y != 0)
+                if (x > y)
+                    x %= y;
+                else
+                    y %= x;
+            return x | y;
+        }
+
+        [Theory]
+        [InlineData(0, 0, 0)]
+        [InlineData(1, 19, 1)]
+        [InlineData(10, 20, 10)]
+        [InlineData(55, 88, 11)]
+        public void PrimeFactors(ulong x, ulong y, ulong expected)
+        {
+            Assert.Equal(expected, GCD(x, y));
         }
     }
 }

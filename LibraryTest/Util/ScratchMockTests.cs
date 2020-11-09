@@ -7,8 +7,10 @@ using Assert = Xunit.Assert;
 
 namespace LibraryTest.Util
 {
-    public class DictionarySvc
+    public class DictionaryService
     {
+        private IDictionary<string, string> Words { get; set; } = new Dictionary<string, string>();
+
         public Auditor EventAuditor { get; set; }
 
         public virtual string LookUp(string key)
@@ -21,6 +23,7 @@ namespace LibraryTest.Util
         }
         public virtual void Add(string word, string definition)
         {
+            Words[word] = definition;
             EventAuditor.Initialize();
             EventAuditor.Log($"adding {word}:{definition}");
         }
@@ -40,22 +43,22 @@ namespace LibraryTest.Util
     public class Client
     {
         public string GetDefinition(string word) { return CreateDict().LookUp(word); }
-        public virtual DictionarySvc CreateDict() { return new DictionarySvc(); }
+        public virtual DictionaryService CreateDict() { return new DictionaryService(); }
     }
 
     public class ScratchMoqTest
     {
-        private DictionarySvc dictionaryService;
+        private DictionaryService dictionaryService;
 
         class TestClient : Client
         {
-            public DictionarySvc Dict { get; set; }
-            public override DictionarySvc CreateDict() { return Dict; }
+            public DictionaryService Dict { get; set; }
+            public override DictionaryService CreateDict() { return Dict; }
         }
 
         public ScratchMoqTest()
         {
-            dictionaryService = new DictionarySvc();
+            dictionaryService = new DictionaryService();
         }
 
         [Fact]
@@ -68,6 +71,7 @@ namespace LibraryTest.Util
 
             auditorSpy.Verify(auditor => auditor.Log("adding dog:a canine"));
         }
+
         [Fact]
         public void LogsAuditRecordOnAdd_Strict()
         {
@@ -85,7 +89,7 @@ namespace LibraryTest.Util
         {
 
             TestClient c = new TestClient();
-            var mock = new Mock<DictionarySvc>();
+            var mock = new Mock<DictionaryService>();
             mock.Setup(d => d.LookUp("smelt")).Returns("hooo");
             c.Dict = mock.Object;
             Assert.Equal("hooo", c.GetDefinition("smelt"));
@@ -103,7 +107,7 @@ namespace LibraryTest.Util
         [Fact]
         public void Args()
         {
-            var dictionary = Mock.Of<DictionarySvc>(s => s.LookUp("smelt") == "a fish");
+            var dictionary = Mock.Of<DictionaryService>(s => s.LookUp("smelt") == "a fish");
 
             Assert.Equal("a fish", dictionary.LookUp("smelt"));
         }
@@ -111,7 +115,7 @@ namespace LibraryTest.Util
         [Fact]
         public void Args2()
         {
-            var dictionary = Mock.Of<DictionarySvc>();
+            var dictionary = Mock.Of<DictionaryService>();
             Mock.Get(dictionary).Setup(d => d.LookUp(It.IsAny<string>())).Returns("a fish");
 
             Assert.Equal("a fish", dictionary.LookUp("smelt"));
@@ -120,7 +124,7 @@ namespace LibraryTest.Util
         [Fact]
         public void ArgsWithPredicate()
         {
-            var dictionary = Mock.Of<DictionarySvc>();
+            var dictionary = Mock.Of<DictionaryService>();
             Mock.Get(dictionary).Setup(
                 d => d.LookUp(It.Is<string>(s => s.Last() == 's'))).Returns("plural");
 
@@ -131,7 +135,7 @@ namespace LibraryTest.Util
         [Fact]
         public void Args3()
         {
-            var mock = new Mock<DictionarySvc>();
+            var mock = new Mock<DictionaryService>();
             mock.Setup(x => x.StringStuff(It.IsAny<string>()))
                 .Returns((string s) => s.ToLower());
 
@@ -142,7 +146,7 @@ namespace LibraryTest.Util
         public void Args4()
         {
             // returning different values on each invocation
-            var mock = new Mock<DictionarySvc>();
+            var mock = new Mock<DictionaryService>();
             var i = 0;
             var definitions = new [] { "a fish", "did smell" };
             mock.Setup(d => d.LookUp("smelt"))
