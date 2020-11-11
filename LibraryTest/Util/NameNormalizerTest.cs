@@ -53,7 +53,7 @@ namespace LibraryCoreTests.Util
             Assert.Equal("Boi, Big", normalizer.Normalize("  Big Boi   "));
         }
 
-        [Fact(Skip="unskip when ready to work")]
+        [Fact]
         public void InitializesMiddleName()
         {
             Assert.Equal("Thoreau, Henry D.", normalizer.Normalize("Henry David Thoreau"));
