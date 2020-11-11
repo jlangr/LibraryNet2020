@@ -9,11 +9,13 @@ namespace LibraryNet2020.Util
     {
         public bool IsEmpty => Count == 0;
 
-        public int Count { get; set; } = 0;
+        public int Count => symbols.Count;
 
-        public void Purchase()
+        private HashSet<string> symbols = new HashSet<string>();
+
+        public void Purchase(string symbol = "")
         {
-            Count = 1;
+            symbols.Add(symbol);            
         }
     }
 }

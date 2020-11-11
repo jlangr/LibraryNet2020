@@ -43,10 +43,25 @@ namespace LibraryTest.Util
         }
 
         [Fact]
-        public void SymbolCountIncrementsWithPurchaseUsingAnotherSymbol()
+        public void SymbolCountIncrementsWithPurchaseOfUniqueSymbol()
         {
+            portfolio.Purchase("yolo");
+            var countBeforeUniquePurchase = portfolio.Count;
+            
+            portfolio.Purchase("notyolo");
 
+            Assert.Equal(countBeforeUniquePurchase + 1, portfolio.Count);
+        }
 
+        [Fact]
+        public void SymbolCountDoesNotIncrementWithPurchaseOfSameSymbol()
+        {
+            portfolio.Purchase("yolo");
+            var countBeforeUniquePurchase = portfolio.Count;
+
+            portfolio.Purchase("yolo");
+
+            Assert.Equal(countBeforeUniquePurchase, portfolio.Count);
         }
     }
 }
