@@ -36,5 +36,14 @@ namespace LibraryTest.Util
             Assert.Equal(0,StockPortfolio.Count());
         }
 
+        [Fact]
+        public void ReturnOneSymbolCountWhenPurchased()
+        {
+            var StockPortfolio = new StockPortfolio();
+            StockPortfolio.PurchaseStock();
+
+            Assert.Equal(1, StockPortfolio.Count());
+        }
+
     }
 }

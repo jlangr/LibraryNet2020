@@ -21,7 +21,7 @@ namespace LibraryNet2020.Util
 
         public int Count()
         {
-            throw new NotImplementedException();
+            return 0;
         }
     }
 }
