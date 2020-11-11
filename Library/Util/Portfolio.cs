@@ -7,13 +7,13 @@ namespace LibraryNet2020.Util
 {
     public class Portfolio
     {
-        public bool IsEmpty { get; set; } = true;
+        public bool IsEmpty => Count == 0;
 
-        public int Count => 0;
+        public int Count { get; set; } = 0;
 
         public void Purchase()
         {
-            IsEmpty = false;
+            Count = 1;
         }
     }
 }

@@ -33,5 +33,20 @@ namespace LibraryTest.Util
         {
             Assert.Equal(0, portfolio.Count);
         }
+
+        [Fact]
+        public void SymbolCountIsNotZeroAfterPurchase()
+        {
+            portfolio.Purchase();
+
+            Assert.NotEqual(0, portfolio.Count);
+        }
+
+        [Fact]
+        public void SymbolCountIncrementsWithPurchaseUsingAnotherSymbol()
+        {
+
+
+        }
     }
 }
