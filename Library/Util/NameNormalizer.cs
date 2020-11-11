@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Text;
 
 namespace LibraryNet2020.Util
 {
@@ -9,13 +10,9 @@ namespace LibraryNet2020.Util
             var parts = Parts(unnormalizedName.Trim());
             if (IsMononym(parts))
                 return unnormalizedName;
-            if (HasTwoMiddleNames(parts))
+            if (HasMiddleNames(parts))
             {
-                return Last(parts) + ", " + First(parts) + " " + Middle(parts) + " " + SecondMiddle(parts);
-            }
-            if (HasMiddleName(parts))
-            {
-                return Last(parts) + ", " + First(parts) + " " + Middle(parts);
+                return Last(parts) + ", " + First(parts) + MiddleNames(parts);
             }
             return Last(parts) + ", " + First(parts);
         }
@@ -41,35 +38,26 @@ namespace LibraryNet2020.Util
             return parts.Last();
         }
 
-        private static string Middle(string[] parts)
+        private static string MiddleNames(string[] parts)
         {
-            if(parts[1].Length == 1)
+            var ret = new StringBuilder();
+            for (int i = 1; i < parts.Length - 2; i++)
             {
-                return $"{parts[1][0]}";
+                if (parts[i].Length == 1)
+                {
+                    ret.Append($" {parts[i][0]}");
+                }
+                else
+                {
+                    ret.Append($" {parts[i][0]}.");
+                }
             }
-
-            return  $"{parts[1][0]}.";
+            return ret.ToString();
         }
 
-        private static string SecondMiddle(string[] parts)
+        private static bool HasMiddleNames(string[] parts)
         {
-            if (parts[2].Length == 1)
-            {
-                return $"{parts[2][0]}";
-            }
-
-            return $"{parts[2][0]}.";
-        }
-
-
-        private static bool HasMiddleName(string[] parts)
-        {
-            return parts.Length == 3;
-        }
-
-        private static bool HasTwoMiddleNames(string[] parts)
-        {
-            return parts.Length == 4;
+            return parts.Length > 2;
         }
     }
 }
