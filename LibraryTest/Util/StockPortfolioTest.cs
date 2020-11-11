@@ -46,7 +46,17 @@ namespace LibraryTest.Util
         }
 
         [Fact]
-        public void SymbolCountShouldIncrementForEachUniqueSymbol()
+        public void ReturnCountOfUniqueSymbolsPurchased()
+        {
+            var StockPortfolio = new StockPortfolio();
+            StockPortfolio.PurchaseStock("TST-1");
+            StockPortfolio.PurchaseStock("TST-2");
+
+            Assert.Equal(2, StockPortfolio.Count());
+        }
+
+        [Fact]
+        public void SymbolCountShouldIncrementForEachUniqueSymbols()
         {
             var StockPortfolio = new StockPortfolio();
             StockPortfolio.PurchaseStock("TST-1");
