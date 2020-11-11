@@ -1,0 +1,40 @@
+
+Is empty when nothing purchase
+->  return true
+
+Is no longer empty after purchase
+->    bool IsEmpty { get; set; } = true;
+->    void Purchase(...) { IsEmpty = false; }
+
+Symbol count is 0 when nothing purchased
+->    void Purchase(...) { IsEmpty = false; }
+->    int Count() { return 0; }
+
+Symbol count is 1 when after purchase
+->    void Purchase(...) { IsEmpty = false; }
+->    int Count() { return IsEmpty ? 0 : 1; }
+
+
+Symbol count increments with each purchase of unique symbol
+->    bool IsEmpty { Count == 0 }
+->    void Purchase(...) { Count++; }
+->    int Count() { get; set; } = 0;
+
+Symbol count does not increment with same-symbol purchase
+-> Set<string>
+      private Set<String> symbols = ...
+->    int Count() { return symbols.Count }
+
+returns shares of symbol
+-> discrete variable called "shares"
+
+separates shares by symbol
+-> Dictionary holdings
+      holdings["bayn"]
+
+... adding, selling 
+      
+
+
+
+? do we really need a dictionary?
