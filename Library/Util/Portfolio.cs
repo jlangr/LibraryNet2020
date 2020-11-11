@@ -19,10 +19,17 @@ namespace LibraryNet2020.Util
             return Symbols.ContainsKey(symbol) ? Symbols[symbol] : 0;
         }
 
-        public void Purchase(string symbol)
+        public void Purchase(string symbol, int count = 1)
         {
             IsEmpty = false;
-            Symbols.Add(symbol, 1);
+            if (Symbols.ContainsKey(symbol))
+            {
+                Symbols[symbol] += count;
+            }
+            else
+            {
+                Symbols.Add(symbol, count);
+            }
         }
     }
 }

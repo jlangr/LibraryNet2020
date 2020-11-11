@@ -50,9 +50,24 @@ namespace LibraryCoreTests.Util
         [Fact]
         public void ReturnZeroIfUnpurchasedShares()
         {
+            Assert.Equal(0, portfolio.GetSharesOfSymbol("APPL"));
+        }
+
+        [Fact]
+        public void SharesTrackedIndependently()
+        {
             portfolio.Purchase("GOOGLE");
 
+            Assert.Equal(1, portfolio.GetSharesOfSymbol("GOOGLE"));
             Assert.Equal(0, portfolio.GetSharesOfSymbol("APPL"));
+        }
+
+        [Fact]
+        public void PurchaseMultipleSharesShouldIncreaseTotalShareCount()
+        {
+            portfolio.Purchase("BAYER", 1);
+            portfolio.Purchase("BAYER",100);
+            Assert.Equal(101, portfolio.GetSharesOfSymbol("BAYER"));
         }
     }
 }
