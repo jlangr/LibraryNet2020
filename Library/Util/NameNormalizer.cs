@@ -4,7 +4,7 @@
 	{
         public string Normalize(string unnormalizedName)
         {
-            var parts = Parts(unnormalizedName);
+            var parts = Parts(unnormalizedName.Trim());
             if (IsMononym(parts))
                 return unnormalizedName;
             return Last(parts) + ", " + First(parts);
