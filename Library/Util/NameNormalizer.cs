@@ -7,27 +7,27 @@ namespace LibraryNet2020.Util
         public string Normalize(string unnormalizedName)
         {
             var parts = SplitByComma(unnormalizedName);
-            for (int i = 1; i < parts.Length; i++)
+            for (int i = 0; i < parts.Length - 1; i++)
             {
-                if (parts[i] == "Jr.")
-                {
-
-                }
-                else
-                {
-                    var regularName = SplitBySpace(unnormalizedName);
-
-                    if (regularName.Length == 1)
-                        return unnormalizedName;
-                    else if (regularName.Length == 2)
-                    {
-                        return Last(regularName) + ", " + First(regularName);
-                    }
-
-                    return Last(regularName) + ", " + First(regularName) + " " + GetMiddleNames(regularName);
-
-                }
+                if (parts[i] == "Jr.")                
+                    return GetRegularName(unnormalizedName) + ", Jr.";                                                       
             }
+
+            return GetRegularName(unnormalizedName);
+        }
+
+        private static string GetRegularName(string unnormalizedName)
+        {
+            var regularName = SplitBySpace(unnormalizedName);
+
+            if (regularName.Length == 1)
+                return unnormalizedName;
+            else if (regularName.Length == 2)
+            {
+                return Last(regularName) + ", " + First(regularName);
+            }
+
+            return Last(regularName) + ", " + First(regularName) + " " + GetMiddleNames(regularName);
         }
 
         private static string GetMiddleNames(string[] parts)
@@ -45,12 +45,12 @@ namespace LibraryNet2020.Util
             return middleNameInitials.ToString().Trim();
         }
 
-        private string[] SplitBySpace(string name)
+        private static string[] SplitBySpace(string name)
         {
             return name.Split(' ', System.StringSplitOptions.RemoveEmptyEntries);
         }
 
-        private string[] SplitByComma(string name)
+        private static string[] SplitByComma(string name)
         {
             return name.Split(',', System.StringSplitOptions.RemoveEmptyEntries);
         }
