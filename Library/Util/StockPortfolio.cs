@@ -23,9 +23,12 @@ namespace LibraryNet2020.Util
         {
             if (stocks.ContainsKey(symbol))
             {
-
+                stocks[symbol] += shares;
             }
-            stocks.Add(symbol,shares); 
+            else
+            {
+                stocks.Add(symbol, shares);
+            }
             
         }
 
