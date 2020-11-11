@@ -39,7 +39,12 @@ namespace LibraryNet2020.Util
 
         private static string Middle(string[] parts)
         {
-            return $"{parts[1][0]}.";
+            if(parts[1].Length == 1)
+            {
+                return $"{parts[1][0]}";
+            }
+
+            return  $"{parts[1][0]}.";
         }
 
         private static bool HasMiddleName(string[] parts)

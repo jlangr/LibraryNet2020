@@ -59,7 +59,7 @@ namespace LibraryCoreTests.Util
             Assert.Equal("Thoreau, Henry D.", normalizer.Normalize("Henry David Thoreau"));
         }
 
-        [Fact(Skip="unskip when ready to work")]
+        [Fact]
         public void DoesNotInitializeOneLetterMiddleName()
         {
             Assert.Equal("Truman, Harry S", normalizer.Normalize("Harry S Truman"));
