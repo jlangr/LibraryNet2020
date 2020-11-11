@@ -12,7 +12,7 @@
 
         private string[] Parts(string name)
         {
-            return name.Split(' ');
+            return name.Split(' ', System.StringSplitOptions.RemoveEmptyEntries);
         }
 
         private static bool IsMononym(string[] parts)

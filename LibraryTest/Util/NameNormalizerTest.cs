@@ -47,37 +47,37 @@ namespace LibraryCoreTests.Util
             Assert.Equal("Murakami, Haruki", normalizer.Normalize("Haruki Murakami"));
         }
 
-        [Fact(Skip="unskip when ready to work")]
+        [Fact]
         public void TrimsWhitespace()
         {
             Assert.Equal("Boi, Big", normalizer.Normalize("  Big Boi   "));
         }
 
-        [Fact(Skip="unskip when ready to work")]
+        [Fact]
         public void InitializesMiddleName()
         {
             Assert.Equal("Thoreau, Henry D.", normalizer.Normalize("Henry David Thoreau"));
         }
 
-        [Fact(Skip="unskip when ready to work")]
+        [Fact]
         public void DoesNotInitializeOneLetterMiddleName()
         {
             Assert.Equal("Truman, Harry S", normalizer.Normalize("Harry S Truman"));
         }
 
-        [Fact(Skip="unskip when ready to work")]
+        [Fact]
         public void InitializesEachOfMultipleMiddleNames()
         {
             Assert.Equal("Louis-Dreyfus, Julia S. E.", normalizer.Normalize("Julia Scarlett Elizabeth Louis-Dreyfus"));
         }
 
-        [Fact(Skip="unskip when ready to work")]
+        [Fact]
         public void AppendsSuffixesToEnd()
         {
             Assert.Equal("King, Martin L., Jr.", normalizer.Normalize("Martin Luther King, Jr."));
         }
 
-        [Fact(Skip="unskip when ready to work")]
+        [Fact]
         public void ThrowsWhenNameContainsTwoCommas()
         {
             var exception = Assert.Throws<ArgumentException>(() => normalizer.Normalize("Thurston, Howell, III"));
