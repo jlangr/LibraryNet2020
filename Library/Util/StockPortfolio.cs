@@ -7,31 +7,36 @@ namespace LibraryNet2020.Util
 {
     public class StockPortfolio
     {
-        private HashSet<string> symbols { get; set; }
+        private Dictionary<string,int> stocks { get; set; }
 
         public StockPortfolio()
         {
-            symbols = new HashSet<string>();
+            stocks = new Dictionary<string, int>();
         }
 
         public bool IsEmpty()
         {
-            return symbols.Count() == 0;
+            return stocks.Count() == 0;
         }
 
         public void PurchaseStock(string symbol, int shares = 1)
         {
-            symbols.Add(symbol);   
+            if (stocks.ContainsKey(symbol))
+            {
+
+            }
+            stocks.Add(symbol,shares); 
+            
         }
 
         public int Count()
         {
-            return symbols.Count();
+            return stocks.Count();
         }
 
-        public int Shares(string v)
+        public int Shares(string symbol)
         {
-            throw new NotImplementedException();
+            return stocks[symbol];
         }
     }
 }
