@@ -7,12 +7,12 @@ namespace LibraryNet2020.Util
         public string Normalize(string unnormalizedName)
         {
             var parts = Parts(unnormalizedName);
+            if (parts.Length < 1)
+                return "";
             if (parts.Length == 1)
                 return unnormalizedName;
-            else if (parts.Length == 2)
-            {
-                return Last(parts) + ", " + First(parts);
-            }
+            if (parts.Length == 2)            
+                return Last(parts) + ", " + First(parts);            
 
             return Last(parts) + ", " + First(parts) + " " + GetMiddleNames(parts);            
         }
@@ -23,14 +23,17 @@ namespace LibraryNet2020.Util
             
             for (int i = 1; i < parts.Length-1; i++)
             {
-                middleNameInitials.Append($"{parts[i][0]}. ");
+                if (parts[i].Length > 1)
+                    middleNameInitials.Append($"{parts[i][0]}. ");
+                else
+                    middleNameInitials.Append($"{parts[i][0]} ");
             }
 
             return middleNameInitials.ToString().Trim();
         }
 
         private string[] Parts(string name)
-        {
+        {            
             return name.Split(' ', System.StringSplitOptions.RemoveEmptyEntries);
         }           
         private static string First(string[] parts)
