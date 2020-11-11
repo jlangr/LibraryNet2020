@@ -23,7 +23,7 @@ namespace LibraryTest.Util
         public void ReturnFalseAfterStockPurchased()
         {
             var StockPortfolio = new StockPortfolio();
-            StockPortfolio.PurchaseStock();
+            StockPortfolio.PurchaseStock("TST");
 
             Assert.False(StockPortfolio.IsEmpty());
         }
@@ -40,10 +40,18 @@ namespace LibraryTest.Util
         public void ReturnOneSymbolCountWhenPurchased()
         {
             var StockPortfolio = new StockPortfolio();
-            StockPortfolio.PurchaseStock();
+            StockPortfolio.PurchaseStock("TST");
 
             Assert.Equal(1, StockPortfolio.Count());
         }
 
+        [Fact]
+        public void SymbolCountShouldIncrementForEachUniqueSymbol()
+        {
+            var StockPortfolio = new StockPortfolio();
+            StockPortfolio.PurchaseStock("TST");
+
+            Assert.Equal(1, StockPortfolio.Count("TST"));
+        }
     }
 }

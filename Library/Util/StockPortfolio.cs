@@ -14,14 +14,14 @@ namespace LibraryNet2020.Util
             return isEmpty;
         }
 
-        public void PurchaseStock()
+        public void PurchaseStock(string symbol)
         {
             isEmpty = false;   
         }
 
-        public int Count()
+        public int Count(string symbol = null)
         {
-            return 0;
+            return isEmpty ? 0 : 1;
         }
     }
 }
