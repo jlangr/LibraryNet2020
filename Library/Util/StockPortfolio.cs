@@ -19,7 +19,7 @@ namespace LibraryNet2020.Util
             return symbols.Count() == 0;
         }
 
-        public void PurchaseStock(string symbol)
+        public void PurchaseStock(string symbol, int shares = 1)
         {
             symbols.Add(symbol);   
         }
@@ -27,6 +27,11 @@ namespace LibraryNet2020.Util
         public int Count()
         {
             return symbols.Count();
+        }
+
+        public int Shares(string v)
+        {
+            throw new NotImplementedException();
         }
     }
 }
