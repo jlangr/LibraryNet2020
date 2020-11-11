@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace LibraryNet2020.Util
@@ -30,6 +31,11 @@ namespace LibraryNet2020.Util
             {
                 Symbols.Add(symbol, count);
             }
+        }
+
+        public void Sell(string symbol)
+        {
+            throw new Exception("Not enough shares of symbol");
         }
     }
 }

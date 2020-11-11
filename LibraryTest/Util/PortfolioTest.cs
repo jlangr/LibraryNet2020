@@ -1,6 +1,8 @@
 using Xunit;
 using Assert = Xunit.Assert;
 using LibraryNet2020.Util;
+using NuGet.Frameworks;
+using System;
 
 namespace LibraryCoreTests.Util
 {
@@ -68,6 +70,25 @@ namespace LibraryCoreTests.Util
             portfolio.Purchase("BAYER", 1);
             portfolio.Purchase("BAYER",100);
             Assert.Equal(101, portfolio.GetSharesOfSymbol("BAYER"));
+        }
+
+        [Fact]
+        public void ThrowExceptionWhenSellingSharesThatIsNotPurchased()
+        {
+            Assert.Throws<Exception>(() => {
+                portfolio.Sell("BAYER");
+            });
+        }
+
+
+        [Fact]
+        public void ThrowExceptionWhenSellingSharesGreaterThanAmmountPurchased()
+        {
+            Assert.Throws<Exception>(() => {
+                portfolio.Purchase("BAYER");
+                portfolio.Sell("BAYER");
+                portfolio.Sell("BAYER");
+            });
         }
     }
 }
