@@ -1,9 +1,10 @@
 namespace LibraryNet2020.Util {
     public class Portfolio {
         public bool IsEmpty { get; private set; } = true;
-        public int Count { get { IsEmpty ? 1 : 0 }}
+        public int Count { get; set; } = 0;
         public void Purchase() {
             IsEmpty = false;
+            Count = 1;
         }
     }
 }

@@ -22,7 +22,15 @@ namespace LibraryCoreTests.Util {
 
         [Fact]
         public void HasNoSymbolsBeforePurchase() {
-            
+
+            Assert.Equal(0, portfolio.Count);
+        }
+
+        [Fact]
+        public void HasSymbolsAfterPurchase()
+        {
+            portfolio.Purchase();
+            Assert.Equal(1, portfolio.Count);
         }
     }
 }
