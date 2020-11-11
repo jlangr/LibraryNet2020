@@ -1,5 +1,7 @@
 ﻿using System;
+using LibraryNet2020.Util;
 using Xunit;
+using Assert = Xunit.Assert;
 
 namespace LibraryTest.Util
 {
@@ -14,5 +16,6 @@ namespace LibraryTest.Util
         {
             Assert.True(StockPortfolio.IsEmpty());
         }
+
     }
 }
