@@ -7,21 +7,26 @@ namespace LibraryNet2020.Util
 {
     public class StockPortfolio
     {
-        public bool isEmpty { get; set; } = true;
+        private HashSet<string> symbols { get; set; }
+
+        public StockPortfolio()
+        {
+            symbols = new HashSet<string>();
+        }
 
         public bool IsEmpty()
         {
-            return isEmpty;
+            return symbols.Count() == 0;
         }
 
         public void PurchaseStock(string symbol)
         {
-            isEmpty = false;   
+            symbols.Add(symbol);   
         }
 
-        public int Count(string symbol = null)
+        public int Count()
         {
-            return isEmpty ? 0 : 1;
+            return symbols.Count();
         }
     }
 }

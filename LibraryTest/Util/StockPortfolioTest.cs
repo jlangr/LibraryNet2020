@@ -55,16 +55,16 @@ namespace LibraryTest.Util
             Assert.Equal(2, StockPortfolio.Count());
         }
 
-        [Fact]
-        public void SymbolCountShouldIncrementForEachUniqueSymbols()
-        {
-            var StockPortfolio = new StockPortfolio();
-            StockPortfolio.PurchaseStock("TST-1");
-            StockPortfolio.PurchaseStock("TST-2");
-            StockPortfolio.PurchaseStock("TST-2");
+        //[Fact]
+        //public void SymbolCountShouldIncrementForEachUniqueSymbols()
+        //{
+        //    var StockPortfolio = new StockPortfolio();
+        //    StockPortfolio.PurchaseStock("TST-1");
+        //    StockPortfolio.PurchaseStock("TST-2");
+        //    StockPortfolio.PurchaseStock("TST-2");
 
-            Assert.Equal(1, StockPortfolio.Count("TST-1"));
-            Assert.Equal(2, StockPortfolio.Count("TST-2"));
-        }
+        //    Assert.Equal(1, StockPortfolio.Count("TST-1"));
+        //    Assert.Equal(2, StockPortfolio.Count("TST-2"));
+        //}
     }
 }
