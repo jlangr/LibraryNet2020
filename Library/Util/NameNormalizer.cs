@@ -1,4 +1,6 @@
-﻿namespace LibraryNet2020.Util
+﻿using System.Linq;
+
+namespace LibraryNet2020.Util
 {
     public class NameNormalizer
 	{
@@ -7,6 +9,10 @@
             var parts = Parts(unnormalizedName.Trim());
             if (IsMononym(parts))
                 return unnormalizedName;
+            if (HasMiddleName(parts))
+            {
+                return Last(parts) + ", " + First(parts) + " " + Middle(parts);
+            }
             return Last(parts) + ", " + First(parts);
         }
 
@@ -17,7 +23,7 @@
 
         private static bool IsMononym(string[] parts)
         {
-            return parts.Length != 2;
+            return parts.Length == 1;
         }
 
         private static string First(string[] parts)
@@ -27,7 +33,18 @@
 
         private static string Last(string[] parts)
         {
-            return parts[1];
+           
+            return parts.Last();
+        }
+
+        private static string Middle(string[] parts)
+        {
+            return $"{parts[1][0]}.";
+        }
+
+        private static bool HasMiddleName(string[] parts)
+        {
+            return parts.Length == 3;
         }
     }
 }
