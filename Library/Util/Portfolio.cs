@@ -1,11 +1,19 @@
+using System.Collections.Generic;
+
 namespace LibraryNet2020.Util {
+
+
     public class Portfolio {
         public bool IsEmpty { get; private set; } = true;
         public int Count { get; set; } = 0;
-        public void Purchase() {
+        public void Purchase(string symbol) {
+
             IsEmpty = false;
-            Count = 1;
+            Count += 1;
+            Count += 1;
         }
+
+        private HashSet<string> Sysmbols {get; set;}
     }
 }
 

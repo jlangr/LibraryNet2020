@@ -2,36 +2,59 @@ using Xunit;
 using Assert = Xunit.Assert;
 using LibraryNet2020.Util;
 
-namespace LibraryCoreTests.Util {
-    public class PortfolioTests {
+namespace LibraryCoreTests.Util
+{
+    public class PortfolioTests
+    {
         Portfolio portfolio = new Portfolio();
 
         [Fact]
-        public void PortfolioIsEmpty() {
+        public void PortfolioIsEmpty()
+        {
             var isEmpty = portfolio.IsEmpty;
 
             Assert.True(isEmpty);
         }
 
         [Fact]
-        public void PortfolioNotEmptyAfterPurchase() {
-            portfolio.Purchase();
+        public void PortfolioNotEmptyAfterPurchase()
+        {
+            portfolio.Purchase("BAYER");
 
             Assert.False(portfolio.IsEmpty);
         }
 
         [Fact]
-        public void HasNoSymbolsBeforePurchase() {
+        public void HasNoSymbolsBeforePurchase()
+        {
 
             Assert.Equal(0, portfolio.Count);
         }
 
         [Fact]
-        public void HasSymbolsAfterPurchase()
+        public void HasSymbolAfterPurchase()
         {
-            portfolio.Purchase();
+            portfolio.Purchase("BAYER");
             Assert.Equal(1, portfolio.Count);
         }
+
+        [Fact]
+        public void HasSymbolsAfterPurchase()
+        {
+            portfolio.Purchase("BAYER");
+            portfolio.Purchase("APPL");
+
+            Assert.Equal(2, portfolio.Count);
+        }
+
+        [Fact]
+        public void ReturnZeroIfUnpurchasedShares()
+        {
+            portfolio.Purchase("GOOGLE");
+
+            Assert.Equal(0, portfolio.Count);
+        }
+
     }
 }
 
