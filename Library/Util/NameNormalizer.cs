@@ -9,6 +9,10 @@ namespace LibraryNet2020.Util
             var parts = Parts(unnormalizedName.Trim());
             if (IsMononym(parts))
                 return unnormalizedName;
+            if (HasTwoMiddleNames(parts))
+            {
+                return Last(parts) + ", " + First(parts) + " " + Middle(parts) + " " + SecondMiddle(parts);
+            }
             if (HasMiddleName(parts))
             {
                 return Last(parts) + ", " + First(parts) + " " + Middle(parts);
@@ -47,9 +51,25 @@ namespace LibraryNet2020.Util
             return  $"{parts[1][0]}.";
         }
 
+        private static string SecondMiddle(string[] parts)
+        {
+            if (parts[2].Length == 1)
+            {
+                return $"{parts[2][0]}";
+            }
+
+            return $"{parts[2][0]}.";
+        }
+
+
         private static bool HasMiddleName(string[] parts)
         {
             return parts.Length == 3;
+        }
+
+        private static bool HasTwoMiddleNames(string[] parts)
+        {
+            return parts.Length == 4;
         }
     }
 }

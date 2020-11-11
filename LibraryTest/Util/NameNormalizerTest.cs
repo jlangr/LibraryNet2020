@@ -65,7 +65,7 @@ namespace LibraryCoreTests.Util
             Assert.Equal("Truman, Harry S", normalizer.Normalize("Harry S Truman"));
         }
 
-        [Fact(Skip="unskip when ready to work")]
+        [Fact]
         public void InitializesEachOfMultipleMiddleNames()
         {
             Assert.Equal("Louis-Dreyfus, Julia S. E.", normalizer.Normalize("Julia Scarlett Elizabeth Louis-Dreyfus"));
