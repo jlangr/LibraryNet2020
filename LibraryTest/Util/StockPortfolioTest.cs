@@ -14,15 +14,26 @@ namespace LibraryTest.Util
         [Fact]
         public void ReturnTrueWhenNoStockPurchased()
         {
+            var StockPortfolio = new StockPortfolio();
+
             Assert.True(StockPortfolio.IsEmpty());
         }
 
         [Fact]
         public void ReturnFalseAfterStockPurchased()
         {
+            var StockPortfolio = new StockPortfolio();
             StockPortfolio.PurchaseStock();
 
             Assert.False(StockPortfolio.IsEmpty());
+        }
+
+        [Fact]
+        public void ReturnZeroSymbolCountWhenNothingIsPurchased()
+        {
+            var StockPortfolio = new StockPortfolio();
+
+            Assert.Equal(0,StockPortfolio.Count());
         }
 
     }

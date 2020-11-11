@@ -11,12 +11,17 @@ namespace LibraryNet2020.Util
 
         public bool IsEmpty()
         {
-            return true;
+            return isEmpty;
         }
 
         public void PurchaseStock()
         {
-            isEmpty = false;
+            isEmpty = false;   
+        }
+
+        public int Count()
+        {
+            throw new NotImplementedException();
         }
     }
 }
