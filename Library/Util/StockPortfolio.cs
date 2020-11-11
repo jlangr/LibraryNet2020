@@ -11,5 +11,10 @@ namespace LibraryNet2020.Util
         {
             return true;
         }
+
+        public static bool PurchaseStock()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

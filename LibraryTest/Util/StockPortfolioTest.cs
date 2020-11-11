@@ -17,5 +17,11 @@ namespace LibraryTest.Util
             Assert.True(StockPortfolio.IsEmpty());
         }
 
+        [Fact]
+        public void ReturnFalseAfterStockPurchased()
+        {
+            Assert.False(StockPortfolio.PurchaseStock());
+        }
+
     }
 }
