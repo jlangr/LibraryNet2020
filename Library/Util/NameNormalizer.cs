@@ -41,7 +41,7 @@ namespace LibraryNet2020.Util
         private static string MiddleNames(string[] parts)
         {
             var ret = new StringBuilder();
-            for (int i = 1; i < parts.Length - 2; i++)
+            for (int i = 1; i < parts.Length - 1; i++)
             {
                 if (parts[i].Length == 1)
                 {
