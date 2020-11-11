@@ -7,14 +7,16 @@ namespace LibraryNet2020.Util
 {
     public class StockPortfolio
     {
-        public static bool IsEmpty()
+        public bool isEmpty { get; set; } = true;
+
+        public bool IsEmpty()
         {
             return true;
         }
 
-        public static bool PurchaseStock()
+        public void PurchaseStock()
         {
-            throw new NotImplementedException();
+            isEmpty = false;
         }
     }
 }
