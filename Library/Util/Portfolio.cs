@@ -1,19 +1,29 @@
 using System.Collections.Generic;
 
-namespace LibraryNet2020.Util {
-
-
-    public class Portfolio {
+namespace LibraryNet2020.Util
+{
+    public class Portfolio
+    {
         public bool IsEmpty { get; private set; } = true;
-        public int Count { get; set; } = 0;
-        public void Purchase(string symbol) {
+        public int SymbolCount
+        {
+            get
+            {
+                return Symbols.Count;
+            }
+        }
+        private Dictionary<string, int> Symbols { get; set; } = new Dictionary<string, int>();
 
-            IsEmpty = false;
-            Count += 1;
-            Count += 1;
+        public int GetSharesOfSymbol(string symbol)
+        {
+            return Symbols.ContainsKey(symbol) ? Symbols[symbol] : 0;
         }
 
-        private HashSet<string> Sysmbols {get; set;}
+        public void Purchase(string symbol)
+        {
+            IsEmpty = false;
+            Symbols.Add(symbol, 1);
+        }
     }
 }
 

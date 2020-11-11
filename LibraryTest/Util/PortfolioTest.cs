@@ -28,14 +28,14 @@ namespace LibraryCoreTests.Util
         public void HasNoSymbolsBeforePurchase()
         {
 
-            Assert.Equal(0, portfolio.Count);
+            Assert.Equal(0, portfolio.SymbolCount);
         }
 
         [Fact]
         public void HasSymbolAfterPurchase()
         {
             portfolio.Purchase("BAYER");
-            Assert.Equal(1, portfolio.Count);
+            Assert.Equal(1, portfolio.SymbolCount);
         }
 
         [Fact]
@@ -44,7 +44,7 @@ namespace LibraryCoreTests.Util
             portfolio.Purchase("BAYER");
             portfolio.Purchase("APPL");
 
-            Assert.Equal(2, portfolio.Count);
+            Assert.Equal(2, portfolio.SymbolCount);
         }
 
         [Fact]
@@ -52,9 +52,8 @@ namespace LibraryCoreTests.Util
         {
             portfolio.Purchase("GOOGLE");
 
-            Assert.Equal(0, portfolio.Count);
+            Assert.Equal(0, portfolio.GetSharesOfSymbol("APPL"));
         }
-
     }
 }
 
