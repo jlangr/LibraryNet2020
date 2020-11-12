@@ -68,14 +68,15 @@ namespace LibraryCoreTests.Util
         public void PurchaseMultipleSharesShouldIncreaseTotalShareCount()
         {
             portfolio.Purchase("BAYER", 1);
-            portfolio.Purchase("BAYER",100);
+            portfolio.Purchase("BAYER", 100);
             Assert.Equal(101, portfolio.GetSharesOfSymbol("BAYER"));
         }
 
         [Fact]
         public void ThrowExceptionWhenSellingSharesThatIsNotPurchased()
         {
-            Assert.Throws<Exception>(() => {
+            Assert.Throws<Exception>(() =>
+            {
                 portfolio.Sell("BAYER");
             });
         }
@@ -84,7 +85,8 @@ namespace LibraryCoreTests.Util
         [Fact]
         public void ThrowExceptionWhenSellingSharesGreaterThanAmmountPurchased()
         {
-            Assert.Throws<Exception>(() => {
+            Assert.Throws<Exception>(() =>
+            {
                 portfolio.Purchase("BAYER");
                 portfolio.Sell("BAYER");
                 portfolio.Sell("BAYER");
