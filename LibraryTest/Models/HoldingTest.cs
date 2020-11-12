@@ -33,7 +33,7 @@ namespace LibraryTest.Models
         [Fact]
         public void IsCheckedOutWhenBranchIsTheCheckedOutBranch()
         {
-            var holding = new Holding {BranchId = Branch.CheckedOutId};
+            var holding = new Holding { BranchId = Branch.CheckedOutId };
             Assert.True(holding.IsCheckedOut);
             Assert.False(holding.IsAvailable);
         }
@@ -41,7 +41,7 @@ namespace LibraryTest.Models
         [Fact]
         public void IsAvailableOutWhenBranchIsSet()
         {
-            var holding = new Holding {BranchId = 1};
+            var holding = new Holding { BranchId = 1 };
             Assert.False(holding.IsCheckedOut);
             Assert.True(holding.IsAvailable);
         }
@@ -126,21 +126,32 @@ namespace LibraryTest.Models
         }
 
         [Fact]
+        public void BookIsCheckedOutAfterCheckout()
+        {
+            var holding = new Holding { Classification = "", CopyNumber = 1, BranchId = 1 };
+            var checkedOutTime = DateTime.Now;
+
+            var policy = CheckoutPolicies.BookCheckoutPolicy;
+            holding.CheckOut(checkedOutTime, PatronId, policy);
+
+            Assert.True(holding.IsCheckedOut);
+        }
+
+        [Fact]
         public void Co()
         {
             var holding = new Holding {Classification = "", CopyNumber = 1, BranchId = 1};
-            Assert.False(holding.IsCheckedOut);
-            var now = DateTime.Now;
+            var checkedOutTime = DateTime.Now;
 
             var policy = CheckoutPolicies.BookCheckoutPolicy;
-            holding.CheckOut(now, PatronId, policy);
+            holding.CheckOut(checkedOutTime, PatronId, policy);
 
             Assert.True(holding.IsCheckedOut);
 
             Assert.Equal(policy.Id, holding.CheckoutPolicy.Id);
             Assert.Equal(PatronId, holding.HeldByPatronId);
 
-            var dueDate = now.AddDays(policy.MaximumCheckoutDays());
+            var dueDate = checkedOutTime.AddDays(policy.MaximumCheckoutDays());
             Assert.Equal(dueDate, holding.DueDate);
 
             Assert.Equal(Branch.CheckedOutId, holding.BranchId);
