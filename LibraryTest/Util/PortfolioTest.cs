@@ -155,7 +155,11 @@ namespace LibraryTest.Util
         [Fact]
         public void ValueEqualsMultipleSharesOfMultipleSymbol()
         {
-            portfolio.StockService = new StubStockService();
+            var mock = new Moq.Mock<StockService>();
+            mock.Setup(x => x.CurrentPrice(Bayn)).Returns(BaynCurrentPrice);
+            mock.Setup(x => x.CurrentPrice(Ibm)).Returns(IbmCurrentPrice);
+            portfolio.StockService = mock.Object;
+
             portfolio.Purchase(Bayn, 10);
             portfolio.Purchase(Ibm, 5);
 
