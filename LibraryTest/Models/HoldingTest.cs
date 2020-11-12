@@ -172,7 +172,7 @@ namespace LibraryTest.Models
         }
 
         [Fact]
-        public void CheckIn()
+        public void CheckInUpdatesHolding()
         {
             var tomorrow = DateTime.Now.AddDays(1);
             const int newBranchId = 2;
