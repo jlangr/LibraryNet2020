@@ -202,24 +202,62 @@ namespace LibraryTest.Models
         }
 
         [Fact]
-        public void Co()
+        public void BookPatronIsEmptyAfterCheckIn()
         {
-            var holding = new Holding {Classification = "", CopyNumber = 1, BranchId = 1};
+            var holding = new Holding { Classification = "", CopyNumber = 1, BranchId = 1 };
             var checkedOutTime = DateTime.Now;
-
             var policy = CheckoutPolicies.BookCheckoutPolicy;
             holding.CheckOut(checkedOutTime, PatronId, policy);
-
-            // checking in
             var tomorrow = DateTime.Now.AddDays(1);
             const int newBranchId = 2;
 
             holding.CheckIn(tomorrow, newBranchId);
 
             Assert.Equal(Holding.NoPatron, holding.HeldByPatronId);
+        }
+
+        [Fact]
+        public void BookCheckoutTimeIsNullAfterCheckIn()
+        {
+            var holding = new Holding { Classification = "", CopyNumber = 1, BranchId = 1 };
+            var checkedOutTime = DateTime.Now;
+            var policy = CheckoutPolicies.BookCheckoutPolicy;
+            holding.CheckOut(checkedOutTime, PatronId, policy);
+            var tomorrow = DateTime.Now.AddDays(1);
+            const int newBranchId = 2;
+
+            holding.CheckIn(tomorrow, newBranchId);
+
             Assert.Null(holding.CheckOutTimestamp);
+        }
+
+        [Fact]
+        public void BookBranchLocationChangesAfterCheckInAtDifferentBranch()
+        {
+            var holding = new Holding { Classification = "", CopyNumber = 1, BranchId = 1 };
+            var checkedOutTime = DateTime.Now;
+            var policy = CheckoutPolicies.BookCheckoutPolicy;
+            holding.CheckOut(checkedOutTime, PatronId, policy);
+            var tomorrow = DateTime.Now.AddDays(1);
+            const int newBranchId = 2;
+
+            holding.CheckIn(tomorrow, newBranchId);
+
             Assert.Equal(newBranchId, holding.BranchId);
-            // day after now
+        }
+
+        [Fact]
+        public void BookLastCheckedInIsUpdatedAfterChecking()
+        {
+            var holding = new Holding {Classification = "", CopyNumber = 1, BranchId = 1};
+            var checkedOutTime = DateTime.Now;
+            var policy = CheckoutPolicies.BookCheckoutPolicy;
+            holding.CheckOut(checkedOutTime, PatronId, policy);
+            var tomorrow = DateTime.Now.AddDays(1);
+            const int newBranchId = 2;
+
+            holding.CheckIn(tomorrow, newBranchId);
+
             Assert.Equal(tomorrow, holding.LastCheckedIn);
         }
 
