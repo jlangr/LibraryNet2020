@@ -9,10 +9,10 @@ namespace LibraryNet2020.Scanner
 {
     public class ScanStation
     {
+        public int BranchId { get; private set; }
+        public int CurrentPatronId { get; set; } = NoPatron;
         public const int NoPatron = -1;
         private readonly IClassificationService classificationService;
-        private readonly int brId;
-        private int currentPatron = NoPatron;
         private DateTime cts;
         private HoldingsService holdingsService;
         private PatronsService patronsService;
@@ -33,7 +33,6 @@ namespace LibraryNet2020.Scanner
             this.holdingsService = holdingsService;
             this.patronsService = patronsService;
             BranchId = branchId;
-            brId = BranchId;
         }
 
         public Holding AddNewHolding(string isbn)
@@ -49,13 +48,9 @@ namespace LibraryNet2020.Scanner
             return holding;
         }
 
-        public int BranchId { get; private set; }
-
-        public int CurrentPatronId => currentPatron;
-
         public void AcceptLibraryCard(int patronId)
         {
-            currentPatron = patronId;
+            CurrentPatronId = patronId;
             cts = TimeService.Now;
         }
 
@@ -68,19 +63,19 @@ namespace LibraryNet2020.Scanner
 
             if (holding.IsCheckedOut)
             {
-                if (currentPatron == NoPatron)
+                if (CurrentPatronId == NoPatron)
                 {
                     var checkInTime = TimeService.Now;
                     Material material = classificationService.Retrieve(holding.Classification);
                     var fineAmount = material.CheckoutPolicy.FineAmount(holding.CheckOutTimestamp.Value, checkInTime);
                     FineHoldingPatron(holding, fineAmount);
 
-                    holding.CheckIn(checkInTime, brId);
+                    holding.CheckIn(checkInTime, BranchId);
                     holdingsService.Update(holding);
                 }
                 else
                 {
-                    if (holding.HeldByPatronId != currentPatron) // check out book already cked-out
+                    if (holding.HeldByPatronId != CurrentPatronId) // check out book already cked-out
                     {
                         var n = TimeService.Now;
                         var f = classificationService.Retrieve(holding.Classification).CheckoutPolicy
@@ -88,9 +83,9 @@ namespace LibraryNet2020.Scanner
                         var patron = patronsService.FindById(holding.HeldByPatronId);
                         patron.Fine(f);
                         patronsService.Update(patron);
-                        holding.CheckIn(n, brId);
+                        holding.CheckIn(n, BranchId);
                         holdingsService.Update(holding);
-                        holding.CheckOut(n, currentPatron, CheckoutPolicies.BookCheckoutPolicy);
+                        holding.CheckOut(n, CurrentPatronId, CheckoutPolicies.BookCheckoutPolicy);
                         holdingsService.Update(holding);
                         // call check out controller(cur, bc1);
                     }
@@ -98,9 +93,9 @@ namespace LibraryNet2020.Scanner
             }
             else
             {
-                if (currentPatron != NoPatron) // check in book
+                if (CurrentPatronId != NoPatron) // check in book
                 {
-                    holding.CheckOut(cts, currentPatron, CheckoutPolicies.BookCheckoutPolicy);
+                    holding.CheckOut(cts, CurrentPatronId, CheckoutPolicies.BookCheckoutPolicy);
                     holdingsService.Update(holding);
                 }
                 else
@@ -117,7 +112,7 @@ namespace LibraryNet2020.Scanner
 
         public void CompleteCheckout()
         {
-            currentPatron = NoPatron;
+            CurrentPatronId = NoPatron;
         }
     }
 }
