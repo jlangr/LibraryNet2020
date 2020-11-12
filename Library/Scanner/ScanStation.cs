@@ -59,9 +59,6 @@ namespace LibraryNet2020.Scanner
             cts = TimeService.Now;
         }
 
-        // 1/19/2017: who wrote this?
-        // 
-        // FIXME. Fix this mess. We just have to SHIP IT for nwo!!!
         public void AcceptBarcode(string barCode)
         {
             var holding = holdingsService.FindByBarcode(barCode);
@@ -72,14 +69,14 @@ namespace LibraryNet2020.Scanner
                 {
                     barCode = holding.Barcode;
                     var patronId = holding.HeldByPatronId;
-                    var cis = TimeService.Now;
-                    Material m = null;
-                    m = classificationService.Retrieve(holding.Classification);
-                    var fine = m.CheckoutPolicy.FineAmount(holding.CheckOutTimestamp.Value, cis);
-                    Patron p = patronsService.FindById(patronId);
-                    p.Fine(fine);
-                    patronsService.Update(p);
-                    holding.CheckIn(cis, brId);
+                    var currentDateAndTime = TimeService.Now;
+                    Material material = null;
+                    material = classificationService.Retrieve(holding.Classification);
+                    var fine = material.CheckoutPolicy.FineAmount(holding.CheckOutTimestamp.Value, currentDateAndTime);
+                    Patron patron = patronsService.FindById(patronId);
+                    patron.Fine(fine);
+                    patronsService.Update(patron);
+                    holding.CheckIn(currentDateAndTime, brId);
                     holdingsService.Update(holding);
                 }
                 else
