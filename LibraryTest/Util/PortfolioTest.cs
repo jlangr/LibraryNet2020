@@ -8,6 +8,8 @@ namespace LibraryTest.Util
     public class PortfolioTest
     {
         private Portfolio portfolio;
+        private const decimal CurrentSharePrice = 12;
+        private const string BayerSymbol = "BAYN";
 
         public PortfolioTest()
         {
@@ -68,6 +70,14 @@ namespace LibraryTest.Util
         public void ValueIsZeroWhenPortfolioIsEmpty()
         {
             Assert.Equal(0, portfolio.Value);
+        }
+
+        [Fact]
+        public void ValueIsEqualToSharePriceAfterSingleSharePurchase()
+        {
+            portfolio.Purchase(BayerSymbol);
+
+            Assert.Equal(CurrentSharePrice, portfolio.Value);
         }
     }
 }
