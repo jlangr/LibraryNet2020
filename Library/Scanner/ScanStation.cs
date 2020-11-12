@@ -62,46 +62,43 @@ namespace LibraryNet2020.Scanner
         // 1/19/2017: who wrote this?
         // 
         // FIXME. Fix this mess. We just have to SHIP IT for nwo!!!
-        public void AcceptBarcode(string bc)
+        public void AcceptBarcode(string barCode)
         {
-            var cl = Holding.ClassificationFromBarcode(bc);
-            var cn = Holding.CopyNumberFromBarcode(bc);
-            var h = holdingsService.FindByBarcode(bc);
+            var holding = holdingsService.FindByBarcode(barCode);
 
-            if (h.IsCheckedOut)
+            if (holding.IsCheckedOut)
             {
                 if (cur == NoPatron)
                 {
-                    // ci
-                    bc = h.Barcode;
-                    var patronId = h.HeldByPatronId;
+                    barCode = holding.Barcode;
+                    var patronId = holding.HeldByPatronId;
                     var cis = TimeService.Now;
                     Material m = null;
-                    m = classificationService.Retrieve(h.Classification);
-                    var fine = m.CheckoutPolicy.FineAmount(h.CheckOutTimestamp.Value, cis);
+                    m = classificationService.Retrieve(holding.Classification);
+                    var fine = m.CheckoutPolicy.FineAmount(holding.CheckOutTimestamp.Value, cis);
                     Patron p = patronsService.FindById(patronId);
                     p.Fine(fine);
                     patronsService.Update(p);
-                    h.CheckIn(cis, brId);
-                    holdingsService.Update(h);
+                    holding.CheckIn(cis, brId);
+                    holdingsService.Update(holding);
                 }
                 else
                 {
-                    if (h.HeldByPatronId != cur) // check out book already cked-out
+                    if (holding.HeldByPatronId != cur) // check out book already cked-out
                     {
-                        var bc1 = h.Barcode;
+                        var bc1 = holding.Barcode;
                         var n = TimeService.Now;
                         var t = TimeService.Now.AddDays(21);
-                        var f = classificationService.Retrieve(h.Classification).CheckoutPolicy
-                            .FineAmount(h.CheckOutTimestamp.Value, n);
-                        var patron = patronsService.FindById(h.HeldByPatronId);
+                        var f = classificationService.Retrieve(holding.Classification).CheckoutPolicy
+                            .FineAmount(holding.CheckOutTimestamp.Value, n);
+                        var patron = patronsService.FindById(holding.HeldByPatronId);
                         patron.Fine(f);
                         patronsService.Update(patron);
-                        h.CheckIn(n, brId);
-                        holdingsService.Update(h);
+                        holding.CheckIn(n, brId);
+                        holdingsService.Update(holding);
                         // co
-                        h.CheckOut(n, cur, CheckoutPolicies.BookCheckoutPolicy);
-                        holdingsService.Update(h);
+                        holding.CheckOut(n, cur, CheckoutPolicies.BookCheckoutPolicy);
+                        holdingsService.Update(holding);
                         // call check out controller(cur, bc1);
                         t.AddDays(1);
                         n = t;
@@ -116,8 +113,8 @@ namespace LibraryNet2020.Scanner
             {
                 if (cur != NoPatron) // check in book
                 {
-                    h.CheckOut(cts, cur, CheckoutPolicies.BookCheckoutPolicy);
-                    holdingsService.Update(h);
+                    holding.CheckOut(cts, cur, CheckoutPolicies.BookCheckoutPolicy);
+                    holdingsService.Update(holding);
                 }
                 else
                     throw new CheckoutException();
