@@ -80,13 +80,16 @@ namespace LibraryNet2020.Scanner
                 {
                     if (holding.HeldByPatronId != currentPatronId) // check out book already cked-out
                     {
-                        var checkInDate = TimeService.Now;
-                        var fine = classificationService.Retrieve(holding.Classification).CheckoutPolicy.FineAmount(holding.CheckOutTimestamp.Value, checkInDate);
-                        var patron = patronsService.FindById(holding.HeldByPatronId);
-                        patron.Fine(fine);
-                        patronsService.Update(patron);
-                        holding.CheckIn(checkInDate, brId);
-                        holding.CheckOut(checkInDate, currentPatronId, CheckoutPolicies.BookCheckoutPolicy);
+                        var currentDateAndTime = TimeService.Now;
+                        Material material = classificationService.Retrieve(holding.Classification);
+                        var patron = patronsService.FindById(holding.HeldByPatronId);              
+            
+
+                        DetermineFine(holding, patron.Id, currentDateAndTime, material);
+
+
+                        holding.CheckIn(currentDateAndTime, brId);
+                        holding.CheckOut(currentDateAndTime, currentPatronId, CheckoutPolicies.BookCheckoutPolicy);
                         holdingsService.Update(holding);
                   
                     }
