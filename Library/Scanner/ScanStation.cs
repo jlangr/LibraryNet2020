@@ -60,7 +60,6 @@ namespace LibraryNet2020.Scanner
         public void AcceptBarcode(string barcode)
         {
             var holding = holdingsService.FindByBarcode(barcode);
-
             if (holding.IsCheckedOut)
             {
                 if (CurrentPatronId == NoPatron)
@@ -71,19 +70,7 @@ namespace LibraryNet2020.Scanner
                 {
                     if (holding.HeldByPatronId != CurrentPatronId) // check out book already cked-out
                     {
-                        var checkInTime = TimeService.Now;
-                        //var f = classificationService.Retrieve(holding.Classification).CheckoutPolicy
-                        //    .FineAmount(holding.CheckOutTimestamp.Value, n);
-                        //var patron = patronsService.FindById(holding.HeldByPatronId);
-                        //patron.Fine(f);
-                        //patronsService.Update(patron);
-                        //holding.CheckIn(n, BranchId);
-                        //holdingsService.Update(holding);
-
-                        CheckInMaterial(holding, checkInTime);
-                        holding.CheckOut(checkInTime, CurrentPatronId, CheckoutPolicies.BookCheckoutPolicy);
-                        holdingsService.Update(holding);
-                        // call check out controller(cur, bc1);
+                        ExchangeMaterial(holding);
                     }
                 }
             }
@@ -91,12 +78,24 @@ namespace LibraryNet2020.Scanner
             {
                 if (CurrentPatronId != NoPatron) // check in book
                 {
-                    holding.CheckOut(checkOutTimestamp, CurrentPatronId, CheckoutPolicies.BookCheckoutPolicy);
-                    holdingsService.Update(holding);
+                    CheckOutMaterial(holding, checkOutTimestamp);
                 }
                 else
                     throw new CheckoutException();
             }
+        }
+
+        private void ExchangeMaterial(Holding holding)
+        {
+            var exchangeTime = TimeService.Now;
+            CheckInMaterial(holding, exchangeTime);
+            CheckOutMaterial(holding, exchangeTime);
+        }
+
+        private void CheckOutMaterial(Holding holding, DateTime checkInTime)
+        {
+            holding.CheckOut(checkInTime, CurrentPatronId, CheckoutPolicies.BookCheckoutPolicy);
+            holdingsService.Update(holding);
         }
 
         private void CheckInMaterial(Holding holding, DateTime checkInTime)
