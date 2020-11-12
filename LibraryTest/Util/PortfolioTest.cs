@@ -129,9 +129,18 @@ namespace LibraryTest.Util
             Assert.Equal(0, portfolio.Value);
         }
 
+        public class StubStockService : StockService
+        {
+            public decimal CurrentPrice(string symbol)
+            {
+                return BaynCurrentPrice;
+            }
+        }
+
         [Fact]
         public void ValueEqualsSingleSharePurchased()
         {
+            portfolio.StockService = new StubStockService();
             portfolio.Purchase(Bayn, 1);
             Assert.Equal(BaynCurrentPrice, portfolio.Value);
         }

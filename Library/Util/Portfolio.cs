@@ -14,7 +14,7 @@ namespace LibraryTest.Util
             get
             {
                 if (IsEmpty) return 0;
-                return Holdings[Holdings.Keys.First()];
+                return StockService.CurrentPrice(Holdings.Keys.First());
                 
             }
         }
