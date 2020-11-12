@@ -63,32 +63,28 @@ namespace LibraryNet2020.Scanner
             var holding = holdingsService.FindByBarcode(barcode);
 
             var timestamp = TimeService.Now;
-            if (holding.IsCheckedOut)
+            if (InCheckinMode() && holding.IsCheckedOut)
             {
-                if (currentPatron == NoPatron)
-                {
-                    AssessLateReturnFine(holding, timestamp);
-                    CheckIn(holding, timestamp);
-                }
-                else
-                {
-                    if (IsCurrentPatronSameAsPatronWithHolding(holding))
-                    {
-                        AssessLateReturnFine(holding, timestamp);
-                        CheckIn(holding, timestamp);
-                        CheckOut(holding, timestamp, CheckoutPolicies.BookCheckoutPolicy);
-                    }
-                }
+                AssessLateReturnFine(holding, timestamp);
+                CheckIn(holding, timestamp);
             }
-            else
+            else if (InCheckoutMode() && IsCurrentPatronSameAsPatronWithHolding(holding) && holding.IsCheckedOut)
             {
-                if (InCheckoutMode())
-                {
-                    CheckOut(holding, timestamp, CheckoutPolicies.BookCheckoutPolicy);
-                }
-                else
-                    throw new CheckoutException();
+                AssessLateReturnFine(holding, timestamp);
+                CheckIn(holding, timestamp);
+                CheckOut(holding, timestamp, CheckoutPolicies.BookCheckoutPolicy);
             }
+            else if (InCheckoutMode() && !holding.IsCheckedOut)
+            {
+                CheckOut(holding, timestamp, CheckoutPolicies.BookCheckoutPolicy);
+            }
+            else if (InCheckinMode() && !holding.IsCheckedOut)
+                throw new CheckoutException();
+        }
+
+        private bool InCheckinMode()
+        {
+            return currentPatron == NoPatron;
         }
 
         private void AssessLateReturnFine(Holding holding, DateTime timestamp)
