@@ -64,28 +64,34 @@ namespace LibraryNet2020.Scanner
 
             var timestamp = TimeService.Now;
             if (InCheckinMode())
-            {
-                if (holding.IsCheckedOut)
-                {
-                    AssessLateReturnFine(holding, timestamp);
-                    CheckIn(holding, timestamp);
-                }
-                else
-                    throw new CheckoutException();
-            }
+                HandleCheckin(holding, timestamp);
             else if (InCheckoutMode())
+                HandleCheckout(holding, timestamp);
+        }
+
+        private void HandleCheckout(Holding holding, DateTime timestamp)
+        {
+            if (IsCurrentPatronSameAsPatronWithHolding(holding) && holding.IsCheckedOut)
             {
-                if (IsCurrentPatronSameAsPatronWithHolding(holding) && holding.IsCheckedOut)
-                {
-                    AssessLateReturnFine(holding, timestamp);
-                    CheckIn(holding, timestamp);
-                    CheckOut(holding, timestamp, CheckoutPolicies.BookCheckoutPolicy);
-                }
-                else if (!holding.IsCheckedOut)
-                {
-                    CheckOut(holding, timestamp, CheckoutPolicies.BookCheckoutPolicy);
-                }
+                AssessLateReturnFine(holding, timestamp);
+                CheckIn(holding, timestamp);
+                CheckOut(holding, timestamp, CheckoutPolicies.BookCheckoutPolicy);
             }
+            else if (!holding.IsCheckedOut)
+            {
+                CheckOut(holding, timestamp, CheckoutPolicies.BookCheckoutPolicy);
+            }
+        }
+
+        private void HandleCheckin(Holding holding, DateTime timestamp)
+        {
+            if (holding.IsCheckedOut)
+            {
+                AssessLateReturnFine(holding, timestamp);
+                CheckIn(holding, timestamp);
+            }
+            else
+                throw new CheckoutException();
         }
 
         private bool InCheckinMode()
