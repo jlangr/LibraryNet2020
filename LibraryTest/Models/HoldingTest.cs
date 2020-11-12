@@ -145,6 +145,30 @@ namespace LibraryTest.Models
             Assert.True(holding.IsCheckedOut);
         }
 
+        [Fact]
+        public void VerifyWhenPolicyIdIsMatching()
+        {
+            var holding = new Holding { Classification = "", CopyNumber = 1, BranchId = 1 };
+            var now = DateTime.Now;
+
+            var policy = CheckoutPolicies.BookCheckoutPolicy;
+            holding.CheckOut(now, PatronId, policy);
+
+            Assert.Equal(policy.Id, holding.CheckoutPolicy.Id);
+        }
+
+        [Fact]
+        public void VerifyWhenPatronIdIsMatching()
+        {
+            var holding = new Holding { Classification = "", CopyNumber = 1, BranchId = 1 };
+            var now = DateTime.Now;
+
+            var policy = CheckoutPolicies.BookCheckoutPolicy;
+            holding.CheckOut(now, PatronId, policy);
+
+            Assert.Equal(PatronId, holding.HeldByPatronId);
+        }
+
 
         [Fact]
         public void Co()
