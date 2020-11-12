@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Moq;
 using Xunit;
 namespace LibraryTest.Util
 {
@@ -73,25 +74,12 @@ namespace LibraryTest.Util
             Assert.Equal(0, portfolio.GetPortfolioValue());
         }
 
-        public class MockStockPriceService : IStockPriceService
-        {
-            public decimal GetPrice(string symbol)
-            {
-                if (symbol == BayerSymbol)
-                {
-                    return CurrentBayerSharePrice;
-                }
-                else
-                {
-                    return CurrentOtherSharePrice;
-                }
-            }
-        }
-
         [Fact]
         public void ValueIsEqualToSharePriceAfterSingleSharePurchase()
         {
-            portfolio.StockPriceService = new MockStockPriceService();
+            var mockService = new Mock<IStockPriceService>();
+            mockService.Setup(x => x.GetPrice(It.IsAny<string>())).Returns(CurrentBayerSharePrice);
+            portfolio.StockPriceService = mockService.Object;
 
             portfolio.Purchase(BayerSymbol, 1);
 
@@ -101,7 +89,9 @@ namespace LibraryTest.Util
         [Fact]
         public void ValueContainsTotalWhenMultipleSharesPurchased()
         {
-            portfolio.StockPriceService = new MockStockPriceService();
+            var mockService = new Mock<IStockPriceService>();
+            mockService.Setup(x => x.GetPrice(It.IsAny<string>())).Returns(CurrentBayerSharePrice);
+            portfolio.StockPriceService = mockService.Object;
 
             portfolio.Purchase(BayerSymbol, 2);
 
@@ -111,7 +101,9 @@ namespace LibraryTest.Util
         [Fact]
         public void ValueContainsTotalAfterMultiplePurchases()
         {
-            portfolio.StockPriceService = new MockStockPriceService();
+            var mockService = new Mock<IStockPriceService>();
+            mockService.Setup(x => x.GetPrice(It.IsAny<string>())).Returns(CurrentBayerSharePrice);
+            portfolio.StockPriceService = mockService.Object;
 
             portfolio.Purchase(BayerSymbol, 2);
             portfolio.Purchase(BayerSymbol, 2);
@@ -122,7 +114,10 @@ namespace LibraryTest.Util
         [Fact]
         public void ValueContainsTotalAfterDifferentSymbolsPurchased()
         {
-            portfolio.StockPriceService = new MockStockPriceService();
+            var mockService = new Mock<IStockPriceService>();
+            mockService.Setup(x => x.GetPrice(BayerSymbol)).Returns(CurrentBayerSharePrice);
+            mockService.Setup(x => x.GetPrice(BayerSymbol + "other")).Returns(CurrentOtherSharePrice);
+            portfolio.StockPriceService = mockService.Object;
 
             portfolio.Purchase(BayerSymbol, 2);
             portfolio.Purchase(BayerSymbol + "other", 2);
@@ -130,5 +125,13 @@ namespace LibraryTest.Util
             var expectedTotal = CurrentBayerSharePrice * 2 + CurrentOtherSharePrice * 2;
             Assert.Equal(expectedTotal, portfolio.GetPortfolioValue());
         }
+
+        //[Fact]
+        //public void ThrowsWhenSellingStockNotOwned()
+        //{
+        //    portfolio.StockPriceService = new MockStockPriceService();
+
+        //    Assert.Throws<Exception>(() => portfolio.Sell(BayerSymbol, 1));
+        //}
     }
 }
