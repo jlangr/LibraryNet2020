@@ -8,7 +8,8 @@ namespace LibraryTest.Util
     public class PortfolioTest
     {
         private Portfolio portfolio;
-        private const decimal CurrentSharePrice = 12;
+        private const decimal CurrentBayerSharePrice = 12;
+        private const decimal CurrentOtherSharePrice = 13;
         private const string BayerSymbol = "BAYN";
 
         public PortfolioTest()
@@ -76,7 +77,14 @@ namespace LibraryTest.Util
         {
             public decimal GetPrice(string symbol)
             {
-                return CurrentSharePrice;
+                if (symbol == BayerSymbol)
+                {
+                    return CurrentBayerSharePrice;
+                }
+                else
+                {
+                    return CurrentOtherSharePrice;
+                }
             }
         }
 
@@ -87,7 +95,7 @@ namespace LibraryTest.Util
 
             portfolio.Purchase(BayerSymbol, 1);
 
-            Assert.Equal(CurrentSharePrice, portfolio.GetPortfolioValue());
+            Assert.Equal(CurrentBayerSharePrice, portfolio.GetPortfolioValue());
         }
 
         [Fact]
@@ -95,11 +103,12 @@ namespace LibraryTest.Util
         {
             portfolio.StockPriceService = new MockStockPriceService();
 
-            portfolio.Purchase(BayerSymbol, 2);            
+            portfolio.Purchase(BayerSymbol, 2);
 
-            Assert.Equal(CurrentSharePrice * 2, portfolio.GetPortfolioValue());
+            Assert.Equal(CurrentBayerSharePrice * 2, portfolio.GetPortfolioValue());
         }
-        [Fact]      
+
+        [Fact]
         public void ValueContainsTotalAfterMultiplePurchases()
         {
             portfolio.StockPriceService = new MockStockPriceService();
@@ -107,7 +116,19 @@ namespace LibraryTest.Util
             portfolio.Purchase(BayerSymbol, 2);
             portfolio.Purchase(BayerSymbol, 2);
 
-            Assert.Equal(CurrentSharePrice * 4, portfolio.GetPortfolioValue());
+            Assert.Equal(CurrentBayerSharePrice * 4, portfolio.GetPortfolioValue());
         }
-    }    
+
+        [Fact]
+        public void ValueContainsTotalAfterDifferentSymbolsPurchased()
+        {
+            portfolio.StockPriceService = new MockStockPriceService();
+
+            portfolio.Purchase(BayerSymbol, 2);
+            portfolio.Purchase(BayerSymbol + "other", 2);
+
+            var expectedTotal = CurrentBayerSharePrice * 2 + CurrentOtherSharePrice * 2;
+            Assert.Equal(expectedTotal, portfolio.GetPortfolioValue());
+        }
+    }
 }
