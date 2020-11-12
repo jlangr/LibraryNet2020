@@ -72,12 +72,24 @@ namespace LibraryTest.Util
             Assert.Equal(0, portfolio.Value);
         }
 
+        public class MockStockPriceService : IStockPriceService
+        {
+            public decimal GetPrice(string symbol)
+            {
+                return CurrentSharePrice;
+            }
+        }
+
         [Fact]
         public void ValueIsEqualToSharePriceAfterSingleSharePurchase()
         {
+            portfolio.StockPriceService = new MockStockPriceService();
             portfolio.Purchase(BayerSymbol);
 
             Assert.Equal(CurrentSharePrice, portfolio.Value);
         }
+
+
     }
+    
 }

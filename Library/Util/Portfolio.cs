@@ -10,13 +10,19 @@ namespace LibraryNet2020.Util
 
         public int Count => symbols.Count;
 
-        public int Value => 0;
+        public decimal Value => StockPriceService.GetPrice(symbols.First());
 
         private HashSet<string> symbols = new HashSet<string>();
+
+        public IStockPriceService StockPriceService { get; set; }
 
         public void Purchase(string symbol = "")
         {
             symbols.Add(symbol);
         }
+    }
+    public interface IStockPriceService
+    {
+        decimal GetPrice(string symbol);
     }
 }
