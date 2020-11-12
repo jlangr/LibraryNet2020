@@ -62,18 +62,16 @@ namespace LibraryNet2020.Scanner
         // 1/19/2017: who wrote this?
         // 
         // FIXME. Fix this mess. We just have to SHIP IT for nwo!!!
-        public void AcceptBarcode(string bc)
+        public void AcceptBarcode(string barcode)
         {
-            var cl = Holding.ClassificationFromBarcode(bc);
-            var cn = Holding.CopyNumberFromBarcode(bc);
-            var h = holdingsService.FindByBarcode(bc);
+            var h = holdingsService.FindByBarcode(barcode);
 
             if (h.IsCheckedOut)
             {
                 if (cur == NoPatron)
                 {
                     // ci
-                    bc = h.Barcode;
+                    barcode = h.Barcode;
                     var patronId = h.HeldByPatronId;
                     var cis = TimeService.Now;
                     Material m = null;
