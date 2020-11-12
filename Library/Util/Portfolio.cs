@@ -9,6 +9,7 @@ namespace LibraryTest.Util
         public bool IsEmpty => Size == 0;
 
         public int Size => Holdings.Keys.Count;
+        public decimal Value => 0;
 
         public int Shares(string symbol) => !Holdings.ContainsKey(symbol) ? 0 : Holdings[symbol];
 

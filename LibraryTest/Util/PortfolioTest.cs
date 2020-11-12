@@ -123,7 +123,13 @@ namespace LibraryTest.Util
             Assert.Equal(0, portfolio.Size);
         }
 
+        [Fact]
+        public void ValueZeroWhenPortfolioIsEmpty()
+        {
+            Assert.Equal(0, portfolio.Value);
+        }
 
-       
+
+
     }
 }
