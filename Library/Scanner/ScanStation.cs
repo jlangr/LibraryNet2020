@@ -63,23 +63,29 @@ namespace LibraryNet2020.Scanner
             var holding = holdingsService.FindByBarcode(barcode);
 
             var timestamp = TimeService.Now;
-            if (InCheckinMode() && holding.IsCheckedOut)
+            if (InCheckinMode())
             {
-                AssessLateReturnFine(holding, timestamp);
-                CheckIn(holding, timestamp);
+                if (holding.IsCheckedOut)
+                {
+                    AssessLateReturnFine(holding, timestamp);
+                    CheckIn(holding, timestamp);
+                }
+                else
+                    throw new CheckoutException();
             }
-            else if (InCheckoutMode() && IsCurrentPatronSameAsPatronWithHolding(holding) && holding.IsCheckedOut)
+            else if (InCheckoutMode())
             {
-                AssessLateReturnFine(holding, timestamp);
-                CheckIn(holding, timestamp);
-                CheckOut(holding, timestamp, CheckoutPolicies.BookCheckoutPolicy);
+                if (IsCurrentPatronSameAsPatronWithHolding(holding) && holding.IsCheckedOut)
+                {
+                    AssessLateReturnFine(holding, timestamp);
+                    CheckIn(holding, timestamp);
+                    CheckOut(holding, timestamp, CheckoutPolicies.BookCheckoutPolicy);
+                }
+                else if (!holding.IsCheckedOut)
+                {
+                    CheckOut(holding, timestamp, CheckoutPolicies.BookCheckoutPolicy);
+                }
             }
-            else if (InCheckoutMode() && !holding.IsCheckedOut)
-            {
-                CheckOut(holding, timestamp, CheckoutPolicies.BookCheckoutPolicy);
-            }
-            else if (InCheckinMode() && !holding.IsCheckedOut)
-                throw new CheckoutException();
         }
 
         private bool InCheckinMode()
