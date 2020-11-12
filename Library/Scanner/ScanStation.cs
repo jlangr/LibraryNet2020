@@ -65,21 +65,23 @@ namespace LibraryNet2020.Scanner
             {
                 if (CurrentPatronId == NoPatron)
                 {
-                    CheckInMaterial(holding);
+                    CheckInMaterial(holding, TimeService.Now);
                 }
                 else
                 {
                     if (holding.HeldByPatronId != CurrentPatronId) // check out book already cked-out
                     {
-                        var n = TimeService.Now;
-                        var f = classificationService.Retrieve(holding.Classification).CheckoutPolicy
-                            .FineAmount(holding.CheckOutTimestamp.Value, n);
-                        var patron = patronsService.FindById(holding.HeldByPatronId);
-                        patron.Fine(f);
-                        patronsService.Update(patron);
-                        holding.CheckIn(n, BranchId);
-                        holdingsService.Update(holding);
-                        holding.CheckOut(n, CurrentPatronId, CheckoutPolicies.BookCheckoutPolicy);
+                        var checkInTime = TimeService.Now;
+                        //var f = classificationService.Retrieve(holding.Classification).CheckoutPolicy
+                        //    .FineAmount(holding.CheckOutTimestamp.Value, n);
+                        //var patron = patronsService.FindById(holding.HeldByPatronId);
+                        //patron.Fine(f);
+                        //patronsService.Update(patron);
+                        //holding.CheckIn(n, BranchId);
+                        //holdingsService.Update(holding);
+
+                        CheckInMaterial(holding, checkInTime);
+                        holding.CheckOut(checkInTime, CurrentPatronId, CheckoutPolicies.BookCheckoutPolicy);
                         holdingsService.Update(holding);
                         // call check out controller(cur, bc1);
                     }
@@ -97,11 +99,9 @@ namespace LibraryNet2020.Scanner
             }
         }
 
-        private void CheckInMaterial(Holding holding)
+        private void CheckInMaterial(Holding holding, DateTime checkInTime)
         {
-            var checkInTime = TimeService.Now;                       
             FineHoldingPatron(holding, checkInTime);
-
             holding.CheckIn(checkInTime, BranchId);
             holdingsService.Update(holding);
         }
