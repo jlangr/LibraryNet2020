@@ -145,5 +145,13 @@ namespace LibraryTest.Util
             Assert.Equal(BaynCurrentPrice, portfolio.Value);
         }
 
+        [Fact]
+        public void ValueEqualsMultipleSharesOfSingleSymbol()
+        {
+            portfolio.StockService = new StubStockService();
+            portfolio.Purchase(Bayn, 10);
+            Assert.Equal(BaynCurrentPrice*10, portfolio.Value);
+        }
+
     }
 }
