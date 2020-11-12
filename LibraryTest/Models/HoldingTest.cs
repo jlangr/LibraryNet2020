@@ -130,11 +130,35 @@ namespace LibraryTest.Models
         {
             var holding = new Holding { Classification = "", CopyNumber = 1, BranchId = 1 };
             var checkedOutTime = DateTime.Now;
-
             var policy = CheckoutPolicies.BookCheckoutPolicy;
+
             holding.CheckOut(checkedOutTime, PatronId, policy);
 
             Assert.True(holding.IsCheckedOut);
+        }
+
+        [Fact]
+        public void BookIsCheckedOutWithCorrectCheckoutPolicy()
+        {
+            var holding = new Holding { Classification = "", CopyNumber = 1, BranchId = 1 };
+            var checkedOutTime = DateTime.Now;
+            var policy = CheckoutPolicies.BookCheckoutPolicy;
+
+            holding.CheckOut(checkedOutTime, PatronId, policy);
+
+            Assert.Equal(policy.Id, holding.CheckoutPolicy.Id);
+        }
+
+        [Fact]
+        public void BookIsCheckedOutWithCorrectPatron()
+        {
+            var holding = new Holding { Classification = "", CopyNumber = 1, BranchId = 1 };
+            var checkedOutTime = DateTime.Now;
+            var policy = CheckoutPolicies.BookCheckoutPolicy;
+
+            holding.CheckOut(checkedOutTime, PatronId, policy);
+
+            Assert.Equal(PatronId, holding.HeldByPatronId);
         }
 
         [Fact]
@@ -144,12 +168,8 @@ namespace LibraryTest.Models
             var checkedOutTime = DateTime.Now;
 
             var policy = CheckoutPolicies.BookCheckoutPolicy;
-            holding.CheckOut(checkedOutTime, PatronId, policy);
-
-            Assert.True(holding.IsCheckedOut);
-
-            Assert.Equal(policy.Id, holding.CheckoutPolicy.Id);
-            Assert.Equal(PatronId, holding.HeldByPatronId);
+            holding.CheckOut(checkedOutTime, PatronId, policy);                                 
+            
 
             var dueDate = checkedOutTime.AddDays(policy.MaximumCheckoutDays());
             Assert.Equal(dueDate, holding.DueDate);
