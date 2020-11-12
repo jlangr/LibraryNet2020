@@ -162,25 +162,60 @@ namespace LibraryTest.Models
         }
 
         [Fact]
+        public void BookIsCheckedOutWithCorrectDueDate()
+        {
+            var holding = new Holding { Classification = "", CopyNumber = 1, BranchId = 1 };
+            var checkedOutTime = DateTime.Now;
+            var policy = CheckoutPolicies.BookCheckoutPolicy;
+
+            holding.CheckOut(checkedOutTime, PatronId, policy);
+
+            var dueDate = checkedOutTime.AddDays(policy.MaximumCheckoutDays());
+            Assert.Equal(dueDate, holding.DueDate);
+        }
+
+        [Fact]
+        public void BookIsCheckedOutWithCorrectBranch()
+        {
+            var holding = new Holding { Classification = "", CopyNumber = 1, BranchId = 1 };
+            var checkedOutTime = DateTime.Now;
+            var policy = CheckoutPolicies.BookCheckoutPolicy;
+
+            holding.CheckOut(checkedOutTime, PatronId, policy);
+
+            Assert.Equal(Branch.CheckedOutId, holding.BranchId);
+        }
+
+        [Fact]
+        public void BookIsNotCheckedOutAfterCheckIn()
+        {
+            var holding = new Holding { Classification = "", CopyNumber = 1, BranchId = 1 };
+            var checkedOutTime = DateTime.Now;
+            var policy = CheckoutPolicies.BookCheckoutPolicy;
+            holding.CheckOut(checkedOutTime, PatronId, policy);
+            var tomorrow = DateTime.Now.AddDays(1);
+            const int newBranchId = 2;
+
+            holding.CheckIn(tomorrow, newBranchId);
+
+            Assert.False(holding.IsCheckedOut);
+        }
+
+        [Fact]
         public void Co()
         {
             var holding = new Holding {Classification = "", CopyNumber = 1, BranchId = 1};
             var checkedOutTime = DateTime.Now;
 
             var policy = CheckoutPolicies.BookCheckoutPolicy;
-            holding.CheckOut(checkedOutTime, PatronId, policy);                                 
-            
+            holding.CheckOut(checkedOutTime, PatronId, policy);
 
-            var dueDate = checkedOutTime.AddDays(policy.MaximumCheckoutDays());
-            Assert.Equal(dueDate, holding.DueDate);
-
-            Assert.Equal(Branch.CheckedOutId, holding.BranchId);
-            
             // checking in
             var tomorrow = DateTime.Now.AddDays(1);
             const int newBranchId = 2;
+
             holding.CheckIn(tomorrow, newBranchId);
-            Assert.False(holding.IsCheckedOut);
+
             Assert.Equal(Holding.NoPatron, holding.HeldByPatronId);
             Assert.Null(holding.CheckOutTimestamp);
             Assert.Equal(newBranchId, holding.BranchId);
