@@ -67,7 +67,6 @@ namespace LibraryNet2020.Scanner
             {
                 if (cur == NoPatron)
                 {
-                    barCode = holding.Barcode;
                     var patronId = holding.HeldByPatronId;
                     var currentDateAndTime = TimeService.Now;
                     Material material = null;
@@ -83,22 +82,17 @@ namespace LibraryNet2020.Scanner
                 {
                     if (holding.HeldByPatronId != cur) // check out book already cked-out
                     {
-                        var bc1 = holding.Barcode;
-                        var n = TimeService.Now;
-                        var t = TimeService.Now.AddDays(21);
-                        var f = classificationService.Retrieve(holding.Classification).CheckoutPolicy
-                            .FineAmount(holding.CheckOutTimestamp.Value, n);
+                        var checkInDate = TimeService.Now;
+                        var fine = classificationService.Retrieve(holding.Classification).CheckoutPolicy
+                            .FineAmount(holding.CheckOutTimestamp.Value, checkInDate);
                         var patron = patronsService.FindById(holding.HeldByPatronId);
-                        patron.Fine(f);
+                        patron.Fine(fine);
                         patronsService.Update(patron);
-                        holding.CheckIn(n, brId);
+                        holding.CheckIn(checkInDate, brId);
                         holdingsService.Update(holding);
-                        // co
-                        holding.CheckOut(n, cur, CheckoutPolicies.BookCheckoutPolicy);
+                        holding.CheckOut(checkInDate, cur, CheckoutPolicies.BookCheckoutPolicy);
                         holdingsService.Update(holding);
-                        // call check out controller(cur, bc1);
-                        t.AddDays(1);
-                        n = t;
+                  
                     }
                     else // not checking out book already cked out by other patron
                     {
