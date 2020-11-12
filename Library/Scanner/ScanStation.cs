@@ -71,9 +71,8 @@ namespace LibraryNet2020.Scanner
 
         private void HandleCheckout(Holding holding, DateTime timestamp)
         {
-            if (IsCurrentPatronSameAsPatronWithHolding(holding) && holding.IsCheckedOut)
+            if (holding.IsCheckedOut && IsCurrentPatronSameAsPatronWithHolding(holding))
             {
-                AssessLateReturnFine(holding, timestamp);
                 CheckIn(holding, timestamp);
                 CheckOut(holding, timestamp, CheckoutPolicies.BookCheckoutPolicy);
             }
@@ -87,7 +86,6 @@ namespace LibraryNet2020.Scanner
         {
             if (holding.IsCheckedOut)
             {
-                AssessLateReturnFine(holding, timestamp);
                 CheckIn(holding, timestamp);
             }
             else
@@ -108,6 +106,7 @@ namespace LibraryNet2020.Scanner
 
         private void CheckIn(Holding holding, DateTime timestamp)
         {
+            AssessLateReturnFine(holding, timestamp);
             holding.CheckIn(timestamp, scannerBranchId);
             holdingsService.Update(holding);
         }
