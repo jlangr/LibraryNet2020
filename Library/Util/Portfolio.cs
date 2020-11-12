@@ -24,15 +24,15 @@ namespace LibraryNet2020.Util
 
         public IStockPriceService StockPriceService { get; set; }
 
-        public void Purchase(string symbol = "")
+        public void Purchase(string symbol, int numberOfShares)
         {
             if (holdings.ContainsKey(symbol))
             {
-                holdings[symbol]++;
+                holdings[symbol] += numberOfShares;
             }
             else
             {
-                holdings.Add(symbol, 1);
+                holdings.Add(symbol, numberOfShares);
             }
         }
     }

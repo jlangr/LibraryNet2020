@@ -25,7 +25,7 @@ namespace LibraryTest.Util
         [Fact]
         public void IsNoLongerEmptyAfterPurchase()
         {
-            portfolio.Purchase();
+            portfolio.Purchase("yolo", 1);
 
             Assert.False(portfolio.IsEmpty);
         }
@@ -39,7 +39,7 @@ namespace LibraryTest.Util
         [Fact]
         public void SymbolCountIsNotZeroAfterPurchase()
         {
-            portfolio.Purchase();
+            portfolio.Purchase("yolo", 1);
 
             Assert.NotEqual(0, portfolio.Count);
         }
@@ -47,10 +47,10 @@ namespace LibraryTest.Util
         [Fact]
         public void SymbolCountIncrementsWithPurchaseOfUniqueSymbol()
         {
-            portfolio.Purchase("yolo");
+            portfolio.Purchase("yolo", 1);
             var countBeforeUniquePurchase = portfolio.Count;
 
-            portfolio.Purchase("notyolo");
+            portfolio.Purchase("notyolo", 1);
 
             Assert.Equal(countBeforeUniquePurchase + 1, portfolio.Count);
         }
@@ -58,10 +58,10 @@ namespace LibraryTest.Util
         [Fact]
         public void SymbolCountDoesNotIncrementWithPurchaseOfSameSymbol()
         {
-            portfolio.Purchase("yolo");
+            portfolio.Purchase("yolo", 1);
             var countBeforeUniquePurchase = portfolio.Count;
 
-            portfolio.Purchase("yolo");
+            portfolio.Purchase("yolo", 1);
 
             Assert.Equal(countBeforeUniquePurchase, portfolio.Count);
         }
@@ -85,7 +85,7 @@ namespace LibraryTest.Util
         {
             portfolio.StockPriceService = new MockStockPriceService();
 
-            portfolio.Purchase(BayerSymbol);
+            portfolio.Purchase(BayerSymbol, 1);
 
             Assert.Equal(CurrentSharePrice, portfolio.GetPortfolioValue());
         }
@@ -95,10 +95,19 @@ namespace LibraryTest.Util
         {
             portfolio.StockPriceService = new MockStockPriceService();
 
-            portfolio.Purchase(BayerSymbol);
-            portfolio.Purchase(BayerSymbol);
+            portfolio.Purchase(BayerSymbol, 2);            
 
             Assert.Equal(CurrentSharePrice * 2, portfolio.GetPortfolioValue());
+        }
+        [Fact]      
+        public void ValueContainsTotalAfterMultiplePurchases()
+        {
+            portfolio.StockPriceService = new MockStockPriceService();
+
+            portfolio.Purchase(BayerSymbol, 2);
+            portfolio.Purchase(BayerSymbol, 2);
+
+            Assert.Equal(CurrentSharePrice * 4, portfolio.GetPortfolioValue());
         }
     }    
 }
