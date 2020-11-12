@@ -193,6 +193,15 @@ namespace LibraryTest.Models
             Assert.Equal(Branch.CheckedOutId, holding.BranchId);
         }
 
+        [Fact]
+        public void verifyBranchId()
+        {
+            var holding = new Holding { Classification = "", CopyNumber = 1, BranchId = 1 };
+            var tomorrow = DateTime.Now.AddDays(1);
+            const int newBranchId = 2;
+            holding.CheckIn(tomorrow, newBranchId);
+        }
+
 
         [Fact]
         public void Co()
