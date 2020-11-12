@@ -44,11 +44,6 @@ namespace LibraryTest.Util
             if (Shares(symbol) < shares) throw new ArgumentException();
         }
 
-        public decimal Value =>
-            Holdings.Aggregate(0m, (total, holding) =>
-            {
-                var (symbol, shares) = holding;
-                return total + StockService.CurrentPrice(symbol) * shares;
-            });
+
     }
 }

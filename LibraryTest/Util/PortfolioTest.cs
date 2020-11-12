@@ -123,45 +123,7 @@ namespace LibraryTest.Util
             Assert.Equal(0, portfolio.Size);
         }
 
-        [Fact]
-        public void ValueIsZeroOnCreation()
-        {
-            Assert.Equal(0, portfolio.Value);
-        }
 
-        class StubStockService : StockService
-        {
-            // oh no not a stub!
-            public decimal CurrentPrice(string symbol) => 
-                symbol == Bayn ? BaynCurrentPrice : IbmCurrentPrice;
-        }
-
-        [Fact]
-        public void ValueIsSharePriceAfterSingleSharePurchase()
-        {
-            portfolio.StockService = new StubStockService();
-            portfolio.Purchase(Bayn, 1);
-            
-            Assert.Equal(BaynCurrentPrice, portfolio.Value);
-        }
-
-        [Fact]
-        public void ValueMultipliesPriceByShareCount()
-        {
-            portfolio.StockService = new StubStockService();
-            portfolio.Purchase(Bayn, 10);
-            
-            Assert.Equal(BaynCurrentPrice * 10, portfolio.Value);
-        }
-
-        [Fact]
-        public void ValueAccumulatesAllSymbolValues()
-        {
-            portfolio.StockService = new StubStockService();
-            portfolio.Purchase(Bayn, 10);
-            portfolio.Purchase(Ibm, 20);
-            
-            Assert.Equal((BaynCurrentPrice * 10) + (IbmCurrentPrice * 20), portfolio.Value);
-        }
+       
     }
 }
