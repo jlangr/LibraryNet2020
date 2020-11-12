@@ -13,45 +13,40 @@ namespace LibraryNet2020.Scanner
         private readonly IClassificationService classificationService;
         private readonly int scannerBranchId;
         private int currentPatron = NoPatron;
-        private DateTime cts;
-        private HoldingsService holdingsService;
-        private PatronsService patronsService;
+        private readonly HoldingsService holdingsService;
+        private readonly PatronsService patronsService;
 
-        public ScanStation(LibraryContext context, int branchId)
-            : this(context,
-                branchId,
-                new MasterClassificationService(),
-                new HoldingsService(context),
-                new PatronsService(context))
-        {
-        }
-
-        public ScanStation(LibraryContext _context, int branchId, IClassificationService classificationService,
+        public ScanStation(LibraryContext context, int branchId, IClassificationService classificationService,
             HoldingsService holdingsService, PatronsService patronsService)
         {
             this.classificationService = classificationService;
             this.holdingsService = holdingsService;
             this.patronsService = patronsService;
             BranchId = branchId;
-            this.scannerBranchId = BranchId;
+            scannerBranchId = BranchId;
         }
 
-        public Holding AddNewHolding(string isbn)
+        public void AddNewHolding(string isbn)
         {
             var classification = classificationService.Classification(isbn);
-            var holding = new Holding
+            holdingsService.Add(new Holding
             {
                 Classification = classification,
                 CopyNumber = holdingsService.NextAvailableCopyNumber(classification),
                 BranchId = BranchId
-            };
-            holdingsService.Add(holding);
-            return holding;
+            });
+        }
+
+        public void CompleteCheckout()
+        {
+            currentPatron = NoPatron;
         }
 
         public int BranchId { get; }
 
         public int CurrentPatronId => currentPatron;
+
+        private bool InCheckinMode() => currentPatron == NoPatron;
 
         public void AcceptLibraryCard(int patronId)
         {
@@ -61,12 +56,10 @@ namespace LibraryNet2020.Scanner
         public void AcceptBarcode(string barcode)
         {
             var holding = holdingsService.FindByBarcode(barcode);
-
-            var timestamp = TimeService.Now;
             if (InCheckinMode())
-                HandleCheckin(holding, timestamp);
-            else if (InCheckoutMode())
-                HandleCheckout(holding, timestamp);
+                HandleCheckin(holding, TimeService.Now);
+            else
+                HandleCheckout(holding, TimeService.Now);
         }
 
         private void HandleCheckout(Holding holding, DateTime timestamp)
@@ -76,25 +69,16 @@ namespace LibraryNet2020.Scanner
                 CheckIn(holding, timestamp);
                 CheckOut(holding, timestamp, CheckoutPolicies.BookCheckoutPolicy);
             }
-            else if (!holding.IsCheckedOut)
-            {
+            else
                 CheckOut(holding, timestamp, CheckoutPolicies.BookCheckoutPolicy);
-            }
         }
 
         private void HandleCheckin(Holding holding, DateTime timestamp)
         {
             if (holding.IsCheckedOut)
-            {
                 CheckIn(holding, timestamp);
-            }
             else
                 throw new CheckoutException();
-        }
-
-        private bool InCheckinMode()
-        {
-            return currentPatron == NoPatron;
         }
 
         private void AssessLateReturnFine(Holding holding, DateTime timestamp)
@@ -117,11 +101,6 @@ namespace LibraryNet2020.Scanner
             holdingsService.Update(holding);
         }
 
-        private bool InCheckoutMode()
-        {
-            return currentPatron != NoPatron;
-        }
-
         private decimal FineAmount(Holding holding, DateTime timestamp)
         {
             var material = classificationService.Retrieve(holding.Classification);
@@ -131,11 +110,6 @@ namespace LibraryNet2020.Scanner
         private bool IsCurrentPatronSameAsPatronWithHolding(Holding h)
         {
             return h.HeldByPatronId != currentPatron;
-        }
-
-        public void CompleteCheckout()
-        {
-            currentPatron = NoPatron;
         }
     }
 }
