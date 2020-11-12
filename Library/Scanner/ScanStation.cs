@@ -11,8 +11,8 @@ namespace LibraryNet2020.Scanner
     {
         public const int NoPatron = -1;
         private readonly IClassificationService classificationService;
-        private readonly int brId;
-        private int cur = NoPatron;
+        private readonly int scannerBranchId;
+        private int currentPatron = NoPatron;
         private DateTime cts;
         private HoldingsService holdingsService;
         private PatronsService patronsService;
@@ -33,7 +33,7 @@ namespace LibraryNet2020.Scanner
             this.holdingsService = holdingsService;
             this.patronsService = patronsService;
             BranchId = branchId;
-            brId = BranchId;
+            this.scannerBranchId = BranchId;
         }
 
         public Holding AddNewHolding(string isbn)
@@ -49,84 +49,86 @@ namespace LibraryNet2020.Scanner
             return holding;
         }
 
-        public int BranchId { get; private set; }
+        public int BranchId { get; }
 
-        public int CurrentPatronId => cur;
+        public int CurrentPatronId => currentPatron;
 
         public void AcceptLibraryCard(int patronId)
         {
-            cur = patronId;
-            cts = TimeService.Now;
+            currentPatron = patronId;
         }
 
-        // 1/19/2017: who wrote this?
-        // 
-        // FIXME. Fix this mess. We just have to SHIP IT for nwo!!!
-        public void AcceptBarcode(string bc)
+        public void AcceptBarcode(string barcode)
         {
-            var cl = Holding.ClassificationFromBarcode(bc);
-            var cn = Holding.CopyNumberFromBarcode(bc);
-            var h = holdingsService.FindByBarcode(bc);
+            var holding = holdingsService.FindByBarcode(barcode);
 
-            if (h.IsCheckedOut)
+            var timestamp = TimeService.Now;
+            if (holding.IsCheckedOut)
             {
-                if (cur == NoPatron)
+                if (currentPatron == NoPatron)
                 {
-                    // ci
-                    bc = h.Barcode;
-                    var patronId = h.HeldByPatronId;
-                    var cis = TimeService.Now;
-                    Material m = null;
-                    m = classificationService.Retrieve(h.Classification);
-                    var fine = m.CheckoutPolicy.FineAmount(h.CheckOutTimestamp.Value, cis);
-                    Patron p = patronsService.FindById(patronId);
-                    p.Fine(fine);
-                    patronsService.Update(p);
-                    h.CheckIn(cis, brId);
-                    holdingsService.Update(h);
+                    AssessLateReturnFine(holding, timestamp);
+                    CheckIn(holding, timestamp);
                 }
                 else
                 {
-                    if (h.HeldByPatronId != cur) // check out book already cked-out
+                    if (IsCurrentPatronSameAsPatronWithHolding(holding))
                     {
-                        var bc1 = h.Barcode;
-                        var n = TimeService.Now;
-                        var t = TimeService.Now.AddDays(21);
-                        var f = classificationService.Retrieve(h.Classification).CheckoutPolicy
-                            .FineAmount(h.CheckOutTimestamp.Value, n);
-                        var patron = patronsService.FindById(h.HeldByPatronId);
-                        patron.Fine(f);
-                        patronsService.Update(patron);
-                        h.CheckIn(n, brId);
-                        holdingsService.Update(h);
-                        // co
-                        h.CheckOut(n, cur, CheckoutPolicies.BookCheckoutPolicy);
-                        holdingsService.Update(h);
-                        // call check out controller(cur, bc1);
-                        t.AddDays(1);
-                        n = t;
-                    }
-                    else // not checking out book already cked out by other patron
-                    {
-                        // otherwise ignore, already checked out by this patron
+                        AssessLateReturnFine(holding, timestamp);
+                        CheckIn(holding, timestamp);
+                        CheckOut(holding, timestamp, CheckoutPolicies.BookCheckoutPolicy);
                     }
                 }
             }
             else
             {
-                if (cur != NoPatron) // check in book
+                if (InCheckoutMode())
                 {
-                    h.CheckOut(cts, cur, CheckoutPolicies.BookCheckoutPolicy);
-                    holdingsService.Update(h);
+                    CheckOut(holding, timestamp, CheckoutPolicies.BookCheckoutPolicy);
                 }
                 else
                     throw new CheckoutException();
             }
         }
 
+        private void AssessLateReturnFine(Holding holding, DateTime timestamp)
+        {
+            var patron = patronsService.FindById(holding.HeldByPatronId);
+            patron.Fine(FineAmount(holding, timestamp));
+            patronsService.Update(patron);
+        }
+
+        private void CheckIn(Holding holding, DateTime timestamp)
+        {
+            holding.CheckIn(timestamp, scannerBranchId);
+            holdingsService.Update(holding);
+        }
+
+        private void CheckOut(Holding holding, DateTime timestamp, CheckoutPolicy bookCheckoutPolicy)
+        {
+            holding.CheckOut(timestamp, currentPatron, bookCheckoutPolicy);
+            holdingsService.Update(holding);
+        }
+
+        private bool InCheckoutMode()
+        {
+            return currentPatron != NoPatron;
+        }
+
+        private decimal FineAmount(Holding holding, DateTime timestamp)
+        {
+            var material = classificationService.Retrieve(holding.Classification);
+            return material.CheckoutPolicy.FineAmount(holding.CheckOutTimestamp.Value, timestamp);
+        }
+
+        private bool IsCurrentPatronSameAsPatronWithHolding(Holding h)
+        {
+            return h.HeldByPatronId != currentPatron;
+        }
+
         public void CompleteCheckout()
         {
-            cur = NoPatron;
+            currentPatron = NoPatron;
         }
     }
 }

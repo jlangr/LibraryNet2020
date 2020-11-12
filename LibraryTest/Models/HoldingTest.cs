@@ -146,6 +146,11 @@ namespace LibraryTest.Models
             Assert.Equal(Branch.CheckedOutId, holding.BranchId);
             
             // checking in
+            CheckIn(holding);
+        }
+
+        private static void CheckIn(Holding holding)
+        {
             var tomorrow = DateTime.Now.AddDays(1);
             const int newBranchId = 2;
             holding.CheckIn(tomorrow, newBranchId);
