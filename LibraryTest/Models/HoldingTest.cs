@@ -176,14 +176,14 @@ namespace LibraryTest.Models
         {
             var tomorrow = DateTime.Now.AddDays(1);
             const int newBranchId = 2;
-            
+
             holding.CheckIn(tomorrow, newBranchId);
-            
+
             Assert.False(holding.IsCheckedOut);
             Assert.Equal(Holding.NoPatron, holding.HeldByPatronId);
             Assert.Null(holding.CheckOutTimestamp);
             Assert.Equal(newBranchId, holding.BranchId);
-        }      
+        }
 
         [Fact]
         public void CheckInAnswersZeroDaysLateWhenReturnedOnDueDate()
