@@ -60,17 +60,13 @@ namespace LibraryNet2020.Scanner
         public void AcceptBarcode(string barcode)
         {
             var holding = holdingsService.FindByBarcode(barcode);
-
             if (holding.IsCheckedOut && CurrentPatronId == NoPatron)
             {
                 CheckInMaterial(holding, TimeService.Now);
             }
             else if (holding.IsCheckedOut && CurrentPatronId != NoPatron)
             {
-                if (holding.HeldByPatronId != CurrentPatronId) // check out book already cked-out
-                {
-                    ExchangeMaterial(holding);
-                }
+                ExchangeMaterial(holding);
             }
             else
             {
@@ -85,9 +81,12 @@ namespace LibraryNet2020.Scanner
 
         private void ExchangeMaterial(Holding holding)
         {
-            var exchangeTime = TimeService.Now;
-            CheckInMaterial(holding, exchangeTime);
-            CheckOutMaterial(holding, exchangeTime);
+            if (holding.HeldByPatronId != CurrentPatronId) // check out book already cked-out
+            {
+                var exchangeTime = TimeService.Now;
+                CheckInMaterial(holding, exchangeTime);
+                CheckOutMaterial(holding, exchangeTime);
+            }
         }
 
         private void CheckOutMaterial(Holding holding, DateTime checkInTime)
