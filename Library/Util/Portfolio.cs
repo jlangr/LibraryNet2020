@@ -14,8 +14,9 @@ namespace LibraryTest.Util
             get
             {
                 if (IsEmpty) return 0;
-                var symbol = Holdings.Keys.First();
-                return StockService.CurrentPrice(symbol) * Holdings[symbol];
+                return Holdings.Select(x => x.Value * StockService.CurrentPrice(x.Key)).Sum();
+                //var symbol = Holdings.Keys.First();
+                //return StockService.CurrentPrice(symbol) * Holdings[symbol];
             }
         }
 
