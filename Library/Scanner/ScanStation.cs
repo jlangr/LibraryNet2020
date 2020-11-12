@@ -69,14 +69,12 @@ namespace LibraryNet2020.Scanner
             if (holding.IsCheckedOut)
             {
                 if (currentPatron == NoPatron)
-                {                                        
-                    var patronId = holding.HeldByPatronId;
-                    var checkInTime = TimeService.Now;                    
+                {
+                    var checkInTime = TimeService.Now;
                     Material material = classificationService.Retrieve(holding.Classification);
                     var fineAmount = material.CheckoutPolicy.FineAmount(holding.CheckOutTimestamp.Value, checkInTime);
-                    Patron p = patronsService.FindById(patronId);
-                    p.Fine(fineAmount);
-                    patronsService.Update(p);
+                    FineHoldingPatron(holding, fineAmount);
+
                     holding.CheckIn(checkInTime, brId);
                     holdingsService.Update(holding);
                 }
@@ -94,8 +92,8 @@ namespace LibraryNet2020.Scanner
                         holdingsService.Update(holding);
                         holding.CheckOut(n, currentPatron, CheckoutPolicies.BookCheckoutPolicy);
                         holdingsService.Update(holding);
-                        // call check out controller(cur, bc1);                        
-                    }                   
+                        // call check out controller(cur, bc1);
+                    }
                 }
             }
             else
@@ -108,6 +106,13 @@ namespace LibraryNet2020.Scanner
                 else
                     throw new CheckoutException();
             }
+        }
+
+        private void FineHoldingPatron(Holding holding, decimal fineAmount)
+        {
+            Patron heldByPatron = patronsService.FindById(holding.HeldByPatronId);
+            heldByPatron.Fine(fineAmount);
+            patronsService.Update(heldByPatron);
         }
 
         public void CompleteCheckout()
