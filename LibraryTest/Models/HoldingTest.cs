@@ -125,6 +125,27 @@ namespace LibraryTest.Models
             Assert.Throws<FormatException>(() => Holding.CopyNumberFromBarcode("QA234"));
         }
 
+
+        [Fact]
+        public void ReturnFalseWhenNotCheckedOut()
+        {
+            var holding = new Holding { Classification = "", CopyNumber = 1, BranchId = 1 };
+            Assert.False(holding.IsCheckedOut);
+        }
+
+        [Fact]
+        public void ReturnTrueWhenCheckedOut()
+        {
+            var holding = new Holding { Classification = "", CopyNumber = 1, BranchId = 1 };
+            var now = DateTime.Now;
+
+            var policy = CheckoutPolicies.BookCheckoutPolicy;
+            holding.CheckOut(now, PatronId, policy);
+
+            Assert.True(holding.IsCheckedOut);
+        }
+
+
         [Fact]
         public void Co()
         {
