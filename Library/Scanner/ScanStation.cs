@@ -12,7 +12,7 @@ namespace LibraryNet2020.Scanner
         public const int NoPatron = -1;
         private readonly IClassificationService classificationService;
         private readonly int brId;
-        private int cur = NoPatron;
+        private int currentPatronId = NoPatron;
         private DateTime cts;
         private HoldingsService holdingsService;
         private PatronsService patronsService;
@@ -51,11 +51,11 @@ namespace LibraryNet2020.Scanner
 
         public int BranchId { get; private set; }
 
-        public int CurrentPatronId => cur;
+        public int CurrentPatronId => currentPatronId;
 
         public void AcceptLibraryCard(int patronId)
         {
-            cur = patronId;
+            currentPatronId = patronId;
             cts = TimeService.Now;
         }
 
@@ -65,32 +65,28 @@ namespace LibraryNet2020.Scanner
 
             if (holding.IsCheckedOut)
             {
-                if (cur == NoPatron)
+                if (currentPatronId == NoPatron)
                 {
                     var patronId = holding.HeldByPatronId;
                     var currentDateAndTime = TimeService.Now;
-                    Material material = null;
-                    material = classificationService.Retrieve(holding.Classification);
-                    var fine = material.CheckoutPolicy.FineAmount(holding.CheckOutTimestamp.Value, currentDateAndTime);
-                    Patron patron = patronsService.FindById(patronId);
-                    patron.Fine(fine);
-                    patronsService.Update(patron);
+                    Material material = classificationService.Retrieve(holding.Classification);
+
+                    DetermineFine(holding, patronId, currentDateAndTime, material);
+
                     holding.CheckIn(currentDateAndTime, brId);
                     holdingsService.Update(holding);
                 }
                 else
                 {
-                    if (holding.HeldByPatronId != cur) // check out book already cked-out
+                    if (holding.HeldByPatronId != currentPatronId) // check out book already cked-out
                     {
                         var checkInDate = TimeService.Now;
-                        var fine = classificationService.Retrieve(holding.Classification).CheckoutPolicy
-                            .FineAmount(holding.CheckOutTimestamp.Value, checkInDate);
+                        var fine = classificationService.Retrieve(holding.Classification).CheckoutPolicy.FineAmount(holding.CheckOutTimestamp.Value, checkInDate);
                         var patron = patronsService.FindById(holding.HeldByPatronId);
                         patron.Fine(fine);
                         patronsService.Update(patron);
                         holding.CheckIn(checkInDate, brId);
-                        holdingsService.Update(holding);
-                        holding.CheckOut(checkInDate, cur, CheckoutPolicies.BookCheckoutPolicy);
+                        holding.CheckOut(checkInDate, currentPatronId, CheckoutPolicies.BookCheckoutPolicy);
                         holdingsService.Update(holding);
                   
                     }
@@ -102,9 +98,9 @@ namespace LibraryNet2020.Scanner
             }
             else
             {
-                if (cur != NoPatron) // check in book
+                if (currentPatronId != NoPatron) // check in book
                 {
-                    holding.CheckOut(cts, cur, CheckoutPolicies.BookCheckoutPolicy);
+                    holding.CheckOut(cts, currentPatronId, CheckoutPolicies.BookCheckoutPolicy);
                     holdingsService.Update(holding);
                 }
                 else
@@ -112,9 +108,17 @@ namespace LibraryNet2020.Scanner
             }
         }
 
+        private void DetermineFine(Holding holding, int patronId, DateTime currentDateAndTime, Material material)
+        {
+            var fine = material.CheckoutPolicy.FineAmount(holding.CheckOutTimestamp.Value, currentDateAndTime);
+            Patron patron = patronsService.FindById(patronId);
+            patron.Fine(fine);
+            patronsService.Update(patron);
+        }
+
         public void CompleteCheckout()
         {
-            cur = NoPatron;
+            currentPatronId = NoPatron;
         }
     }
 }
