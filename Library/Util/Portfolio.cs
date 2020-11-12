@@ -1,11 +1,18 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LibraryNet2020.Util
 {
+    public interface StockService
+    {
+        decimal GetStockValue(string symbol);
+    }
+
     public class Portfolio
     {
         public bool IsEmpty { get; private set; } = true;
+        public StockService MyStockService { get; set; }
         public int SymbolCount
         {
             get
@@ -14,6 +21,15 @@ namespace LibraryNet2020.Util
             }
         }
         private Dictionary<string, int> Symbols { get; set; } = new Dictionary<string, int>();
+        public decimal Value
+        {
+            get
+            {
+                if (!Symbols.Any()) return 0;
+                var stockValues = Symbols.Keys.Select((symbol) => GetSharesOfSymbol(symbol) * MyStockService.GetStockValue(symbol));
+                return stockValues.Sum();
+            }
+        }
 
         public int GetSharesOfSymbol(string symbol)
         {

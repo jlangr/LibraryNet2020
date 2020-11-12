@@ -3,12 +3,25 @@ using Assert = Xunit.Assert;
 using LibraryNet2020.Util;
 using NuGet.Frameworks;
 using System;
+using System.Collections.Generic;
 
 namespace LibraryCoreTests.Util
 {
     public class PortfolioTests
     {
         Portfolio portfolio = new Portfolio();
+        public const decimal AppleStockValue = 100.0m;
+        public const decimal GoogleStockValue = 200.0m;
+
+        public class StubStockService : StockService
+        {
+            private Dictionary<string, decimal> StockFixture = new Dictionary<string, decimal> { { "GOOG", GoogleStockValue }, { "APPL", AppleStockValue } };
+
+            public decimal GetStockValue(string symbol)
+            {
+                return StockFixture.ContainsKey(symbol) ? StockFixture[symbol] : 0;
+            }
+        }
 
         [Fact]
         public void PortfolioIsEmpty()
@@ -81,7 +94,6 @@ namespace LibraryCoreTests.Util
             });
         }
 
-
         [Fact]
         public void ThrowExceptionWhenSellingSharesGreaterThanAmmountPurchased()
         {
@@ -91,6 +103,44 @@ namespace LibraryCoreTests.Util
                 portfolio.Sell("BAYER");
                 portfolio.Sell("BAYER");
             });
+        }
+
+        [Fact]
+        public void ValueIsZeroWhenPortfolioIsEmpty()
+        {
+            Assert.Equal(0, portfolio.Value);
+        }
+
+        [Fact]
+        public void ValueReturnsStockValueWhenOneShareOwned()
+        {
+            portfolio.Purchase("APPL", 1);
+            portfolio.MyStockService = new StubStockService();
+
+            Assert.Equal(AppleStockValue, portfolio.Value);
+        }
+
+        [Fact]
+        public void ValueReturnsStockValueWhenMultipleSharesOwner()
+        {
+            var stockQuantity = 50;
+            portfolio.Purchase("APPL", stockQuantity);
+            portfolio.MyStockService = new StubStockService();
+
+            Assert.Equal(stockQuantity * AppleStockValue, portfolio.Value);
+        }
+
+        [Fact]
+        public void ValueReturnsCompletePortfolioValue()
+        {
+            var appleStockQuantity = 25;
+            var googleStockQuantity = 50;
+            portfolio.Purchase("APPL", appleStockQuantity);
+            portfolio.Purchase("GOOG", googleStockQuantity);
+            portfolio.MyStockService = new StubStockService();
+            var expectedValue = appleStockQuantity * AppleStockValue + googleStockQuantity * GoogleStockValue;
+
+            Assert.Equal(expectedValue, portfolio.Value);
         }
     }
 }
