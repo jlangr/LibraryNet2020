@@ -13,7 +13,7 @@ namespace LibraryNet2020.Scanner
         public int CurrentPatronId { get; set; } = NoPatron;
         public const int NoPatron = -1;
         private readonly IClassificationService classificationService;
-        private DateTime cts;
+        private DateTime checkOutTimestamp;
         private HoldingsService holdingsService;
         private PatronsService patronsService;
 
@@ -51,7 +51,7 @@ namespace LibraryNet2020.Scanner
         public void AcceptLibraryCard(int patronId)
         {
             CurrentPatronId = patronId;
-            cts = TimeService.Now;
+            checkOutTimestamp = TimeService.Now;
         }
 
         // 1/19/2017: who wrote this?
@@ -65,13 +65,7 @@ namespace LibraryNet2020.Scanner
             {
                 if (CurrentPatronId == NoPatron)
                 {
-                    var checkInTime = TimeService.Now;
-                    Material material = classificationService.Retrieve(holding.Classification);
-                    var fineAmount = material.CheckoutPolicy.FineAmount(holding.CheckOutTimestamp.Value, checkInTime);
-                    FineHoldingPatron(holding, fineAmount);
-
-                    holding.CheckIn(checkInTime, BranchId);
-                    holdingsService.Update(holding);
+                    CheckInMaterial(holding);
                 }
                 else
                 {
@@ -95,7 +89,7 @@ namespace LibraryNet2020.Scanner
             {
                 if (CurrentPatronId != NoPatron) // check in book
                 {
-                    holding.CheckOut(cts, CurrentPatronId, CheckoutPolicies.BookCheckoutPolicy);
+                    holding.CheckOut(checkOutTimestamp, CurrentPatronId, CheckoutPolicies.BookCheckoutPolicy);
                     holdingsService.Update(holding);
                 }
                 else
@@ -103,9 +97,20 @@ namespace LibraryNet2020.Scanner
             }
         }
 
-        private void FineHoldingPatron(Holding holding, decimal fineAmount)
+        private void CheckInMaterial(Holding holding)
+        {
+            var checkInTime = TimeService.Now;                       
+            FineHoldingPatron(holding, checkInTime);
+
+            holding.CheckIn(checkInTime, BranchId);
+            holdingsService.Update(holding);
+        }
+
+        private void FineHoldingPatron(Holding holding, DateTime checkInTime)
         {
             Patron heldByPatron = patronsService.FindById(holding.HeldByPatronId);
+            Material material = classificationService.Retrieve(holding.Classification);
+            var fineAmount = material.CheckoutPolicy.FineAmount(holding.CheckOutTimestamp.Value, checkInTime);
             heldByPatron.Fine(fineAmount);
             patronsService.Update(heldByPatron);
         }
