@@ -4,6 +4,7 @@ using LibraryNet2020.Util;
 using NuGet.Frameworks;
 using System;
 using System.Collections.Generic;
+using Moq;
 
 namespace LibraryCoreTests.Util
 {
@@ -12,16 +13,9 @@ namespace LibraryCoreTests.Util
         Portfolio portfolio = new Portfolio();
         public const decimal AppleStockValue = 100.0m;
         public const decimal GoogleStockValue = 200.0m;
-
-        public class StubStockService : StockService
-        {
-            private Dictionary<string, decimal> StockFixture = new Dictionary<string, decimal> { { "GOOG", GoogleStockValue }, { "APPL", AppleStockValue } };
-
-            public decimal GetStockValue(string symbol)
-            {
-                return StockFixture.ContainsKey(symbol) ? StockFixture[symbol] : 0;
-            }
-        }
+        public const string AppleSymbol = "APPL";
+        public const string GoogleSymbol = "GOOG";
+        public const string BayerSymbol = "BAYER";
 
         [Fact]
         public void PortfolioIsEmpty()
@@ -34,7 +28,7 @@ namespace LibraryCoreTests.Util
         [Fact]
         public void PortfolioNotEmptyAfterPurchase()
         {
-            portfolio.Trade("BAYER");
+            portfolio.Trade(BayerSymbol);
 
             Assert.False(portfolio.IsEmpty);
         }
@@ -49,15 +43,15 @@ namespace LibraryCoreTests.Util
         [Fact]
         public void HasSymbolAfterPurchase()
         {
-            portfolio.Trade("BAYER");
+            portfolio.Trade(BayerSymbol);
             Assert.Equal(1, portfolio.SymbolCount);
         }
 
         [Fact]
         public void HasSymbolsAfterPurchase()
         {
-            portfolio.Trade("BAYER");
-            portfolio.Trade("APPL");
+            portfolio.Trade(BayerSymbol);
+            portfolio.Trade(AppleSymbol);
 
             Assert.Equal(2, portfolio.SymbolCount);
         }
@@ -65,24 +59,24 @@ namespace LibraryCoreTests.Util
         [Fact]
         public void ReturnZeroIfUnpurchasedShares()
         {
-            Assert.Equal(0, portfolio.GetSharesOfSymbol("APPL"));
+            Assert.Equal(0, portfolio.GetSharesOfSymbol(AppleSymbol));
         }
 
         [Fact]
         public void SharesTrackedIndependently()
         {
-            portfolio.Trade("GOOGLE");
+            portfolio.Trade(GoogleSymbol);
 
-            Assert.Equal(1, portfolio.GetSharesOfSymbol("GOOGLE"));
-            Assert.Equal(0, portfolio.GetSharesOfSymbol("APPL"));
+            Assert.Equal(1, portfolio.GetSharesOfSymbol(GoogleSymbol));
+            Assert.Equal(0, portfolio.GetSharesOfSymbol(AppleSymbol));
         }
 
         [Fact]
         public void PurchaseMultipleSharesShouldIncreaseTotalShareCount()
         {
-            portfolio.Trade("BAYER", 1);
-            portfolio.Trade("BAYER", 100);
-            Assert.Equal(101, portfolio.GetSharesOfSymbol("BAYER"));
+            portfolio.Trade(BayerSymbol, 1);
+            portfolio.Trade(BayerSymbol, 100);
+            Assert.Equal(101, portfolio.GetSharesOfSymbol(BayerSymbol));
         }
 
         [Fact]
@@ -90,7 +84,7 @@ namespace LibraryCoreTests.Util
         {
             Assert.Throws<Exception>(() =>
             {
-                portfolio.Sell("BAYER");
+                portfolio.Sell(BayerSymbol);
             });
         }
 
@@ -99,9 +93,9 @@ namespace LibraryCoreTests.Util
         {
             Assert.Throws<Exception>(() =>
             {
-                portfolio.Trade("BAYER");
-                portfolio.Sell("BAYER");
-                portfolio.Sell("BAYER");
+                portfolio.Trade(BayerSymbol);
+                portfolio.Sell(BayerSymbol);
+                portfolio.Sell(BayerSymbol);
             });
         }
 
@@ -114,8 +108,11 @@ namespace LibraryCoreTests.Util
         [Fact]
         public void ValueReturnsStockValueWhenOneShareOwned()
         {
-            portfolio.Trade("APPL", 1);
-            portfolio.MyStockService = new StubStockService();
+            var mockStockService = new Mock<StockService>();
+            mockStockService.Setup(mock => mock.GetStockValue(AppleSymbol))
+                .Returns(AppleStockValue);
+            portfolio.Trade(AppleSymbol, 1);
+            portfolio.MyStockService = mockStockService.Object;
 
             Assert.Equal(AppleStockValue, portfolio.Value);
         }
@@ -123,9 +120,12 @@ namespace LibraryCoreTests.Util
         [Fact]
         public void ValueReturnsStockValueWhenMultipleSharesOwner()
         {
+            var mockStockService = new Mock<StockService>();
+            mockStockService.Setup(mock => mock.GetStockValue(AppleSymbol))
+                .Returns(AppleStockValue);
             var stockQuantity = 50;
-            portfolio.Trade("APPL", stockQuantity);
-            portfolio.MyStockService = new StubStockService();
+            portfolio.Trade(AppleSymbol, stockQuantity);
+            portfolio.MyStockService = mockStockService.Object;
 
             Assert.Equal(stockQuantity * AppleStockValue, portfolio.Value);
         }
@@ -135,10 +135,16 @@ namespace LibraryCoreTests.Util
         {
             var appleStockQuantity = 25;
             var googleStockQuantity = 50;
-            portfolio.Trade("APPL", appleStockQuantity);
-            portfolio.Trade("GOOG", googleStockQuantity);
-            portfolio.MyStockService = new StubStockService();
+            var mockStockService = new Mock<StockService>();
+            mockStockService.Setup(mock => mock.GetStockValue(AppleSymbol))
+                .Returns(AppleStockValue);
+            mockStockService.Setup(mock => mock.GetStockValue(GoogleSymbol))
+                .Returns(GoogleStockValue);
             var expectedValue = appleStockQuantity * AppleStockValue + googleStockQuantity * GoogleStockValue;
+            portfolio.MyStockService = mockStockService.Object;
+
+            portfolio.Trade(AppleSymbol, appleStockQuantity);
+            portfolio.Trade(GoogleSymbol, googleStockQuantity);
 
             Assert.Equal(expectedValue, portfolio.Value);
         }
@@ -146,18 +152,18 @@ namespace LibraryCoreTests.Util
         [Fact]
         public void ShareCountDecreasesForPartialSale()
         {
-            portfolio.Trade("GOOG", 2);
+            portfolio.Trade(GoogleSymbol, 2);
 
-            portfolio.Trade("GOOG", -1);
+            portfolio.Trade(GoogleSymbol, -1);
 
-            Assert.Equal(1, portfolio.GetSharesOfSymbol("GOOG"));
+            Assert.Equal(1, portfolio.GetSharesOfSymbol(GoogleSymbol));
 
         }
 
         [Fact]
         public void TradeIsDeniedForInsufficientShares()
         {
-            Assert.Throws<Exception>(() => portfolio.Trade("GOOG", -1));
+            Assert.Throws<Exception>(() => portfolio.Trade(GoogleSymbol, -1));
         }
     }
 }
