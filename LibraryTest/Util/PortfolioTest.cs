@@ -129,7 +129,12 @@ namespace LibraryTest.Util
             Assert.Equal(0, portfolio.Value);
         }
 
-
+        [Fact]
+        public void ValueEqualsSingleSharePurchased()
+        {
+            portfolio.Purchase(Bayn, 1);
+            Assert.Equal(BaynCurrentPrice, portfolio.Value);
+        }
 
     }
 }
