@@ -163,38 +163,27 @@ namespace LibraryTest.Models
         public void LastCheckedInDateSetOnCheckIn()
         {
             var now = DateTime.Now;
+            var tomorrow = DateTime.Now.AddDays(1);
+            const int newBranchId = 2;
+
+            holding.CheckIn(tomorrow, newBranchId);
+
+            Assert.Equal(tomorrow, holding.LastCheckedIn);
         }
 
         [Fact]
-        public void Co()
+        public void CheckIn()
         {
-            Assert.False(holding.IsCheckedOut);
-            var now = DateTime.Now;
-
-            var policy = CheckoutPolicies.BookCheckoutPolicy;
-            holding.CheckOut(now, PatronId, policy);
-
-            Assert.True(holding.IsCheckedOut);
-
-            Assert.Equal(policy.Id, holding.CheckoutPolicy.Id);
-            Assert.Equal(PatronId, holding.HeldByPatronId);
-
-            var dueDate = now.AddDays(policy.MaximumCheckoutDays());
-            Assert.Equal(dueDate, holding.DueDate);
-
-            Assert.Equal(Branch.CheckedOutId, holding.BranchId);
-
-            // checking in
             var tomorrow = DateTime.Now.AddDays(1);
             const int newBranchId = 2;
+            
             holding.CheckIn(tomorrow, newBranchId);
+            
             Assert.False(holding.IsCheckedOut);
             Assert.Equal(Holding.NoPatron, holding.HeldByPatronId);
             Assert.Null(holding.CheckOutTimestamp);
             Assert.Equal(newBranchId, holding.BranchId);
-            // day after now
-            Assert.Equal(tomorrow, holding.LastCheckedIn);
-        }
+        }      
 
         [Fact]
         public void CheckInAnswersZeroDaysLateWhenReturnedOnDueDate()
