@@ -84,12 +84,21 @@ namespace LibraryTest.Util
         public void ValueIsEqualToSharePriceAfterSingleSharePurchase()
         {
             portfolio.StockPriceService = new MockStockPriceService();
+
             portfolio.Purchase(BayerSymbol);
 
             Assert.Equal(CurrentSharePrice, portfolio.Value);
         }
 
+        [Fact]
+        public void ValueContainsTotalWhenMultipleSharesPurchased()
+        {
+            portfolio.StockPriceService = new MockStockPriceService();
 
-    }
-    
+            portfolio.Purchase(BayerSymbol);
+            portfolio.Purchase(BayerSymbol);
+
+            Assert.Equal(CurrentSharePrice * 2, portfolio.Value);
+        }
+    }    
 }

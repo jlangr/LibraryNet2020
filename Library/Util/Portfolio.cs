@@ -8,17 +8,24 @@ namespace LibraryNet2020.Util
     {
         public bool IsEmpty => Count == 0;
 
-        public int Count => symbols.Count;
+        public int Count => holdings.Count;
 
-        public decimal Value => StockPriceService.GetPrice(symbols.First());
+        public decimal Value => StockPriceService.GetPrice(holdings.First().Key) * holdings.First().Value;
 
-        private HashSet<string> symbols = new HashSet<string>();
+        private Dictionary<string, int> holdings = new Dictionary<string, int>();
 
         public IStockPriceService StockPriceService { get; set; }
 
         public void Purchase(string symbol = "")
         {
-            symbols.Add(symbol);
+            if (holdings.ContainsKey(symbol))
+            {
+                holdings[symbol]++;
+            }
+            else
+            {
+                holdings.Add(symbol, 1);
+            }
         }
     }
     public interface IStockPriceService
