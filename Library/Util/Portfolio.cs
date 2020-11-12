@@ -10,7 +10,15 @@ namespace LibraryNet2020.Util
 
         public int Count => holdings.Count;
 
-        public decimal Value => StockPriceService.GetPrice(holdings.First().Key) * holdings.First().Value;
+        public decimal GetPortfolioValue()
+        {
+            if (holdings.Count == 0)
+            {
+                return 0;
+            }
+            return StockPriceService.GetPrice(holdings.First().Key) * holdings.First().Value;
+
+        }
 
         private Dictionary<string, int> holdings = new Dictionary<string, int>();
 

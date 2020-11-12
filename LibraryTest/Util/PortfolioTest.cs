@@ -69,7 +69,7 @@ namespace LibraryTest.Util
         [Fact]
         public void ValueIsZeroWhenPortfolioIsEmpty()
         {
-            Assert.Equal(0, portfolio.Value);
+            Assert.Equal(0, portfolio.GetPortfolioValue());
         }
 
         public class MockStockPriceService : IStockPriceService
@@ -87,7 +87,7 @@ namespace LibraryTest.Util
 
             portfolio.Purchase(BayerSymbol);
 
-            Assert.Equal(CurrentSharePrice, portfolio.Value);
+            Assert.Equal(CurrentSharePrice, portfolio.GetPortfolioValue());
         }
 
         [Fact]
@@ -98,7 +98,7 @@ namespace LibraryTest.Util
             portfolio.Purchase(BayerSymbol);
             portfolio.Purchase(BayerSymbol);
 
-            Assert.Equal(CurrentSharePrice * 2, portfolio.Value);
+            Assert.Equal(CurrentSharePrice * 2, portfolio.GetPortfolioValue());
         }
     }    
 }
