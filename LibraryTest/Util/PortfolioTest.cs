@@ -34,7 +34,7 @@ namespace LibraryCoreTests.Util
         [Fact]
         public void PortfolioNotEmptyAfterPurchase()
         {
-            portfolio.Purchase("BAYER");
+            portfolio.Trade("BAYER");
 
             Assert.False(portfolio.IsEmpty);
         }
@@ -49,15 +49,15 @@ namespace LibraryCoreTests.Util
         [Fact]
         public void HasSymbolAfterPurchase()
         {
-            portfolio.Purchase("BAYER");
+            portfolio.Trade("BAYER");
             Assert.Equal(1, portfolio.SymbolCount);
         }
 
         [Fact]
         public void HasSymbolsAfterPurchase()
         {
-            portfolio.Purchase("BAYER");
-            portfolio.Purchase("APPL");
+            portfolio.Trade("BAYER");
+            portfolio.Trade("APPL");
 
             Assert.Equal(2, portfolio.SymbolCount);
         }
@@ -71,7 +71,7 @@ namespace LibraryCoreTests.Util
         [Fact]
         public void SharesTrackedIndependently()
         {
-            portfolio.Purchase("GOOGLE");
+            portfolio.Trade("GOOGLE");
 
             Assert.Equal(1, portfolio.GetSharesOfSymbol("GOOGLE"));
             Assert.Equal(0, portfolio.GetSharesOfSymbol("APPL"));
@@ -80,8 +80,8 @@ namespace LibraryCoreTests.Util
         [Fact]
         public void PurchaseMultipleSharesShouldIncreaseTotalShareCount()
         {
-            portfolio.Purchase("BAYER", 1);
-            portfolio.Purchase("BAYER", 100);
+            portfolio.Trade("BAYER", 1);
+            portfolio.Trade("BAYER", 100);
             Assert.Equal(101, portfolio.GetSharesOfSymbol("BAYER"));
         }
 
@@ -99,7 +99,7 @@ namespace LibraryCoreTests.Util
         {
             Assert.Throws<Exception>(() =>
             {
-                portfolio.Purchase("BAYER");
+                portfolio.Trade("BAYER");
                 portfolio.Sell("BAYER");
                 portfolio.Sell("BAYER");
             });
@@ -114,7 +114,7 @@ namespace LibraryCoreTests.Util
         [Fact]
         public void ValueReturnsStockValueWhenOneShareOwned()
         {
-            portfolio.Purchase("APPL", 1);
+            portfolio.Trade("APPL", 1);
             portfolio.MyStockService = new StubStockService();
 
             Assert.Equal(AppleStockValue, portfolio.Value);
@@ -124,7 +124,7 @@ namespace LibraryCoreTests.Util
         public void ValueReturnsStockValueWhenMultipleSharesOwner()
         {
             var stockQuantity = 50;
-            portfolio.Purchase("APPL", stockQuantity);
+            portfolio.Trade("APPL", stockQuantity);
             portfolio.MyStockService = new StubStockService();
 
             Assert.Equal(stockQuantity * AppleStockValue, portfolio.Value);
@@ -135,31 +135,58 @@ namespace LibraryCoreTests.Util
         {
             var appleStockQuantity = 25;
             var googleStockQuantity = 50;
-            portfolio.Purchase("APPL", appleStockQuantity);
-            portfolio.Purchase("GOOG", googleStockQuantity);
+            portfolio.Trade("APPL", appleStockQuantity);
+            portfolio.Trade("GOOG", googleStockQuantity);
             portfolio.MyStockService = new StubStockService();
             var expectedValue = appleStockQuantity * AppleStockValue + googleStockQuantity * GoogleStockValue;
 
             Assert.Equal(expectedValue, portfolio.Value);
         }
+
+        [Fact]
+        public void ShareCountDecreasesForPartialSale()
+        {            
+            portfolio.Trade("GOOG", 2);
+
+            portfolio.Trade("GOOG", -1);
+
+            Assert.Equal(1, portfolio.GetSharesOfSymbol("GOOG"));
+
+        }
+
+        [Fact]
+        public void TradeIsDeniedForInsufficientShares()
+        {
+            Assert.Throws<Exception>(() => portfolio.Trade("GOOG", -1));
+        }
+
+
     }
 }
 
 /*
-class Portfolio
-    Is it empty?
-    How Many unique symbols?
-    Given a symbol and # of shares, make a purchase
-    How many shares for a given symbol?
-    Given a symbol and a # of shares, sell the shares
-    Throw an exception when selling too many shares
+Is it empty?
+    Portfolio is empty
+    Portfolio not empty after purchase
 
+How many unique symbols?
+    Has 0 symbols before purchase
+    Has 1 symbol after purchase
+    Has n symbols after n purchases for a given symbol
+    Count updates after purchase for a given symbol
 
-PortfolioIsEmpty
-    return true;
+Given a symbol and # of shares, make a purchase
+    Making purchase increases symbol count
+    Making purchase increases share count
 
-PortfolioNotEmptyAfterPurchase
-    void Purchase(string symbol, int shares) {}
-    return false;
+How many shares of a given symbol?
+    Has 0 shares if not purchased
+    Has 1 share after purchase of a given symbol
+    Count unchanged after purchase of different symbol
+
+Given a symbol and a # of shares, sell the shares
+    Throws exception if selling share that has not been purchased
+    Throws exception if selling greater than amount purchased
+    Share count decreases after partial sale
+    Share removed from collection after complete sale
 */
-

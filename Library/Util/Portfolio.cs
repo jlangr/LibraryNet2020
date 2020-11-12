@@ -36,11 +36,14 @@ namespace LibraryNet2020.Util
             return Symbols.ContainsKey(symbol) ? Symbols[symbol] : 0;
         }
 
-        public void Purchase(string symbol, int count = 1)
+        public void Trade(string symbol, int count = 1)
         {
             IsEmpty = false;
+
+            ValidateTrade(symbol, count);
+
             if (Symbols.ContainsKey(symbol))
-            {
+            {               
                 Symbols[symbol] += count;
             }
             else
@@ -52,6 +55,16 @@ namespace LibraryNet2020.Util
         public void Sell(string symbol)
         {
             throw new Exception("Not enough shares of symbol");
+        }
+
+        private void ValidateTrade(string symbol, int count = 1)
+        {
+            if (!Symbols.ContainsKey(symbol) && count > 0)
+                return;
+
+            if (Symbols[symbol] + count < 0)
+                throw new Exception("Insufficient shares");
+
         }
     }
 }
