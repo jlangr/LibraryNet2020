@@ -63,74 +63,56 @@ namespace LibraryNet2020.Scanner
         // 
         // FIXME. Fix this mess. We just have to SHIP IT for nwo!!!
         public void AcceptBarcode(string barCode)
-        {         
+        {
             var holdingService = holdingsService.FindByBarcode(barCode);
+            var now = TimeService.Now;
+            decimal fineAmount = GetFineAmount(holdingService, now);
 
-            if (holdingService.IsCheckedOut)
+            if (holdingService.IsCheckedOut && IsCurrentPatron())
             {
-                if (currentPatron == NoPatron)
-                {
-                    // ci                  
-                    var patronId = holdingService.HeldByPatronId;
-                    var now = TimeService.Now;
-                    Material material = classificationService.Retrieve(holdingService.Classification);                     
-                    var fineAmount = material.CheckoutPolicy.FineAmount(holdingService.CheckOutTimestamp.Value, now);
-                    
-                    Patron patron = patronsService.FindById(patronId);
-                    patron.Fine(fineAmount);
-                    patronsService.Update(patron);
-                    holdingService.CheckIn(now, branchId);
-                    holdingsService.Update(holdingService);
-                }
-                else
-                {
-                    if (holdingService.HeldByPatronId != currentPatron) // check out book already cked-out
-                    {
-                      
-                        var now = TimeService.Now;
-                        var dueDate = TimeService.Now.AddDays(21);
-                        var fineAmount = classificationService.Retrieve(holdingService.Classification).CheckoutPolicy
-                            .FineAmount(holdingService.CheckOutTimestamp.Value, now);
-                        
-                        var patron = patronsService.FindById(holdingService.HeldByPatronId);                        
-                        patron.Fine(fineAmount);
-                        patronsService.Update(patron);
-                        holdingService.CheckIn(now, branchId);
-                        holdingsService.Update(holdingService);
-                        // co
-                        holdingService.CheckOut(now, currentPatron, CheckoutPolicies.BookCheckoutPolicy);
-                        holdingsService.Update(holdingService);
-                        // call check out controller(cur, barCode1);
-                        dueDate.AddDays(1);
-                        now = dueDate;
-                    }
-                    else // not checking out book already cked out by other patron
-                    {
-                        // otherwise ignore, already checked out by this patron
-                    }
-                }
+                CheckInAndFinePatron(holdingService, now, fineAmount);
+            }
+            else if (holdingService.IsCheckedOut)
+            {
+                CheckInAndFinePatron(holdingService, now, fineAmount);
+                CheckoutAndUpdate(holdingService);
+            }
+            else if (!IsCurrentPatron())
+            {
+                CheckoutAndUpdate(holdingService);
             }
             else
             {
-                if (currentPatron != NoPatron) // check in book
-                {
-                    holdingService.CheckOut(cts, currentPatron, CheckoutPolicies.BookCheckoutPolicy);
-                    holdingsService.Update(holdingService);
-                }
-                else
-                    throw new CheckoutException();
+                throw new CheckoutException();
             }
         }
 
-        private void CheckInAndFindPatron(decimal fineAmount, int branchId, HoldingService holdingService)
+        private decimal GetFineAmount(Holding holdingService, DateTime now)
+        {
+            Material material = classificationService.Retrieve(holdingService.Classification);
+            var fineAmount = material.CheckoutPolicy.FineAmount(holdingService.CheckOutTimestamp.Value, now);
+            return fineAmount;
+        }
+
+        private void CheckoutAndUpdate(Holding holdingService)
+        {
+            holdingService.CheckOut(cts, currentPatron, CheckoutPolicies.BookCheckoutPolicy);
+            holdingsService.Update(holdingService);
+        }
+
+        private bool IsCurrentPatron()
+        {
+            return currentPatron == NoPatron;
+        }
+
+        private void CheckInAndFinePatron(Holding holdingService, DateTime now, decimal fineAmount)
         {
             var patron = patronsService.FindById(holdingService.HeldByPatronId);
             patron.Fine(fineAmount);
             patronsService.Update(patron);
             holdingService.CheckIn(now, branchId);
-            holdingService.Update(holdingService);
+            holdingsService.Update(holdingService);
         }
-
 
         public void CompleteCheckout()
         {
