@@ -145,7 +145,7 @@ namespace LibraryCoreTests.Util
 
         [Fact]
         public void ShareCountDecreasesForPartialSale()
-        {            
+        {
             portfolio.Trade("GOOG", 2);
 
             portfolio.Trade("GOOG", -1);
@@ -159,8 +159,6 @@ namespace LibraryCoreTests.Util
         {
             Assert.Throws<Exception>(() => portfolio.Trade("GOOG", -1));
         }
-
-
     }
 }
 

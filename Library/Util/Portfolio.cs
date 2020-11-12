@@ -43,7 +43,7 @@ namespace LibraryNet2020.Util
             ValidateTrade(symbol, count);
 
             if (Symbols.ContainsKey(symbol))
-            {               
+            {
                 Symbols[symbol] += count;
             }
             else
@@ -59,12 +59,11 @@ namespace LibraryNet2020.Util
 
         private void ValidateTrade(string symbol, int count = 1)
         {
-            if (!Symbols.ContainsKey(symbol) && count > 0)
+            if (count > 0)
                 return;
 
-            if (Symbols[symbol] + count < 0)
+            if (GetSharesOfSymbol(symbol) + count < 0)
                 throw new Exception("Insufficient shares");
-
         }
     }
 }
