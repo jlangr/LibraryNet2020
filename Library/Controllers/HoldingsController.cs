@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LibraryNet2020.ControllerHelpers;
@@ -63,14 +62,13 @@ namespace LibraryNet2020.Controllers
             try
             {
                 holdingsService.Add(holding);
+                return RedirectToAction(nameof(Index));
             }
             catch (Exception e)
             {
                 ModelState.AddModelError(ModelKey, e.Message);
                 return View(holding);
             }
-
-            return RedirectToAction(nameof(Index));
         }
 
         // GET: Holdings/Edit/5
@@ -115,7 +113,7 @@ namespace LibraryNet2020.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            context.Holdings.Delete(id, context);
+            await Task.Run(() => context.Holdings.Delete(id, context));
             return RedirectToAction(nameof(Index));
         }
     }

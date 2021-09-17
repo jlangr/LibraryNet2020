@@ -89,7 +89,7 @@ namespace LibraryNet2020.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            _context.Materials.Delete(id, _context);
+            await Task.Run(() => _context.Materials.Delete(id, _context));
             return RedirectToAction(nameof(Index));
         }
     }

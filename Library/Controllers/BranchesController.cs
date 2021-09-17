@@ -58,21 +58,18 @@ namespace LibraryNet2020.Controllers
         {
             if (id != branch.Id) return NotFound();
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return View(branch);
+            try
             {
-                try
-                {
-                    context.Update(branch);
-                    await context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!context.Branches.Exists(branch.Id)) return NotFound();
-                    throw;
-                }
+                context.Update(branch);
+                await context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-            return View(branch);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!context.Branches.Exists(branch.Id)) return NotFound();
+                throw;
+            }
         }
 
         // GET: Branches/Delete/5
@@ -86,9 +83,8 @@ namespace LibraryNet2020.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            context.Branches.Delete(id, context);
+            await Task.Run(() => context.Branches.Delete(id, context));
             return RedirectToAction(nameof(Index));
         }
-        
     }
 }

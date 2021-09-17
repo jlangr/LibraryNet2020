@@ -250,7 +250,7 @@ namespace LibraryTest.Util
             var cache =
                 Mock.Of<Cache>(c => c.LookUp("smelt") == "a fish");
 
-            Assert.Equal(cache.LookUp("smelt"), "a fish");
+            Assert.Equal("a fish", cache.LookUp("smelt"));
         }
 
         public class Store
@@ -267,7 +267,7 @@ namespace LibraryTest.Util
             var store =
                 Mock.Of<Store>(c => c.LookUp("smelt") == "a fish");
 
-            Assert.Equal(store.LookUp("smelt"), "a fish");
+            Assert.Equal("a fish", store.LookUp("smelt"));
         }
 
 
